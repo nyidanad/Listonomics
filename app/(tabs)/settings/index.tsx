@@ -1,6 +1,6 @@
 import { Text } from 'react-native'
 
-export const Settings = () => {
+const Settings = () => {
   return (
     <Text>Settings page</Text>
   )

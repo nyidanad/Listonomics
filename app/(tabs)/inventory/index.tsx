@@ -1,6 +1,6 @@
 import { Text } from 'react-native'
 
-export const Inventory = () => {
+const Inventory = () => {
   return (
     <Text>Inventory page</Text>
   )

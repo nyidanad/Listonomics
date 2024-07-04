@@ -1,5 +1,5 @@
-import FontAwesome from '@expo/vector-icons/FontAwesome';
-import Ionicons from '@expo/vector-icons/Ionicons';
+import FontAwesome from '@expo/vector-icons/FontAwesome'
+import Ionicons from '@expo/vector-icons/Ionicons'
 import { Tabs } from 'expo-router'
 
 function tabsLayout() {
@@ -8,6 +8,7 @@ function tabsLayout() {
         headerShadowVisible: false,
         tabBarActiveTintColor: '#3E46C7',
         tabBarInactiveTintColor: '#B1B1B1',
+        tabBarHideOnKeyboard: true,
         tabBarStyle: {
             height: 60,
             backgroundColor: '#F6F6F6',

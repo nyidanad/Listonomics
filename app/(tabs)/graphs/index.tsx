@@ -1,6 +1,6 @@
 import { Text } from 'react-native'
 
-export const Graphs = () => {
+const Graphs = () => {
   return (
     <Text>Graphs page</Text>
   )
