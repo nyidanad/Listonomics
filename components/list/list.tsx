@@ -1,6 +1,7 @@
 import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons'
 import Ionicons from '@expo/vector-icons/Ionicons'
 import { StyleSheet, Text, TouchableOpacity, View } from "react-native"
+import { useRouter } from 'expo-router'
 
 type ListProps = {
   title: string,
@@ -8,10 +9,12 @@ type ListProps = {
   color: string
 }
 
-const list = ({ title, icon, color }: ListProps) => {
+const List = ({ title, icon, color }: ListProps) => {
+  const router = useRouter()
+
   return (
     <View>
-      <TouchableOpacity style={styles.container}>
+      <TouchableOpacity style={styles.container} onPress={() => router.push({ pathname: 'home/lists/[id]', params: { title, color } })}>
         <View style={styles.listWrapper}>
           <View style={[styles.iconWrapper, { backgroundColor: color }]}>
             <MaterialCommunityIcons name={icon} style={[styles.icon, { backgroundColor: color }]} />
@@ -60,4 +63,4 @@ const styles = StyleSheet.create({
   },
 })
 
-export default list
+export default List

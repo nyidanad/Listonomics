@@ -18,6 +18,7 @@ function tabsLayout() {
             paddingBottom: 5,
         }
     }}>
+        <Tabs.Screen name='index' options={{ href: null }} />
         <Tabs.Screen name='home' options={{
             title: 'Home',
             tabBarIcon: ({ color }) => <FontAwesome size={33} name="home" color={color} />,
