@@ -20,7 +20,7 @@ const BSTextInput = ({ value, placeholder, keyboardtype, onChangeText }: BSTextI
         </Text>
       )
     }
-    return null;
+    return null
   }
 
   return (
