@@ -1,10 +1,13 @@
 import Ionicons from '@expo/vector-icons/Ionicons'
 import { StyleSheet, Text, TouchableOpacity, View } from "react-native"
-import { useState } from 'react';
+import { useRef, useState } from 'react'
+import { useLocalSearchParams } from 'expo-router'
+import { BottomSheetModal } from '@gorhom/bottom-sheet'
 
-import Item from "../../../../components/item/item";
-import Hr from "../../../../components/horizontal-rules/hr";
-import { useLocalSearchParams } from 'expo-router';
+import Item from "../../../../components/item/item"
+import Hr from "../../../../components/horizontalRules/hr"
+import BottomSheet from '../../../../components/bottomSheet/bottom-sheet'
+import { GestureHandlerRootView } from 'react-native-gesture-handler'
 
 type ListProps = {
   title: string,
@@ -15,42 +18,54 @@ const ListPage = () => {
   const [totalSum, setTotalSum] = useState(0)
   const [cartSum, setCartSum] = useState(0)
   const { title, color } = useLocalSearchParams() as ListProps
+  const bottomSheetRef = useRef<BottomSheetModal>(null)
+  const [showModal, setShowModal] = useState(false)
+
+  // Handeling BottomSheet
+  const handleSheetOpen = () => { bottomSheetRef.current?.present(), setShowModal(true) }
+  const handleSheetClose = () => { bottomSheetRef.current?.close(), setShowModal(false) }
 
   return (
-    <View style={styles.container}>
-      <View>
-        <View style={styles.titleWrapper}>
-          <Text style={[styles.title, {color: color}]}>{title}</Text>
-          <TouchableOpacity>
-            <Ionicons name='options' style={[styles.optionsIcon, { backgroundColor: color, }]} />
-          </TouchableOpacity>
-        </View>
-        <Text style={styles.summaryTitle}>SUMMARY</Text>
-        <Text style={styles.summaryCost}>Total:      {totalSum}Ft</Text>
-        <Text style={styles.summaryCost}>In Cart:    {cartSum}Ft</Text>
-        <Hr />
-        
-        <View style={{ height: '76%' }}>
-          <Text style={[styles.categoryHeader, { color: color }]}>Food</Text>
-          <Item name='item1' price={1000000} quantity={2} checked={false} color={color} />
-          <Item name='item2' price={125} quantity={3} checked={true} color={color} />
-          <Item name='item3' price={150} quantity={5} checked={true} color={color} />
-          <Item name='item4' price={125} quantity={1} checked={false} color={color} />
-          <Text style={[styles.categoryHeader, { color: color }]}>Drink</Text>
-          <Item name='item5' price={100} quantity={6} checked={false} color={color} />
-          <Item name='item6' price={125} quantity={2} checked={true} color={color} />
-        </View>
-      </View>
-
-      <View style={styles.addItemWrapper}>
-        <TouchableOpacity>
-          <View style={styles.addItemWrapper}>
-            <Ionicons name="add-circle" style={[styles.addItemIcon, {color: color}]} />
-            <Text style={[styles.addItemText, {color: color}]}>New Item</Text>
+    <GestureHandlerRootView>
+      <View style={styles.container}>
+        <View>
+          <View style={styles.titleWrapper}>
+            <Text style={[styles.title, {color: color}]}>{title}</Text>
+            <TouchableOpacity>
+              <Ionicons name='options' style={[styles.optionsIcon, { backgroundColor: color, }]} />
+            </TouchableOpacity>
           </View>
-        </TouchableOpacity>
+          <Text style={styles.summaryTitle}>SUMMARY</Text>
+          <Text style={styles.summaryCost}>Total:      {totalSum}Ft</Text>
+          <Text style={styles.summaryCost}>In Cart:    {cartSum}Ft</Text>
+          <Hr />
+          
+          <View style={{ height: '76%' }}>
+            <Text style={[styles.categoryHeader, { color: color }]}>Food</Text>
+            <Item name='item1' price={1000000} quantity={2} checked={false} color={color} />
+            <Item name='item2' price={125} quantity={3} checked={true} color={color} />
+            <Item name='item3' price={150} quantity={5} checked={true} color={color} />
+            <Item name='item4' price={125} quantity={1} checked={false} color={color} />
+            <Text style={[styles.categoryHeader, { color: color }]}>Drink</Text>
+            <Item name='item5' price={100} quantity={6} checked={false} color={color} />
+            <Item name='item6' price={125} quantity={2} checked={true} color={color} />
+          </View>
+        </View>
+
+        {!showModal &&
+          <View style={styles.addItemWrapper}>
+            <TouchableOpacity onPress={handleSheetOpen}>
+              <View style={styles.addItemWrapper}>
+                <Ionicons name="add-circle" style={[styles.addItemIcon, {color: color}]} />
+                <Text style={[styles.addItemText, {color: color}]}>New Item</Text>
+              </View>
+            </TouchableOpacity>
+          </View>
+        }
+        
+        <BottomSheet title='Add Item' color={color} onClose={handleSheetClose} ref={bottomSheetRef} />
       </View>
-    </View>
+    </GestureHandlerRootView>
   )
 }
 
@@ -89,12 +104,10 @@ const styles = StyleSheet.create({
   },
   
   addItemWrapper: {
-    position: 'absolute',
     flexDirection: 'row',
     alignItems: 'center',
     zIndex: 999,
-    top: '94%',
-    left: 10
+    bottom: 5,
   },
   addItemIcon: {
     fontSize: 32,

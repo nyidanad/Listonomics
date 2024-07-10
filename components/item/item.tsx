@@ -2,7 +2,7 @@ import Checkbox from "expo-checkbox"
 import { useState } from "react";
 import { StyleSheet, Text, TouchableOpacity, View } from "react-native"
 
-import Hr from "../horizontal-rules/hr-item";
+import Hr from "../horizontalRules/hr-item";
 
 type ItemProps = {
   name: string,
@@ -16,7 +16,7 @@ const CIRCLE_SIZE = 24
 const CIRCLE_RING_SIZE = 1.5
 
 const Item = ({ name, price, quantity, checked, color }: ItemProps) => {
-  const [isChecked, setChecked] = useState(false);
+  const [isChecked, setChecked] = useState(checked);
 
   return (
     <View>
