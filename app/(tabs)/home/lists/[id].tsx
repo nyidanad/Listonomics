@@ -19,11 +19,10 @@ const ListPage = () => {
   const [cartSum, setCartSum] = useState(0)
   const { title, color } = useLocalSearchParams() as ListProps
   const bottomSheetRef = useRef<BottomSheetModal>(null)
-  const [showModal, setShowModal] = useState(false)
 
   // Handeling BottomSheet
-  const handleSheetOpen = () => { bottomSheetRef.current?.present(), setShowModal(true) }
-  const handleSheetClose = () => { bottomSheetRef.current?.close(), setShowModal(false) }
+  const handleSheetOpen = () => { bottomSheetRef.current?.present() }
+  const handleSheetClose = () => { bottomSheetRef.current?.close() }
 
   return (
     <GestureHandlerRootView>
@@ -52,16 +51,14 @@ const ListPage = () => {
           </View>
         </View>
 
-        {!showModal &&
-          <View style={styles.addItemWrapper}>
-            <TouchableOpacity onPress={handleSheetOpen}>
-              <View style={styles.addItemWrapper}>
-                <Ionicons name="add-circle" style={[styles.addItemIcon, {color: color}]} />
-                <Text style={[styles.addItemText, {color: color}]}>New Item</Text>
-              </View>
-            </TouchableOpacity>
-          </View>
-        }
+        <View style={styles.addItemWrapper}>
+          <TouchableOpacity onPress={handleSheetOpen}>
+            <View style={styles.addItemWrapper}>
+              <Ionicons name="add-circle" style={[styles.addItemIcon, {color: color}]} />
+              <Text style={[styles.addItemText, {color: color}]}>New Item</Text>
+            </View>
+          </TouchableOpacity>
+        </View>
         
         <BottomSheet title='Add Item' color={color} onClose={handleSheetClose} ref={bottomSheetRef} />
       </View>

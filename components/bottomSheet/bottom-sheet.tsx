@@ -52,7 +52,7 @@ const priorites: Priorities[] = [
 ]
 
 const BottomSheet = forwardRef<Ref, Props>((props, ref) => {
-  const snapPoints = useMemo(() => ['45%', '45%', '63%'], [])
+  const snapPoints = useMemo(() => ['53%', '53%', '71%'], [])
   const [snapIndex, setSnapIndex] = useState(0)
   const [item, setItem] = useState('')
   const [iconIndex, setIconIndex] = useState<number | null>(null)
@@ -172,26 +172,28 @@ const BottomSheet = forwardRef<Ref, Props>((props, ref) => {
         </View>
 
         {snapIndex >= 2 && (
-          <DateTimePicker 
-            value={expireDate} 
-            show={showDatePicker}
-            label={true}
-            labelText='Expire date'
-            onPress={() => setShowDatePicker(true)} 
-            onChange={onDTPChange} />
-        )}
+          <>
+            <DateTimePicker 
+              value={expireDate} 
+              show={showDatePicker}
+              label={true}
+              labelText='Expire date'
+              onPress={() => setShowDatePicker(true)} 
+              onChange={onDTPChange}
+            />
 
-        {snapIndex >= 2 && (
-          <Dropdown
-            data={priorites} 
-            value={priority} 
-            label={true} 
-            placeholder='Priority' 
-            icon='chevron-expand' 
-            onChange={(priority) => {setPriority(priority)}} 
-          />
+            <Dropdown
+              data={priorites} 
+              value={priority} 
+              label={true} 
+              placeholder='Priority' 
+              icon='chevron-expand' 
+              onChange={(priority) => {setPriority(priority)}} 
+            />
+          </>
         )}
-
+      </View>
+      <View style={styles.buttonWrapper}>
         <TouchableOpacity style={[styles.addItemButton, { backgroundColor: props.color }]}>
           <Text style={styles.addItemText}>Add Item</Text>
         </TouchableOpacity>
@@ -203,6 +205,9 @@ const BottomSheet = forwardRef<Ref, Props>((props, ref) => {
 const styles = StyleSheet.create({
   container: {
     paddingHorizontal: 20,
+  },
+  buttonWrapper: {
+    top: 45,
   },
   header: {
     flexDirection: 'row',

@@ -1,6 +1,6 @@
 import Ionicons from '@expo/vector-icons/Ionicons'
-import { Link, useRouter } from 'expo-router'
-import { StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native'
+import { useRouter } from 'expo-router'
+import { StyleSheet, Text, TouchableOpacity, View } from 'react-native'
 
 import Searchbar from '../../../components/search/searchbar'
 import ListFilter from '../../../components/filter/list-filter'
@@ -18,8 +18,11 @@ export const Home = () => {
         <ListFilter title='Flagged' icon='flag-sharp' quantity={5} backgroundColor='#FBC116' />
       </View>
 
-      <Text style={styles.title}>My Lists</Text>
-      <View style={{ height: '68%' }}>
+      <View style={styles.listsHeader}>
+        <Text style={styles.title}>My Lists</Text>
+        <Ionicons name="options" style={styles.settingsIcon} />
+      </View>
+      <View style={{ maxHeight: '65%', flex: 1 }}>
         <List title='Weekend List' icon='format-list-bulleted' color='#BB6CD7' />
         <List title='Shopping List' icon='cart' color='#0570FF' />
         <List title='Kids' icon='baby-carriage' color='#FFC602' />
@@ -41,13 +44,23 @@ export const Home = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#FFF',
     paddingTop: 35,
     paddingHorizontal: 20,
+  },
+  listsHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 15,
   },
   title: {
     fontSize: 24,
     fontWeight: 'bold',
+    color: '#363636',
+  },
+  settingsIcon: {
+    fontSize: 24,
+    color: '#363636',
   },
   filters: {
     flexDirection: 'row',
@@ -58,7 +71,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     zIndex: 999,
-    top: 20,
+    top: 25,
   },
   addListIcon: {
     fontSize: 32,

@@ -13,7 +13,7 @@ const searchbar = () => {
 const styles = StyleSheet.create({
   search: {
     height: 38,
-    backgroundColor: '#EDEEF2',
+    backgroundColor: '#E5E5E5',
     borderRadius: 999,
     paddingHorizontal: 15,
     marginBottom: 20,
@@ -21,12 +21,12 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   searchIcon: {
-    color: '#808080',
+    color: '#6D6D6D',
     marginRight: 8,
     fontSize: 18,
   },
   searchText: {
-    color: '#808080',
+    color: '#6D6D6D',
     fontSize: 15,
   },
 })

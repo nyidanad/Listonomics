@@ -17,10 +17,10 @@ const List = ({ title, icon, color }: ListProps) => {
       <TouchableOpacity style={styles.container} onPress={() => router.push({ pathname: 'home/lists/[id]', params: { title, color } })}>
         <View style={styles.listWrapper}>
           <View style={[styles.iconWrapper, { backgroundColor: color }]}>
-            <MaterialCommunityIcons name={icon} style={[styles.icon, { backgroundColor: color }]} />
+            <MaterialCommunityIcons name={icon} style={styles.icon} />
           </View>
           <Text style={styles.listTitle}>{title}</Text>
-          <Ionicons name="chevron-forward" style={styles.listArrow} />
+          <Ionicons name="ellipsis-vertical" style={styles.listArrow} />
         </View>
       </TouchableOpacity>
     </View>
@@ -29,12 +29,20 @@ const List = ({ title, icon, color }: ListProps) => {
 
 const styles = StyleSheet.create({
   container: {
-    backgroundColor: '#F3F2F8',
-    borderRadius: 12,
-    paddingHorizontal: 15,
-    height: 60,
+    backgroundColor: '#FFF',
+    borderRadius: 10,
+    paddingHorizontal: 12,
+    height: 55,
     justifyContent: 'center',
-    marginTop: 15,
+    marginBottom: 8,
+    shadowColor: '#B8BFCB',
+    shadowOffset: {
+        width: 0,
+        height: 4,
+    },
+    shadowOpacity: 0.3,
+    shadowRadius: 3,
+    elevation: 2,
   },
   listWrapper: {
     alignItems: 'center',
@@ -43,14 +51,14 @@ const styles = StyleSheet.create({
   },
   iconWrapper: {
     borderRadius: 999,
-    width: 40,
-    height: 40,
+    width: 35,
+    height: 35,
     marginRight: 20,
     justifyContent: 'center',
     alignItems: 'center',
   },
   icon: {
-    fontSize: 22,
+    fontSize: 20,
     color: 'white',
   },
   listTitle: {
