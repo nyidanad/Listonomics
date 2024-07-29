@@ -1,19 +1,28 @@
-import { StyleSheet, View } from "react-native"
+import { DimensionValue, View } from "react-native"
 
+type HrProps = {
+  color: string,
+  width: number,
+  length?: DimensionValue,
+  top?: number,
+  bottom?: number,
+  align?: 'flex-end' | 'flex-start' | 'center'
+}
 
-const hr = () => {
+const Hr = ({ color, width, length, top, bottom, align }: HrProps) => {
   return (
-    <View style={styles.hr} />
+    <View 
+      style={{ 
+        width: '100%',
+        borderBottomColor: color,
+        borderBottomWidth: width,
+        maxWidth: length,
+        marginTop: top,
+        marginBottom: bottom,
+        alignSelf: align
+      }}
+    />
   )
 }
 
-const styles = StyleSheet.create({
-  hr: {
-    borderBottomColor: '#EDEEF2',
-    borderBottomWidth: 0.75,
-    marginTop: 8,
-    marginBottom: 5,
-  },
-})
-
-export default hr
+export default Hr

@@ -5,7 +5,7 @@ import { forwardRef, useCallback, useMemo, useState } from "react"
 import { Alert, ScrollView, StyleSheet, Text, TouchableOpacity, TouchableWithoutFeedback, View } from "react-native"
 import { DateTimePickerEvent } from '@react-native-community/datetimepicker'
 
-import TextInput from '../inputField/bottom-sheet-textinput'
+import BSTextInput from '../inputField/bottom-sheet-textinput'
 import Dropdown from '../dropdown/dropdown'
 import DateTimePicker from '../dateTimePicker/dateTimePicker'
 
@@ -116,7 +116,7 @@ const BottomSheet = forwardRef<Ref, Props>((props, ref) => {
           <View style={styles.headerButton} />
         </View>
 
-        <TextInput value={item} placeholder='Name' keyboardtype='default' onChangeText={(text) => setItem(text)} />
+        <BSTextInput value={item} placeholder='Name' keyboardtype='default' onChangeText={(text) => setItem(text)} />
         
         <View>
           <ScrollView horizontal showsHorizontalScrollIndicator={false}>
@@ -138,7 +138,7 @@ const BottomSheet = forwardRef<Ref, Props>((props, ref) => {
 
         <View style={styles.cost}>
           <View style={styles.priceInput}>
-            <TextInput 
+            <BSTextInput 
               value={price} 
               placeholder='Price' 
               keyboardtype='numeric' 
@@ -155,7 +155,7 @@ const BottomSheet = forwardRef<Ref, Props>((props, ref) => {
           </View>
 
           <View style={styles.quantityInput}>
-            <TextInput 
+            <BSTextInput 
               value={quantity} 
               placeholder='Quantity' 
               keyboardtype='numeric' 
