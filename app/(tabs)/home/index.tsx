@@ -1,13 +1,45 @@
+import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons'
 import Ionicons from '@expo/vector-icons/Ionicons'
-import { useRouter } from 'expo-router'
-import { StyleSheet, Text, TouchableOpacity, View } from 'react-native'
+import { useEffect, useState } from 'react'
+import { FlatList, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
+import { useNavigation, useRouter } from 'expo-router'
+import { useSQLiteContext } from 'expo-sqlite'
 
 import Searchbar from '../../../components/search/searchbar'
 import ListFilter from '../../../components/filter/list-filter'
 import List from '../../../components/list/list'
 
+type List = {
+  lid: number,
+  title: string
+  date: Date
+  color: string
+  icon: keyof typeof MaterialCommunityIcons.glyphMap
+  serial: number
+}
+
 export const Home = () => {
+  const db = useSQLiteContext()
   const router = useRouter()
+  const navigation = useNavigation()
+  const [lists, setLists] = useState<List[]>([])
+
+  // Fetching List table
+  const getLists = async () => {
+    try {
+      const allRows: List[] = await db.getAllAsync('SELECT * FROM Lists')
+      setLists(allRows)
+      console.log('[GET] Lists fetched successfully.')
+    } catch (error) {
+      console.log('Error while fetching List : ', error)
+    }
+  }
+
+  // Loading all lists
+  useEffect(() => {
+    const loadLists = navigation.addListener('focus', () => getLists())
+    return loadLists
+  }, [navigation])
 
   return (
     <View style={styles.container}>
@@ -23,12 +55,20 @@ export const Home = () => {
         <Ionicons name="options" style={styles.settingsIcon} />
       </View>
       <View style={{ maxHeight: '65%', flex: 1 }}>
-        <List title='Weekend List' icon='format-list-bulleted' color='#BB6CD7' />
-        <List title='Shopping List' icon='cart' color='#0570FF' />
-        <List title='Kids' icon='baby-carriage' color='#FFC602' />
-        <List title='Finance' icon='cash-multiple' color='#18C04E' />
-        <List title='Groceries' icon='format-list-bulleted' color='#FF342D' />
-        <List title='Birthday Party' icon='cake-variant' color='#FF8A04' />
+        {lists.length === 0 ? (
+          <View style={styles.emptyContainer}>
+            <Text style={styles.emptyTitle}>SUCH EMPTINESS</Text>
+            <Text style={styles.emptyMessage}>Create your first shopping list!</Text>
+          </View>
+        ) :
+          <FlatList 
+            data={lists}
+            keyExtractor={(item) => item.lid.toString()}
+            renderItem={({ item }) => (
+              <List title={item.title} icon={item.icon} color={item.color} />
+            )}
+          />
+        }
       </View>
       
       <TouchableOpacity onPress={() => router.push('home/addList')}>
@@ -80,8 +120,22 @@ const styles = StyleSheet.create({
   },
   addListText: {
     fontSize: 17,
-    fontWeight: '500',
     color: '#4AA0F1',
+  },
+
+  emptyContainer: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  emptyTitle: {
+    fontSize: 16,
+    color: '#DEDEDE',
+  },
+  emptyMessage: {
+    fontSize: 14,
+    fontWeight: 'bold',
+    color: '#DEDEDE',
   },
 })
 

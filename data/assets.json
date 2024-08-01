@@ -1,0 +1,36 @@
+{
+  "colors": [
+    "#FF342D",
+    "#FF8A04",
+    "#FFC602",
+    "#18C04E",
+    "#4AA0F1",
+    "#0570FF",
+    "#514BD3",
+    "#E83A60",
+    "#BB6CD7",
+    "#937B5A",
+    "#525C68",
+    "#D79D96"
+  ],
+  "icons": [
+    "cart",
+    "format-list-bulleted",
+    "map-marker-radius",
+    "gift-outline",
+    "cake-variant",
+    "school",
+    "gamepad-variant",
+    "ticket",
+    "cash-multiple",
+    "dumbbell",
+    "silverware-fork-knife",
+    "car",
+    "home",
+    "lotion",
+    "tshirt-crew",
+    "baby-carriage",
+    "pill",
+    "paw"
+  ]
+}

@@ -3,44 +3,23 @@ import Ionicons from '@expo/vector-icons/Ionicons'
 import { useState } from 'react'
 import { StyleSheet, Text, TextInput, TouchableOpacity, TouchableWithoutFeedback, View } from "react-native"
 import DateTimePicker, { DateTimePickerEvent } from "@react-native-community/datetimepicker"
+import { router } from 'expo-router'
+import { useSQLiteContext } from 'expo-sqlite'
 
-const colors = [
-  '#FF342D',
-  '#FF8A04',
-  '#FFC602',
-  '#18C04E',
-  '#4AA0F1',
-  '#0570FF',
-  '#514BD3',
-  '#E83A60',
-  '#BB6CD7',
-  '#937B5A',
-  '#525C68',
-  '#D79D96',
-]
+import assets from '../../../data/assets.json'
 
-type MaterialCommunityIconsType = keyof typeof MaterialCommunityIcons.glyphMap
+type iconType = keyof typeof MaterialCommunityIcons.glyphMap
 
-const icons: MaterialCommunityIconsType[] = [
-  'cart',
-  'format-list-bulleted',
-  'map-marker-radius',
-  'gift-outline',
-  'cake-variant',
-  'school',
-  'gamepad-variant',
-  'ticket',
-  'cash-multiple',
-  'dumbbell',
-  'silverware-fork-knife',
-  'car',
-  'home',
-  'lotion',
-  'tshirt-crew',
-  'baby-carriage',
-  'pill',
-  'paw',
- ]
+type List = {
+  title: string
+  date: Date
+  color: string
+  icon: keyof typeof MaterialCommunityIcons.glyphMap
+}
+
+type SQLRow = {
+  serial: string
+}
 
 const CIRCLE_SIZE = 40
 const CIRCLE_RING_SIZE = 2
@@ -48,34 +27,61 @@ const ICON_CIRCLE_SIZE = 35
 const ICON_CIRCLE_RING_SIZE = 2
 
 const addList = () => {
-  const [title, setTitle] = useState('')
-  const [date, setDate] = useState(new Date())
-  const [color, setColor] = useState(4)
-  const [icon, setIcon] = useState(1)
+  const db = useSQLiteContext()
+  const colors = assets.colors
+  const icons = assets.icons as iconType[]
+  
+  const [list, setList] = useState<List>({ title: '', date: new Date(), color: colors[4], icon: icons[1] })
+  const [selectedColor, setSelectedColor] = useState(list.color)
+  const [selectedIcon, setSelectedIcon] = useState(list.icon)
   const [showDatePicker, setShowDatePicker] = useState(false)
-  const [selectedColor, setSelectedColor] = useState(color)
-  const [selectedIcon, setSelectedIcon] = useState(icon)
 
+  // POST List
+  const postList = async () => {
+    const statement = await db.prepareAsync('INSERT INTO Lists (title, date, color, icon, serial) VALUES ($title, $date, $color, $icon, $serial)')
+    let nextSerial: number = 0
+
+    try {
+      for await (const row of db.getEachAsync<SQLRow>('SELECT serial FROM Lists')) {
+        const serial = parseInt(row.serial)
+        if(serial >= nextSerial) {
+          nextSerial = serial
+        }
+      }
+      let res = await statement.executeAsync({
+        $title: list.title,
+        $date: list.date.toISOString(),
+        $color: list.color,
+        $icon: list.icon,
+        $serial: nextSerial + 1
+      })
+      console.log('[POST] List added successfully.')
+    } catch (error) {
+      console.log('Error while POST List : ', error)
+    }
+    finally {
+      router.back()
+    }
+  }
 
   // Handling DateTimePicker modal
   const onChange = (event: DateTimePickerEvent, selectedDate?: Date) => {
     setShowDatePicker(false)
     if (selectedDate) {
-      setDate(selectedDate)
+      setList({...list, date: selectedDate})
     }
   }
-  
 
   return (
     <View style={styles.container}>
       <View>
         <View style={styles.titleWrapper}>
-          <View style={[styles.titleIcon, { backgroundColor: colors[color] }]}>
-              <MaterialCommunityIcons name={icons[icon]} style={styles.selectedIcon} />
+          <View style={[styles.titleIcon, { backgroundColor: list.color }]}>
+              <MaterialCommunityIcons name={list.icon} style={styles.selectedIcon} />
           </View>
           <TextInput
-            value={title}
-            onChangeText={text => {setTitle(text)}}
+            value={list.title}
+            onChangeText={(text) => setList({...list, title: text})}
             placeholder='List Name'
             placeholderTextColor={'#B9B6B9'} 
             style={styles.inputTitleText}
@@ -85,19 +91,19 @@ const addList = () => {
         <TouchableOpacity onPress={() => setShowDatePicker(true)}>
           <View style={styles.dateWrapper}>
             <Text style={styles.dateText}>
-              {date.toLocaleDateString('HU', { year: 'numeric', month: '2-digit', day: '2-digit' }).replace(/\//, '.')}
+              {list.date.toLocaleDateString('HU', { year: 'numeric', month: '2-digit', day: '2-digit' }).replace(/\//, '.')}
             </Text>
             <MaterialCommunityIcons name="calendar-month-outline" style={styles.dateIcon} />
           </View>
         </TouchableOpacity>
-        {showDatePicker && (<DateTimePicker value={date} is24Hour={true} mode={"date"} onChange={onChange} />)}
+        {showDatePicker && (<DateTimePicker value={list.date} is24Hour={true} mode={"date"} onChange={onChange} />)}
 
         <View style={styles.colorWrapper}>
           {colors.map((color, index) => {
-            const isActive = selectedColor === index
+            const isActive = selectedColor === colors[index]
             return (
               <View key={color}>
-                <TouchableOpacity onPress={() => [setColor(index), setSelectedColor(index)]}>
+                <TouchableOpacity onPress={() => [setList({...list, color: colors[index]}), setSelectedColor(colors[index])]}>
                   <View style={[styles.circle, isActive && { borderColor: color }]}>
                     <View style={[styles.circleInner, { backgroundColor: color }]} />
                   </View>
@@ -109,10 +115,10 @@ const addList = () => {
 
         <View style={styles.iconsWrapper}>
           {icons.map((icon, index) => {
-            const isActive = selectedIcon === index
+            const isActive = selectedIcon === icons[index]
             return (
               <View key={icon}>
-                <TouchableWithoutFeedback onPress={() => [setIcon(index), setSelectedIcon(index)]}>
+                <TouchableWithoutFeedback onPress={() => [setList({...list, icon: icons[index]}), setSelectedIcon(icons[index])]}>
                   <View style={[styles.iconCircle, isActive && { borderColor: '#494949' }]}>
                     <MaterialCommunityIcons name={icon} style={styles.icon} />
                   </View>
@@ -123,7 +129,7 @@ const addList = () => {
         </View>
       </View>
       
-      <TouchableOpacity>
+      <TouchableOpacity onPress={postList}>
         <View style={styles.addButtonWrapper}>
           <Ionicons name="checkmark-circle" style={styles.addButtonIcon} />
           <Text style={styles.addButtonText}>Create</Text>
@@ -205,7 +211,6 @@ const styles = StyleSheet.create({
     width: '100%',
     height: 50,
     fontSize: 20,
-    fontWeight: 'bold',
     textAlign: 'center',
   },
 
