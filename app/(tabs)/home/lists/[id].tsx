@@ -37,7 +37,7 @@ const ListPage = () => {
           <Text style={styles.summaryTitle}>SUMMARY</Text>
           <Text style={styles.summaryCost}>Total:      {totalSum}Ft</Text>
           <Text style={styles.summaryCost}>In Cart:    {cartSum}Ft</Text>
-          <Hr />
+          <Hr color='#F6F6F6' width={1} top={8} />
           
           <View style={{ height: '76%' }}>
             <Text style={[styles.categoryHeader, { color: color }]}>Food</Text>
@@ -104,7 +104,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     zIndex: 999,
-    bottom: 5,
+    bottom: 2,
   },
   addItemIcon: {
     fontSize: 32,

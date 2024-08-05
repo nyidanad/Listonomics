@@ -1,21 +1,21 @@
 import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons'
 import Ionicons from '@expo/vector-icons/Ionicons'
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { FlatList, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
 import { useNavigation, useRouter } from 'expo-router'
 import { useSQLiteContext } from 'expo-sqlite'
 
 import Searchbar from '../../../components/search/searchbar'
 import ListFilter from '../../../components/filter/list-filter'
-import List from '../../../components/list/list'
+import ListComponent from '../../../components/list/list'
 
-type List = {
-  lid: number,
+export type List = {
+  lid: number
   title: string
-  date: Date
+  date: string
   color: string
   icon: keyof typeof MaterialCommunityIcons.glyphMap
-  serial: number
+  serial?: number
 }
 
 export const Home = () => {
@@ -31,7 +31,7 @@ export const Home = () => {
       setLists(allRows)
       console.log('[GET] Lists fetched successfully.')
     } catch (error) {
-      console.log('Error while fetching List : ', error)
+      console.error('Error while fetching List : ', error)
     }
   }
 
@@ -40,6 +40,7 @@ export const Home = () => {
     const loadLists = navigation.addListener('focus', () => getLists())
     return loadLists
   }, [navigation])
+
 
   return (
     <View style={styles.container}>
@@ -64,8 +65,8 @@ export const Home = () => {
           <FlatList 
             data={lists}
             keyExtractor={(item) => item.lid.toString()}
-            renderItem={({ item }) => (
-              <List title={item.title} icon={item.icon} color={item.color} />
+            renderItem={({ item, index }) => (
+              <ListComponent list={item} index={index} />
             )}
           />
         }

@@ -2,28 +2,53 @@ import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons'
 import Ionicons from '@expo/vector-icons/Ionicons'
 import { StyleSheet, Text, TouchableOpacity, View } from "react-native"
 import { useRouter } from 'expo-router'
+import { useRef, useState } from 'react'
 
-type ListProps = {
-  title: string,
-  icon: keyof typeof MaterialCommunityIcons.glyphMap,
-  color: string
+import { List } from '../../app/(tabs)/home'
+import ListOptionsModal from '../../components/modals/listOptionsModal'
+
+type ListComponentProps = {
+  list: List
+  index: number
 }
 
-const List = ({ title, icon, color }: ListProps) => {
+const ListComponent = ({ list, index }: ListComponentProps) => {
   const router = useRouter()
+  const [showModal, setShowModal] = useState(false)
+  const [modalPosition, setModalPosition] = useState({ top: 0 })
+  const listsRef = useRef<(View | null)[]>([])
+
+  // Calculating Modal position to selected List
+  const handleModalPosition = (index: number) => {
+    const ref = listsRef.current[index]
+    if (ref) {
+      ref.measureInWindow((x, y, width, height) => {
+        setModalPosition({ top: y + height - 370 })
+      })
+    }
+  }
 
   return (
-    <View>
-      <TouchableOpacity style={styles.container} onPress={() => router.push({ pathname: 'home/lists/[id]', params: { title, color } })}>
-        <View style={styles.listWrapper}>
-          <View style={[styles.iconWrapper, { backgroundColor: color }]}>
-            <MaterialCommunityIcons name={icon} style={styles.icon} />
+    <>
+      <View>
+        <TouchableOpacity 
+          style={styles.container} 
+          onPress={() => router.push({ pathname: 'home/lists/[id]', params: { title: list.title, color: list.color } })}
+          ref={(ref) => { listsRef.current[index] = ref }}
+        >
+          <View style={styles.listWrapper}>
+            <View style={[styles.iconWrapper, { backgroundColor: list.color }]}>
+              <MaterialCommunityIcons name={list.icon} style={styles.icon} />
+            </View>
+            <Text style={styles.listTitle}>{list.title}</Text>
+            <TouchableOpacity onPress={() => [handleModalPosition(index), setShowModal(true)]}>
+              <Ionicons name="ellipsis-vertical" style={styles.listArrow} />
+            </TouchableOpacity>
           </View>
-          <Text style={styles.listTitle}>{title}</Text>
-          <Ionicons name="ellipsis-vertical" style={styles.listArrow} />
-        </View>
-      </TouchableOpacity>
-    </View>
+        </TouchableOpacity>
+      </View>
+      <ListOptionsModal showModal={showModal} setShowModal={setShowModal} modalPosition={modalPosition} selectedList={list} />
+    </>
   )
 }
 
@@ -71,4 +96,4 @@ const styles = StyleSheet.create({
   },
 })
 
-export default List
+export default ListComponent

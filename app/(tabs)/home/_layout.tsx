@@ -16,6 +16,12 @@ export const homeLayout = () => {
             headerTitleStyle: { fontWeight: 'bold' },
             headerShadowVisible: false,
           }} />
+          <Stack.Screen name='editList/[id]' options={{
+            headerTitle: 'Edit List',
+            headerTitleAlign: 'center',
+            headerTitleStyle: { fontWeight: 'bold' },
+            headerShadowVisible: false,
+          }} />
           <Stack.Screen name='lists/[id]' options={{
             headerTitle: 'Lists',
             headerShadowVisible: false,
