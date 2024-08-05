@@ -20,6 +20,11 @@ type ModalProps = {
   getLists: () => Promise<void>
 }
 
+type SQLRow = {
+  title: string
+  serial: string
+}
+
 const ListOptionsModal = ({ showModal, setShowModal, modalPosition, selectedList, getLists }: ModalProps) => {
   const db = useSQLiteContext()
   const router = useRouter()
@@ -27,6 +32,53 @@ const ListOptionsModal = ({ showModal, setShowModal, modalPosition, selectedList
   // Handeling Modal close
   const onCloseModal = () => {
     setShowModal(false)
+  }
+
+  // DUPLICATE List
+  const dupList = async (list: List) => {
+    const statement = await db.prepareAsync('INSERT INTO Lists (title, date, color, icon, serial) VALUES ($title, $date, $color, $icon, $serial)')
+    let nextTitle: string = list.title.replace(/\s\(\d+\)$/, "")
+    let nextSerial: number = 0
+    let count: number = 0
+
+    try {
+      // get highest serial number
+      for await (const row of db.getEachAsync<SQLRow>('SELECT serial FROM Lists')) {
+        const serial = parseInt(row.serial)
+        if(serial >= nextSerial) {
+          nextSerial = serial
+        }
+      }
+
+      // get highest version of the same titled List
+      for await (const row of db.getEachAsync<SQLRow>('SELECT title FROM Lists')) {
+        const checkTitle = row.title
+
+        if (checkTitle.startsWith(nextTitle)) {
+          const version = checkTitle.match(/\((\d+)\)$/)
+          count = 2
+          
+          if (version) {
+            count = Math.max(count, parseInt(version[1]) + 1)
+          }
+        }
+      }
+      nextTitle = `${nextTitle} (${count})`
+
+      let res = await statement.executeAsync({
+        $title: nextTitle,
+        $date: list.date,
+        $color: list.color,
+        $icon: list.icon,
+        $serial: nextSerial + 1
+      })
+      console.log('[POST] List duplicated successfully.')
+    } catch (error) {
+      console.error('Error while DUPLICATE List : ', error)
+    } finally {
+      getLists()
+      onCloseModal()
+    }
   }
 
   // DELETE List
@@ -62,7 +114,7 @@ const ListOptionsModal = ({ showModal, setShowModal, modalPosition, selectedList
           <Hr color='#EDEEF2' width={1} top={8} bottom={8} />
 
           {/* DUPLICATE */}
-          <TouchableOpacity>
+          <TouchableOpacity onPress={() => dupList(selectedList)}>
             <View style={styles.button}>
               <Text style={styles.text}>Duplicate</Text>
               <Ionicons name="duplicate-outline" style={styles.icon} />
