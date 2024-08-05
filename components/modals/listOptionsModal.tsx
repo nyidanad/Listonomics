@@ -6,6 +6,7 @@ import { useRouter } from 'expo-router'
 
 import { List } from '../../app/(tabs)/home'
 import Hr from '../horizontalRules/hr'
+import { useSQLiteContext } from 'expo-sqlite'
 
 export type ModalPositionsProps = {
   top: number
@@ -16,14 +17,29 @@ type ModalProps = {
   setShowModal: Dispatch<SetStateAction<boolean>>
   modalPosition: ModalPositionsProps
   selectedList: List
+  getLists: () => Promise<void>
 }
 
-const ListOptionsModal = ({ showModal, setShowModal, modalPosition, selectedList }: ModalProps) => {
+const ListOptionsModal = ({ showModal, setShowModal, modalPosition, selectedList, getLists }: ModalProps) => {
+  const db = useSQLiteContext()
   const router = useRouter()
 
   // Handeling Modal close
   const onCloseModal = () => {
     setShowModal(false)
+  }
+
+  // DELETE List
+  const delList = async (lid: number) => {
+    try {
+      await db.runAsync('DELETE FROM Lists WHERE lid = ?', lid)
+      console.log('[DEL] List deleted successfully.')
+    } catch (error) {
+      console.error('Error while DEL List : ', error)
+    } finally {
+      getLists()
+      onCloseModal()
+    }
   }
 
   return (
@@ -64,7 +80,7 @@ const ListOptionsModal = ({ showModal, setShowModal, modalPosition, selectedList
           <Hr color='#EDEEF2' width={1} top={8} bottom={8} />
 
           {/* DELETE */}
-          <TouchableOpacity>
+          <TouchableOpacity onPress={() => delList(selectedList.lid)}>
             <View style={styles.button}>
               <Text style={[styles.text, { color: 'red' }]}>Delete</Text>
               <Ionicons name="trash" style={[styles.icon, { color: 'red' }]} />

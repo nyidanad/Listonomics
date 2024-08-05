@@ -66,7 +66,7 @@ export const Home = () => {
             data={lists}
             keyExtractor={(item) => item.lid.toString()}
             renderItem={({ item, index }) => (
-              <ListComponent list={item} index={index} />
+              <ListComponent list={item} index={index} getLists={getLists} />
             )}
           />
         }

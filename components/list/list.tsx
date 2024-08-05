@@ -10,9 +10,10 @@ import ListOptionsModal from '../../components/modals/listOptionsModal'
 type ListComponentProps = {
   list: List
   index: number
+  getLists: () => Promise<void>
 }
 
-const ListComponent = ({ list, index }: ListComponentProps) => {
+const ListComponent = ({ list, index, getLists }: ListComponentProps) => {
   const router = useRouter()
   const [showModal, setShowModal] = useState(false)
   const [modalPosition, setModalPosition] = useState({ top: 0 })
@@ -47,7 +48,7 @@ const ListComponent = ({ list, index }: ListComponentProps) => {
           </View>
         </TouchableOpacity>
       </View>
-      <ListOptionsModal showModal={showModal} setShowModal={setShowModal} modalPosition={modalPosition} selectedList={list} />
+      <ListOptionsModal showModal={showModal} setShowModal={setShowModal} modalPosition={modalPosition} selectedList={list} getLists={getLists} />
     </>
   )
 }
