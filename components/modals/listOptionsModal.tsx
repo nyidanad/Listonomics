@@ -1,7 +1,7 @@
 import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons'
 import Ionicons from '@expo/vector-icons/Ionicons'
 import React, { Dispatch, SetStateAction } from 'react'
-import { Modal, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
+import { Alert, Modal, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
 import { useRouter } from 'expo-router'
 
 import { List } from '../../app/(tabs)/home'
@@ -84,13 +84,21 @@ const ListOptionsModal = ({ showModal, setShowModal, modalPosition, selectedList
   // DELETE List
   const delList = async (lid: number) => {
     try {
-      await db.runAsync('DELETE FROM Lists WHERE lid = ?', lid)
-      console.log('[DEL] List deleted successfully.')
+      Alert.alert('Delete List', 'Are you sure want to delete this list?', [
+        {
+          text: 'Cancel'
+        },
+        {
+          text: 'Confirm',
+          onPress: () => {
+            db.runAsync('DELETE FROM Lists WHERE lid = ?', lid)
+            console.log('[DEL] List deleted successfully.')
+            getLists()
+          }
+        }
+      ])
     } catch (error) {
       console.error('Error while DEL List : ', error)
-    } finally {
-      getLists()
-      onCloseModal()
     }
   }
 
