@@ -38,10 +38,11 @@ const addList = () => {
 
   // POST List
   const postList = async () => {
-    const statement = await db.prepareAsync('INSERT INTO Lists (title, date, color, icon, serial) VALUES ($title, $date, $color, $icon, $serial)')
+    const statement = await db.prepareAsync('INSERT INTO Lists (title, date, color, icon, serial, flagged) VALUES ($title, $date, $color, $icon, $serial, $flagged)')
     let nextSerial: number = 0
 
     try {
+      // get highest serial number
       for await (const row of db.getEachAsync<SQLRow>('SELECT serial FROM Lists')) {
         const serial = parseInt(row.serial)
         if(serial >= nextSerial) {
@@ -53,7 +54,8 @@ const addList = () => {
         $date: list.date.toISOString(),
         $color: list.color,
         $icon: list.icon,
-        $serial: nextSerial + 1
+        $serial: nextSerial + 1,
+        $flagged: 0
       })
       console.log('[POST] List added successfully.')
     } catch (error) {

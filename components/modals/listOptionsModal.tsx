@@ -36,10 +36,10 @@ const ListOptionsModal = ({ showModal, setShowModal, modalPosition, selectedList
 
   // DUPLICATE List
   const dupList = async (list: List) => {
-    const statement = await db.prepareAsync('INSERT INTO Lists (title, date, color, icon, serial) VALUES ($title, $date, $color, $icon, $serial)')
+    const statement = await db.prepareAsync('INSERT INTO Lists (title, date, color, icon, serial, flagged) VALUES ($title, $date, $color, $icon, $serial, $flagged)')
     let nextTitle: string = list.title.replace(/\s\(\d+\)$/, "")
     let nextSerial: number = 0
-    let count: number = 0
+    let count: number = 2
 
     try {
       // get highest serial number
@@ -56,7 +56,6 @@ const ListOptionsModal = ({ showModal, setShowModal, modalPosition, selectedList
 
         if (checkTitle.startsWith(nextTitle)) {
           const version = checkTitle.match(/\((\d+)\)$/)
-          count = 2
           
           if (version) {
             count = Math.max(count, parseInt(version[1]) + 1)
@@ -70,7 +69,8 @@ const ListOptionsModal = ({ showModal, setShowModal, modalPosition, selectedList
         $date: list.date,
         $color: list.color,
         $icon: list.icon,
-        $serial: nextSerial + 1
+        $serial: nextSerial + 1,
+        $flagged: list.flagged
       })
       console.log('[POST] List duplicated successfully.')
     } catch (error) {
@@ -78,6 +78,23 @@ const ListOptionsModal = ({ showModal, setShowModal, modalPosition, selectedList
     } finally {
       getLists()
       onCloseModal()
+    }
+  }
+
+  // FLAGGED List
+  const flagList = async (lid: number, flag: number) => {
+    try {
+      if(flag === 0) {
+        flag = 1
+      } else {
+        flag = 0
+      }
+      await db.runAsync('UPDATE Lists SET flagged = ? WHERE lid = ?', flag, lid)
+      console.log('[PUT] List flag updated successfully.')
+    } catch (error) {
+      console.error('Error while FLAGGED List : ', error)
+    } finally {
+      getLists()
     }
   }
 
@@ -131,10 +148,10 @@ const ListOptionsModal = ({ showModal, setShowModal, modalPosition, selectedList
           <Hr color='#EDEEF2' width={1} top={8} bottom={8} />
 
           {/* FLAGGED */}
-          <TouchableOpacity>
+          <TouchableOpacity onPress={() => flagList(selectedList.lid, selectedList.flagged)}>
             <View style={styles.button}>
               <Text style={styles.text}>Flagged</Text>
-              <Ionicons name="flag-outline" style={styles.icon} />
+              <Ionicons name={selectedList.flagged === 0 ? "flag-outline" : "flag-sharp"} style={styles.icon} />
             </View>
           </TouchableOpacity>
           <Hr color='#EDEEF2' width={1} top={8} bottom={8} />

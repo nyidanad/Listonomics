@@ -13,7 +13,8 @@ async function createTables(db: SQLiteDatabase) {
         date DATE NOT NULL,
         color TEXT NOT NULL,
         icon TEXT NOT NULL,
-        serial INTEGER NOT NULL UNIQUE
+        serial INTEGER NOT NULL UNIQUE,
+        flagged BOOLEAN
       );
 
       CREATE TABLE IF NOT EXISTS Items (

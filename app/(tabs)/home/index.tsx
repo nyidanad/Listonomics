@@ -1,6 +1,6 @@
 import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons'
 import Ionicons from '@expo/vector-icons/Ionicons'
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useState } from 'react'
 import { FlatList, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
 import { useNavigation, useRouter } from 'expo-router'
 import { useSQLiteContext } from 'expo-sqlite'
@@ -16,6 +16,7 @@ export type List = {
   color: string
   icon: keyof typeof MaterialCommunityIcons.glyphMap
   serial?: number
+  flagged: number
 }
 
 export const Home = () => {
