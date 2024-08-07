@@ -24,12 +24,22 @@ export const Home = () => {
   const router = useRouter()
   const navigation = useNavigation()
   const [lists, setLists] = useState<List[]>([])
+  const [allFilter, setAllFilter] = useState(0)
+  const [todayFilter, setTodayFilter] = useState(0)
+  const [flaggedFilter, setFlaggedFilter] = useState(0)
 
   // Fetching List table
   const getLists = async () => {
     try {
       const allRows: List[] = await db.getAllAsync('SELECT * FROM Lists')
+      const all: any[] = await db.getAllAsync('SELECT COUNT(*) FROM Lists')
+      const today: any[] = await db.getAllAsync('SELECT COUNT(*) FROM Lists WHERE STRFTIME("%Y-%m-%d", date) = STRFTIME("%Y-%m-%d", "now")')
+      const flagged: any[] = await db.getAllAsync('SELECT COUNT(*) FROM Lists WHERE flagged = 1')
+      
       setLists(allRows)
+      setAllFilter(all[0]['COUNT(*)'])
+      setTodayFilter(today[0]['COUNT(*)'])
+      setFlaggedFilter(flagged[0]['COUNT(*)'])
       console.log('[GET] Lists fetched successfully.')
     } catch (error) {
       console.error('Error while fetching List : ', error)
@@ -47,9 +57,9 @@ export const Home = () => {
     <View style={styles.container}>
       <Searchbar />
       <View style={styles.filters}>
-        <ListFilter title='All' icon='albums' quantity={42} backgroundColor='#404040' />
-        <ListFilter title='Today' icon='calendar-sharp' quantity={1} backgroundColor='#5A75E4' />
-        <ListFilter title='Flagged' icon='flag-sharp' quantity={5} backgroundColor='#FBC116' />
+        <ListFilter title='All' icon='albums' quantity={allFilter} backgroundColor='#404040' />
+        <ListFilter title='Today' icon='calendar-sharp' quantity={todayFilter} backgroundColor='#5A75E4' />
+        <ListFilter title='Flagged' icon='flag-sharp' quantity={flaggedFilter} backgroundColor='#FBC116' />
       </View>
 
       <View style={styles.listsHeader}>
