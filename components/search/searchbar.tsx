@@ -1,14 +1,20 @@
 import Ionicons from '@expo/vector-icons/Ionicons';
+import { Dispatch, SetStateAction } from 'react';
 import { StyleSheet, TextInput, View } from "react-native";
 
-const searchbar = () => {
+type SearchbarProps = {
+  searchQuery: string
+  setSearchQuery: Dispatch<SetStateAction<string>>
+}
+
+const Searchbar = ({ searchQuery, setSearchQuery }: SearchbarProps) => {
   return (
     <View style={styles.search}>
       <Ionicons name="search" style={styles.searchIcon} />
-      <TextInput placeholder="Search" style={styles.searchText} />
+      <TextInput placeholder="Search" style={styles.searchText} value={searchQuery} onChangeText={(text) => setSearchQuery(text)} />
     </View>
-  );
-};
+  )
+}
 
 const styles = StyleSheet.create({
   search: {
@@ -31,4 +37,4 @@ const styles = StyleSheet.create({
   },
 })
 
-export default searchbar;
+export default Searchbar

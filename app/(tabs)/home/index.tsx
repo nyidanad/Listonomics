@@ -27,6 +27,7 @@ export const Home = () => {
   const [allFilter, setAllFilter] = useState(0)
   const [todayFilter, setTodayFilter] = useState(0)
   const [flaggedFilter, setFlaggedFilter] = useState(0)
+  const [searchQuery, setSearchQuery] = useState('')
 
   // Fetching List table
   const getLists = async () => {
@@ -40,6 +41,8 @@ export const Home = () => {
       setAllFilter(all[0]['COUNT(*)'])
       setTodayFilter(today[0]['COUNT(*)'])
       setFlaggedFilter(flagged[0]['COUNT(*)'])
+
+      setSearchQuery('')
       console.log('[GET] Lists fetched successfully.')
     } catch (error) {
       console.error('Error while fetching List : ', error)
@@ -52,10 +55,15 @@ export const Home = () => {
     return loadLists
   }, [navigation])
 
+  // Filter Lists to seachbar
+  const filteredLists = lists.filter(item => {
+    return item.title.toLowerCase().includes(searchQuery.toLowerCase())
+  })
+
 
   return (
     <View style={styles.container}>
-      <Searchbar />
+      <Searchbar searchQuery={searchQuery} setSearchQuery={setSearchQuery} />
       <View style={styles.filters}>
         <ListFilter title='All' icon='albums' quantity={allFilter} backgroundColor='#404040' />
         <ListFilter title='Today' icon='calendar-sharp' quantity={todayFilter} backgroundColor='#5A75E4' />
@@ -74,7 +82,7 @@ export const Home = () => {
           </View>
         ) :
           <FlatList 
-            data={lists}
+            data={filteredLists}
             keyExtractor={(item) => item.lid.toString()}
             renderItem={({ item, index }) => (
               <ListComponent list={item} index={index} getLists={getLists} />
