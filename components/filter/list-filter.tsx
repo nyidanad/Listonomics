@@ -1,4 +1,5 @@
 import Ionicons from '@expo/vector-icons/Ionicons'
+import { Dispatch, SetStateAction } from 'react'
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native'
 
 type listFilterProps = {
@@ -6,11 +7,12 @@ type listFilterProps = {
   icon: keyof typeof Ionicons.glyphMap,
   quantity: number,
   backgroundColor: string
+  setFilter: Dispatch<SetStateAction<string>>
 }
 
-const listFilter = ({ title, icon, quantity, backgroundColor }: listFilterProps) => {
+const listFilter = ({ title, icon, quantity, backgroundColor, setFilter }: listFilterProps) => {
   return (
-    <TouchableOpacity style={styles.filter}>
+    <TouchableOpacity style={styles.filter} onPress={() => setFilter(title)}>
       <View style={styles.iconContainer}>
         <View style={[styles.icon, {backgroundColor}]}>
           <Ionicons style={styles.filterIcon} name={icon} />

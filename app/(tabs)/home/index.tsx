@@ -28,11 +28,20 @@ export const Home = () => {
   const [todayFilter, setTodayFilter] = useState(0)
   const [flaggedFilter, setFlaggedFilter] = useState(0)
   const [searchQuery, setSearchQuery] = useState('')
+  const [filter, setFilter] = useState('')
 
   // Fetching List table
-  const getLists = async () => {
+  const getLists = async (filter: string) => {
+    let query = ''
     try {
-      const allRows: List[] = await db.getAllAsync('SELECT * FROM Lists')
+      if(filter === 'Today') {
+        query = ' WHERE STRFTIME("%Y-%m-%d", date) = STRFTIME("%Y-%m-%d", "now")'
+      }
+      else if(filter === 'Flagged') {
+        query = ' WHERE flagged = 1'
+      }
+
+      const allRows: List[] = await db.getAllAsync('SELECT * FROM Lists' + query)
       const all: any[] = await db.getAllAsync('SELECT COUNT(*) FROM Lists')
       const today: any[] = await db.getAllAsync('SELECT COUNT(*) FROM Lists WHERE STRFTIME("%Y-%m-%d", date) = STRFTIME("%Y-%m-%d", "now")')
       const flagged: any[] = await db.getAllAsync('SELECT COUNT(*) FROM Lists WHERE flagged = 1')
@@ -49,11 +58,13 @@ export const Home = () => {
     }
   }
 
-  // Loading all lists
+  // Loading all lists by filter: ['All', 'Today', 'Flagged']
   useEffect(() => {
-    const loadLists = navigation.addListener('focus', () => getLists())
-    return loadLists
-  }, [navigation])
+    const loadLists = () => getLists(filter)
+    loadLists()
+    const unsubscribe = navigation.addListener('focus', loadLists)
+    return () => unsubscribe()
+  }, [navigation, filter])
 
   // Filter Lists to seachbar
   const filteredLists = lists.filter(item => {
@@ -65,9 +76,9 @@ export const Home = () => {
     <View style={styles.container}>
       <Searchbar searchQuery={searchQuery} setSearchQuery={setSearchQuery} />
       <View style={styles.filters}>
-        <ListFilter title='All' icon='albums' quantity={allFilter} backgroundColor='#404040' />
-        <ListFilter title='Today' icon='calendar-sharp' quantity={todayFilter} backgroundColor='#5A75E4' />
-        <ListFilter title='Flagged' icon='flag-sharp' quantity={flaggedFilter} backgroundColor='#FBC116' />
+        <ListFilter title='All' icon='albums' quantity={allFilter} backgroundColor='#404040' setFilter={setFilter} />
+        <ListFilter title='Today' icon='calendar-sharp' quantity={todayFilter} backgroundColor='#5A75E4' setFilter={setFilter} />
+        <ListFilter title='Flagged' icon='flag-sharp' quantity={flaggedFilter} backgroundColor='#FBC116' setFilter={setFilter} />
       </View>
 
       <View style={styles.listsHeader}>
@@ -85,7 +96,7 @@ export const Home = () => {
             data={filteredLists}
             keyExtractor={(item) => item.lid.toString()}
             renderItem={({ item, index }) => (
-              <ListComponent list={item} index={index} getLists={getLists} />
+              <ListComponent list={item} index={index} getLists={() => getLists(filter)} />
             )}
           />
         }
@@ -131,7 +142,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     zIndex: 999,
-    top: 25,
+    top: 30,
   },
   addListIcon: {
     fontSize: 32,
