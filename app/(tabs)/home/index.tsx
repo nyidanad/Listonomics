@@ -1,5 +1,6 @@
 import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons'
 import Ionicons from '@expo/vector-icons/Ionicons'
+import Octions from '@expo/vector-icons/Octicons'
 import { useEffect, useState } from 'react'
 import { FlatList, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
 import { useNavigation, useRouter } from 'expo-router'
@@ -8,6 +9,7 @@ import { useSQLiteContext } from 'expo-sqlite'
 import Searchbar from '../../../components/search/searchbar'
 import ListFilter from '../../../components/filter/list-filter'
 import ListComponent from '../../../components/list/list'
+import ListOrderModal from '../../../components/modals/listOrderModal'
 
 export type List = {
   lid: number
@@ -17,6 +19,11 @@ export type List = {
   icon: keyof typeof MaterialCommunityIcons.glyphMap
   serial?: number
   flagged: number
+}
+
+export type Order = {
+  orderBy: string
+  orderWay: string
 }
 
 export const Home = () => {
@@ -29,19 +36,42 @@ export const Home = () => {
   const [flaggedFilter, setFlaggedFilter] = useState(0)
   const [searchQuery, setSearchQuery] = useState('')
   const [filter, setFilter] = useState('')
+  const [order, setOrder] = useState<Order>({orderBy: 'Alphabetical', orderWay: 'ASC'})
+  const [showOrderModal, setShowOrderModal] = useState(false)
 
   // Fetching List table
-  const getLists = async (filter: string) => {
-    let query = ''
+  const getLists = async (filter: string, order: Order) => {
+    let filterQuery = ''
+    let orderQuery = ''
     try {
+      // FILTER statements
       if(filter === 'Today') {
-        query = ' WHERE STRFTIME("%Y-%m-%d", date) = STRFTIME("%Y-%m-%d", "now")'
+        filterQuery = ' WHERE STRFTIME("%Y-%m-%d", date) = STRFTIME("%Y-%m-%d", "now")'
       }
       else if(filter === 'Flagged') {
-        query = ' WHERE flagged = 1'
+        filterQuery = ' WHERE flagged = 1'
       }
 
-      const allRows: List[] = await db.getAllAsync('SELECT * FROM Lists' + query)
+      // ORDER BY statements
+      if(order.orderBy === 'Alphabetical') {
+        orderQuery = ' ORDER BY title'
+      }
+      else if(order.orderBy === 'Date') {
+        orderQuery = ' ORDER BY date'
+      }
+      else if(order.orderBy === 'Custom') {
+        orderQuery = ' ORDER BY serial'
+      }
+
+      // ORDER WAY statement
+      if(order.orderWay === 'ASC') {
+        orderQuery += ' ASC'
+      }
+      else {
+        orderQuery += ' DESC'
+      }
+
+      const allRows: List[] = await db.getAllAsync('SELECT * FROM Lists' + filterQuery + orderQuery)
       const all: any[] = await db.getAllAsync('SELECT COUNT(*) FROM Lists')
       const today: any[] = await db.getAllAsync('SELECT COUNT(*) FROM Lists WHERE STRFTIME("%Y-%m-%d", date) = STRFTIME("%Y-%m-%d", "now")')
       const flagged: any[] = await db.getAllAsync('SELECT COUNT(*) FROM Lists WHERE flagged = 1')
@@ -60,11 +90,11 @@ export const Home = () => {
 
   // Loading all lists by filter: ['All', 'Today', 'Flagged']
   useEffect(() => {
-    const loadLists = () => getLists(filter)
+    const loadLists = () => getLists(filter, order)
     loadLists()
     const unsubscribe = navigation.addListener('focus', loadLists)
     return () => unsubscribe()
-  }, [navigation, filter])
+  }, [navigation, filter, order])
 
   // Filter Lists to seachbar
   const filteredLists = lists.filter(item => {
@@ -73,42 +103,57 @@ export const Home = () => {
 
 
   return (
-    <View style={styles.container}>
-      <Searchbar searchQuery={searchQuery} setSearchQuery={setSearchQuery} />
-      <View style={styles.filters}>
-        <ListFilter title='All' icon='albums' quantity={allFilter} backgroundColor='#404040' setFilter={setFilter} />
-        <ListFilter title='Today' icon='calendar-sharp' quantity={todayFilter} backgroundColor='#5A75E4' setFilter={setFilter} />
-        <ListFilter title='Flagged' icon='flag-sharp' quantity={flaggedFilter} backgroundColor='#FBC116' setFilter={setFilter} />
+    <>
+      <View style={styles.container}>
+        <Searchbar searchQuery={searchQuery} setSearchQuery={setSearchQuery} />
+        <View style={styles.filters}>
+          <ListFilter title='All' icon='albums' quantity={allFilter} backgroundColor='#404040' setFilter={setFilter} />
+          <ListFilter title='Today' icon='calendar-sharp' quantity={todayFilter} backgroundColor='#5A75E4' setFilter={setFilter} />
+          <ListFilter title='Flagged' icon='flag-sharp' quantity={flaggedFilter} backgroundColor='#FBC116' setFilter={setFilter} />
+        </View>
+
+        <View style={styles.listsHeader}>
+          <Text style={styles.title}>My Lists</Text>
+          <View style={styles.settingsWrapper}>
+            <Text style={styles.settingsText}>{order.orderBy}</Text>
+            {order.orderWay === 'ASC' ?
+              <TouchableOpacity onPress={() => setShowOrderModal(true)}>
+                <Octions name="sort-asc" style={styles.settingsIcon} />
+              </TouchableOpacity>
+            :
+              <TouchableOpacity onPress={() => setShowOrderModal(true)}>
+                <Octions name="sort-desc" style={styles.settingsIcon} />
+              </TouchableOpacity>
+            }
+          </View>
+        </View>
+        <View style={{ maxHeight: '65%', flex: 1 }}>
+          {lists.length === 0 ? (
+            <View style={styles.emptyContainer}>
+              <Text style={styles.emptyTitle}>SUCH EMPTINESS</Text>
+              <Text style={styles.emptyMessage}>Create your first shopping list!</Text>
+            </View>
+          ) :
+            <FlatList 
+              data={filteredLists}
+              keyExtractor={(item) => item.lid.toString()}
+              renderItem={({ item, index }) => (
+                <ListComponent list={item} index={index} getLists={() => getLists(filter, order)} />
+              )}
+            />
+          }
+        </View>
+        
+        <TouchableOpacity onPress={() => router.push('home/addList')}>
+          <View style={styles.addListWrapper}>
+            <Ionicons name="add-circle-sharp" style={styles.addListIcon} />
+            <Text style={styles.addListText}>Add List</Text>
+          </View>
+        </TouchableOpacity>
       </View>
 
-      <View style={styles.listsHeader}>
-        <Text style={styles.title}>My Lists</Text>
-        <Ionicons name="options" style={styles.settingsIcon} />
-      </View>
-      <View style={{ maxHeight: '65%', flex: 1 }}>
-        {lists.length === 0 ? (
-          <View style={styles.emptyContainer}>
-            <Text style={styles.emptyTitle}>SUCH EMPTINESS</Text>
-            <Text style={styles.emptyMessage}>Create your first shopping list!</Text>
-          </View>
-        ) :
-          <FlatList 
-            data={filteredLists}
-            keyExtractor={(item) => item.lid.toString()}
-            renderItem={({ item, index }) => (
-              <ListComponent list={item} index={index} getLists={() => getLists(filter)} />
-            )}
-          />
-        }
-      </View>
-      
-      <TouchableOpacity onPress={() => router.push('home/addList')}>
-        <View style={styles.addListWrapper}>
-          <Ionicons name="add-circle-sharp" style={styles.addListIcon} />
-          <Text style={styles.addListText}>Add List</Text>
-        </View>
-      </TouchableOpacity>
-    </View>
+      <ListOrderModal showModal={showOrderModal} setShowModal={setShowOrderModal} order={order} setOrder={setOrder} />
+    </>
   )
 }
 
@@ -128,6 +173,15 @@ const styles = StyleSheet.create({
     fontSize: 24,
     fontWeight: 'bold',
     color: '#363636',
+  },
+  settingsWrapper: {
+    flexDirection: 'row',
+    alignItems: 'baseline'
+  },
+  settingsText: {
+    fontSize: 10,
+    color: '#ADADAD',
+    marginRight: 10,
   },
   settingsIcon: {
     fontSize: 24,
