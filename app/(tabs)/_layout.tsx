@@ -2,13 +2,16 @@ import FontAwesome from '@expo/vector-icons/FontAwesome'
 import Ionicons from '@expo/vector-icons/Ionicons'
 import { Tabs } from 'expo-router'
 import { SQLiteProvider } from 'expo-sqlite'
+import { StatusBar } from 'expo-status-bar'
 
 function tabsLayout() {
   return (
     <SQLiteProvider databaseName="listonomics.db">
+      <StatusBar style='auto' />
+
       <Tabs screenOptions={{
         headerShadowVisible: false,
-        tabBarActiveTintColor: '#3E46C7',
+        tabBarActiveTintColor: '#007AFF',
         tabBarInactiveTintColor: '#605967',
         tabBarHideOnKeyboard: true,
         tabBarStyle: {

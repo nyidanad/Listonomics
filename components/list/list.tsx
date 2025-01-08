@@ -1,8 +1,8 @@
+import React, { useRef, useState } from 'react'
+import { StyleSheet, Text, TouchableOpacity, View } from "react-native"
 import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons'
 import Ionicons from '@expo/vector-icons/Ionicons'
-import { StyleSheet, Text, TouchableOpacity, View } from "react-native"
 import { useRouter } from 'expo-router'
-import { useRef, useState } from 'react'
 
 import { List } from '../../app/(tabs)/home'
 import ListOptionsModal from '../../components/modals/listOptionsModal'
@@ -42,8 +42,8 @@ const ListComponent = ({ list, index, getLists }: ListComponentProps) => {
               <MaterialCommunityIcons name={list.icon} style={styles.icon} />
             </View>
             <Text style={styles.listTitle}>{list.title}</Text>
-            <TouchableOpacity onPress={() => [handleModalPosition(index), setShowModal(true)]}>
-              <Ionicons name="ellipsis-vertical" style={styles.listArrow} />
+            <TouchableOpacity onPress={() => [/*handleModalPosition(index), setShowModal(true)*/]}>
+              <Ionicons name="chevron-forward" style={styles.listArrow} />
             </TouchableOpacity>
           </View>
         </TouchableOpacity>
@@ -89,11 +89,12 @@ const styles = StyleSheet.create({
   },
   listTitle: {
     flex: 1,
+    color: '#363636',
     fontSize: 16,
   },
   listArrow: {
     fontSize: 18,
-    color: '#C0C0C0',
+    color: '#363636',
   },
 })
 

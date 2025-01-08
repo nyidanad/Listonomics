@@ -1,8 +1,9 @@
+import React, { useEffect, useState } from 'react'
+import { FlatList, StyleSheet, Text, TouchableOpacity, View, Image } from 'react-native'
+import AsyncStorage from '@react-native-async-storage/async-storage'
 import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons'
 import Ionicons from '@expo/vector-icons/Ionicons'
 import Octions from '@expo/vector-icons/Octicons'
-import { useEffect, useState } from 'react'
-import { FlatList, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
 import { useNavigation, useRouter } from 'expo-router'
 import { useSQLiteContext } from 'expo-sqlite'
 
@@ -40,9 +41,18 @@ export const Home = () => {
   const [showOrderModal, setShowOrderModal] = useState(false)
 
   // Fetching List table
-  const getLists = async (filter: string, order: Order) => {
+  const getLists = async (filter: string) => {
     let filterQuery = ''
     let orderQuery = ''
+    let orderBy = await AsyncStorage.getItem('orderBy')
+    let orderWay = await AsyncStorage.getItem('orderWay')
+
+    if(orderBy === null || orderWay === null) {
+      await AsyncStorage.setItem('orderBy', 'Alphabetical')                   // ** DEFAULT VALUE OF ORDER_BY **
+      await AsyncStorage.setItem('orderWay', 'ASC')                           // ** DEFAULT VALUE OF ORDER_WAY **
+    }
+    console.log(order)
+
     try {
       // FILTER statements
       if(filter === 'Today') {
@@ -64,12 +74,7 @@ export const Home = () => {
       }
 
       // ORDER WAY statement
-      if(order.orderWay === 'ASC') {
-        orderQuery += ' ASC'
-      }
-      else {
-        orderQuery += ' DESC'
-      }
+      order.orderWay === 'ASC' ? orderQuery += ' ASC' : orderQuery += ' DESC'
 
       const allRows: List[] = await db.getAllAsync('SELECT * FROM Lists' + filterQuery + orderQuery)
       const all: any[] = await db.getAllAsync('SELECT COUNT(*) FROM Lists')
@@ -90,7 +95,7 @@ export const Home = () => {
 
   // Loading all lists by filter: ['All', 'Today', 'Flagged']
   useEffect(() => {
-    const loadLists = () => getLists(filter, order)
+    const loadLists = () => getLists(filter)
     loadLists()
     const unsubscribe = navigation.addListener('focus', loadLists)
     return () => unsubscribe()
@@ -104,8 +109,29 @@ export const Home = () => {
 
   return (
     <>
+      <View style={styles.headerContainer}>
+        <View style={styles.profile}>
+          <Image
+            style={styles.image}
+            source={require("../../../assets/windows.png")}
+          />
+          <View>
+            <Text style={styles.welcome}>Welcome Back! 👋</Text>
+            <Text style={styles.name}>Nyíri Dániel</Text>
+          </View>
+        </View>
+        <View style={styles.buttons}>
+          <TouchableOpacity>
+            <Ionicons name='person-add-outline' style={styles.headerIcon} />
+          </TouchableOpacity>
+          <TouchableOpacity>
+            <Ionicons name='notifications-outline' style={[styles.headerIcon, {marginLeft: 10}]} />
+          </TouchableOpacity>
+        </View>
+      </View>
+
       <View style={styles.container}>
-        <Searchbar searchQuery={searchQuery} setSearchQuery={setSearchQuery} />
+        <Searchbar placeholder="Find your list..." searchQuery={searchQuery} setSearchQuery={setSearchQuery} />
         <View style={styles.filters}>
           <ListFilter title='All' icon='albums' quantity={allFilter} backgroundColor='#404040' setFilter={setFilter} />
           <ListFilter title='Today' icon='calendar-sharp' quantity={todayFilter} backgroundColor='#5A75E4' setFilter={setFilter} />
@@ -127,7 +153,7 @@ export const Home = () => {
             }
           </View>
         </View>
-        <View style={{ maxHeight: '65%', flex: 1 }}>
+        <View style={styles.listContainer}>
           {lists.length === 0 ? (
             <View style={styles.emptyContainer}>
               <Text style={styles.emptyTitle}>SUCH EMPTINESS</Text>
@@ -137,18 +163,16 @@ export const Home = () => {
             <FlatList 
               data={filteredLists}
               keyExtractor={(item) => item.lid.toString()}
+              contentContainerStyle={{ paddingBottom: 80 }}
               renderItem={({ item, index }) => (
-                <ListComponent list={item} index={index} getLists={() => getLists(filter, order)} />
+                <ListComponent list={item} index={index} getLists={() => getLists(filter)} />
               )}
             />
           }
         </View>
         
-        <TouchableOpacity onPress={() => router.push('home/addList')}>
-          <View style={styles.addListWrapper}>
-            <Ionicons name="add-circle-sharp" style={styles.addListIcon} />
-            <Text style={styles.addListText}>Add List</Text>
-          </View>
+        <TouchableOpacity onPress={() => router.push('home/addList')} style={styles.addListWrapper}>
+          <Ionicons name="add-circle-sharp" style={styles.addListIcon} />
         </TouchableOpacity>
       </View>
 
@@ -158,16 +182,58 @@ export const Home = () => {
 }
 
 const styles = StyleSheet.create({
+  headerContainer: {
+    backgroundColor: '#FFF',
+    justifyContent: 'space-between',
+    flexDirection: 'row',
+    paddingVertical: 15,
+    paddingHorizontal: 20,
+  },
+  profile: {
+    flex: 1,
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  image: {
+    maxHeight: 50,
+    maxWidth: 50,
+    resizeMode: 'contain',
+    borderColor: 'rgba(255, 255, 255, 0.3)',
+    borderWidth: 2,
+    borderRadius: 999,
+    marginRight: 10,
+  },
+  welcome: {
+    color: '#989CA9',
+    fontSize: 12,
+  },
+  name: {
+    color: '#363636',
+    fontSize: 16,
+    fontWeight: 'bold',
+  },
+  buttons: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  headerIcon: {
+    color: '#007AFF',
+    fontSize: 18,
+    borderRadius: 999,
+    borderColor: 'rgba(118, 118, 128, 0.12)',
+    borderWidth: 2,
+    padding: 6,
+  },
   container: {
     flex: 1,
-    paddingTop: 35,
+    paddingTop: 20,
     paddingHorizontal: 20,
   },
   listsHeader: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    marginBottom: 15,
+    marginBottom: 20,
   },
   title: {
     fontSize: 24,
@@ -192,20 +258,21 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     paddingBottom: 25,
   },
+
+  listContainer: {
+    flex: 1,
+  },
+
   addListWrapper: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    position: 'absolute',
+    alignSelf: 'flex-end',
+    bottom: 20,
+    paddingHorizontal: 14,
     zIndex: 999,
-    top: 30,
   },
   addListIcon: {
-    fontSize: 32,
-    marginRight: 8,
-    color: '#4AA0F1',
-  },
-  addListText: {
-    fontSize: 17,
-    color: '#4AA0F1',
+    fontSize: 65,
+    color: 'rgba(0, 122, 255, 0.85)',
   },
 
   emptyContainer: {
