@@ -1,8 +1,8 @@
 import React, { useRef, useState } from 'react'
 import { StyleSheet, Text, TouchableOpacity, View } from "react-native"
-import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons'
-import Ionicons from '@expo/vector-icons/Ionicons'
 import { useRouter } from 'expo-router'
+
+import Ionicons from '@expo/vector-icons/Ionicons'
 
 import { List } from '../../app/(tabs)/home'
 import ListOptionsModal from '../../components/modals/listOptionsModal'
@@ -35,16 +35,15 @@ const ListComponent = ({ list, index, getLists }: ListComponentProps) => {
         <TouchableOpacity 
           style={styles.container} 
           onPress={() => router.push({ pathname: 'home/lists/[id]', params: { title: list.title, color: list.color } })}
+          onLongPress={() => [handleModalPosition(index), setShowModal(true)]}
           ref={(ref) => { listsRef.current[index] = ref }}
         >
           <View style={styles.listWrapper}>
             <View style={[styles.iconWrapper, { backgroundColor: list.color }]}>
-              <MaterialCommunityIcons name={list.icon} style={styles.icon} />
+              <Ionicons name={list.icon} style={styles.icon} />
             </View>
             <Text style={styles.listTitle}>{list.title}</Text>
-            <TouchableOpacity onPress={() => [/*handleModalPosition(index), setShowModal(true)*/]}>
-              <Ionicons name="chevron-forward" style={styles.listArrow} />
-            </TouchableOpacity>
+            <Ionicons name="chevron-forward" style={styles.listArrow} />
           </View>
         </TouchableOpacity>
       </View>

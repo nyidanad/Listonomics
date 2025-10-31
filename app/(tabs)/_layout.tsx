@@ -1,8 +1,8 @@
-import FontAwesome from '@expo/vector-icons/FontAwesome'
-import Ionicons from '@expo/vector-icons/Ionicons'
 import { Tabs } from 'expo-router'
 import { SQLiteProvider } from 'expo-sqlite'
 import { StatusBar } from 'expo-status-bar'
+
+import Ionicons from '@expo/vector-icons/Ionicons'
 
 function tabsLayout() {
   return (
@@ -12,7 +12,7 @@ function tabsLayout() {
       <Tabs screenOptions={{
         headerShadowVisible: false,
         tabBarActiveTintColor: '#007AFF',
-        tabBarInactiveTintColor: '#605967',
+        tabBarInactiveTintColor: '#B1B1B1',
         tabBarHideOnKeyboard: true,
         tabBarStyle: {
           height: 55,
@@ -38,12 +38,12 @@ function tabsLayout() {
         />
         <Tabs.Screen name='inventory/index' options={{
           title: 'Inventory',
-          tabBarIcon: ({ color }) => <FontAwesome size={26} name="cubes" color={color} />,
+          tabBarIcon: ({ color }) => <Ionicons size={26} name="cube" color={color} />,
           headerShown: false,
           }}
         />
         <Tabs.Screen name='graphs/index' options={{
-          title: 'Graphs',
+          title: 'Statistics',
           tabBarIcon: ({ color }) => <Ionicons size={26} name="bar-chart" color={color} />,
           headerShown: false,
           }}

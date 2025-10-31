@@ -1,13 +1,14 @@
-import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons'
-import Ionicons from '@expo/vector-icons/Ionicons'
-import Entypo from '@expo/vector-icons/Entypo';
 import { useState } from 'react'
-import { StyleSheet, Text, TextInput, TouchableOpacity, TouchableWithoutFeedback, View } from "react-native"
-import DateTimePicker, { DateTimePickerEvent } from "@react-native-community/datetimepicker"
+import { StyleSheet, Text, TextInput, TouchableOpacity, View } from "react-native"
 import { router } from 'expo-router'
+
+import Ionicons from '@expo/vector-icons/Ionicons'
+import Entypo from '@expo/vector-icons/Entypo'
+import DateTimePicker, { DateTimePickerEvent } from "@react-native-community/datetimepicker"
 import { useSQLiteContext } from 'expo-sqlite'
 
 import assets from '../../../data/assets.json'
+import CustomHeader from '../../../components/header/customHeader'
 
 type iconType = keyof typeof Ionicons.glyphMap
 
@@ -71,76 +72,80 @@ const addList = () => {
   }
 
   return (
-    <View style={styles.container}>
-      <View>
-        { /* TITLE */ }
-        <View style={styles.titleWrapper}>
-          <View style={[styles.titleIcon, { backgroundColor: list.color }]}>
-              <Ionicons name={list.icon} style={styles.selectedIcon} />
-          </View>
-          <TextInput
-            value={list.title}
-            onChangeText={(text) => setList({...list, title: text})}
-            placeholder='List Name'
-            placeholderTextColor={'#AFAFAF'} 
-            style={styles.inputTitleText}
-          />
-        </View>
-
-        { /* DATETIMEPICKER */ }
-        <TouchableOpacity onPress={() => setShowDatePicker(true)} style={styles.dateContainer}>
-          <View style={styles.dateWrapper}>
-            <Ionicons name="calendar-outline" size={32} color={'#363636'} style={{ marginRight: 10 }} />
-            <View>
-              <Text style={styles.dateLabel}>Schedule List</Text>
-              <Text style={styles.dateText}>
-                {list.date.toLocaleDateString('HU', { year: 'numeric', month: '2-digit', day: '2-digit' }).replace(/\//, '.')}
-              </Text>
+    <>
+      <CustomHeader title='Add List' backTo='Home' action='Add' onPress={postList} />
+      
+      <View style={styles.container}>
+        <View>
+          { /* TITLE */ }
+          <View style={styles.titleWrapper}>
+            <View style={[styles.titleIcon, { backgroundColor: list.color }]}>
+                <Ionicons name={list.icon} style={styles.selectedIcon} />
             </View>
+            <TextInput
+              value={list.title}
+              onChangeText={(text) => setList({...list, title: text})}
+              placeholder='List Name'
+              placeholderTextColor={'#AFAFAF'} 
+              style={styles.inputTitleText}
+            />
           </View>
-          <Entypo name="select-arrows" size={22} color={'#363636'} />
-        </TouchableOpacity>
-        {showDatePicker && (<DateTimePicker value={list.date} is24Hour={true} mode={"date"} onChange={onChange} />)}
 
-        { /* COLORS */ }
-        <View style={styles.wrapper}>
-          {colors.map((color, index) => {
-            const isActive = selectedColor === colors[index]
-            return (
-              <View key={color}>
-                <TouchableOpacity onPress={() => [setList({...list, color: colors[index]}), setSelectedColor(colors[index])]}>
-                  <View style={[styles.circle, { backgroundColor: color }]}>
-                    {isActive && <View style={styles.innerCircle} />}
-                  </View>
-                </TouchableOpacity>
+          { /* DATETIMEPICKER */ }
+          <TouchableOpacity onPress={() => setShowDatePicker(true)} style={styles.dateContainer}>
+            <View style={styles.dateWrapper}>
+              <Ionicons name="calendar-outline" size={32} color={'#363636'} style={{ marginRight: 10 }} />
+              <View>
+                <Text style={styles.dateLabel}>Schedule List</Text>
+                <Text style={styles.dateText}>
+                  {list.date.toLocaleDateString('HU', { year: 'numeric', month: '2-digit', day: '2-digit' }).replace(/\//, '.')}
+                </Text>
               </View>
-            )
-          })}
-          <TouchableOpacity style={[styles.circle, { backgroundColor: '#F5F5F5', }]}>
-            <MaterialCommunityIcons name={'plus'} size={24} color={'#363636'} />
+            </View>
+            <Entypo name="select-arrows" size={22} color={'#363636'} />
           </TouchableOpacity>
-        </View>
+          {showDatePicker && (<DateTimePicker value={list.date} is24Hour={true} mode={"date"} onChange={onChange} />)}
 
-        { /* ICONS */ }
-        <View style={styles.wrapper}>
-          {icons.map((icon, index) => {
-            const isActive = selectedIcon === icons[index]
-            return (
-              <View key={icon}>
-                <TouchableOpacity onPress={() => [setList({...list, icon: icons[index]}), setSelectedIcon(icons[index])]}>
-                  <View style={[styles.circle, isActive && { backgroundColor: selectedColor+'20' }]}>
-                    <Ionicons name={icon} style={[styles.icon, isActive && { color: selectedColor }]} />
-                  </View>
-                </TouchableOpacity>
-              </View>
-            )
-          })}
-          <TouchableOpacity style={[styles.circle, { backgroundColor: '#F5F5F5', }]}>
-            <MaterialCommunityIcons name={'plus'} size={24} color={'#363636'} />
-          </TouchableOpacity>
+          { /* COLORS */ }
+          <View style={styles.wrapper}>
+            {colors.map((color, index) => {
+              const isActive = selectedColor === colors[index]
+              return (
+                <View key={color}>
+                  <TouchableOpacity onPress={() => [setList({...list, color: colors[index]}), setSelectedColor(colors[index])]}>
+                    <View style={[styles.circle, { backgroundColor: color }]}>
+                      {isActive && <View style={styles.innerCircle} />}
+                    </View>
+                  </TouchableOpacity>
+                </View>
+              )
+            })}
+            <TouchableOpacity style={[styles.circle, { backgroundColor: '#F5F5F5', }]}>
+              <Ionicons name={'add-sharp'} size={24} color={'#363636'} />
+            </TouchableOpacity>
+          </View>
+
+          { /* ICONS */ }
+          <View style={styles.wrapper}>
+            {icons.map((icon, index) => {
+              const isActive = selectedIcon === icons[index]
+              return (
+                <View key={icon}>
+                  <TouchableOpacity onPress={() => [setList({...list, icon: icons[index]}), setSelectedIcon(icons[index])]}>
+                    <View style={[styles.circle, isActive && { backgroundColor: selectedColor+'20' }]}>
+                      <Ionicons name={icon} style={[styles.icon, isActive && { color: selectedColor }]} />
+                    </View>
+                  </TouchableOpacity>
+                </View>
+              )
+            })}
+            <TouchableOpacity style={[styles.circle, { backgroundColor: '#F5F5F5', }]}>
+              <Ionicons name={'add-sharp'} size={24} color={'#363636'} />
+            </TouchableOpacity>
+          </View>
         </View>
       </View>
-    </View>
+    </>
   )
 }
 

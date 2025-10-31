@@ -11,16 +11,10 @@ export const homeLayout = () => {
             headerShown: false,
           }} />
           <Stack.Screen name='addList' options={{
-            headerTitle: 'Add List',
-            headerTitleAlign: 'center',
-            headerTitleStyle: { fontWeight: 'bold' },
-            headerShadowVisible: false,
+            headerShown: false
           }} />
           <Stack.Screen name='editList/[id]' options={{
-            headerTitle: 'Edit List',
-            headerTitleAlign: 'center',
-            headerTitleStyle: { fontWeight: 'bold' },
-            headerShadowVisible: false,
+            headerShown: false
           }} />
           <Stack.Screen name='lists/[id]' options={{
             headerTitle: 'Lists',

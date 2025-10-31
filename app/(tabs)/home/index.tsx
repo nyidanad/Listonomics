@@ -1,10 +1,10 @@
 import React, { useEffect, useState } from 'react'
 import { FlatList, StyleSheet, Text, TouchableOpacity, View, Image } from 'react-native'
-import AsyncStorage from '@react-native-async-storage/async-storage'
-import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons'
+import { useNavigation, useRouter } from 'expo-router'
+
 import Ionicons from '@expo/vector-icons/Ionicons'
 import Octions from '@expo/vector-icons/Octicons'
-import { useNavigation, useRouter } from 'expo-router'
+import AsyncStorage from '@react-native-async-storage/async-storage'
 import { useSQLiteContext } from 'expo-sqlite'
 
 import Searchbar from '../../../components/search/searchbar'
@@ -15,9 +15,9 @@ import ListOrderModal from '../../../components/modals/listOrderModal'
 export type List = {
   lid: number
   title: string
-  date: string
+  date: Date
   color: string
-  icon: keyof typeof MaterialCommunityIcons.glyphMap
+  icon: keyof typeof Ionicons.glyphMap
   serial?: number
   flagged: number
 }
@@ -121,9 +121,6 @@ export const Home = () => {
           </View>
         </View>
         <View style={styles.buttons}>
-          <TouchableOpacity>
-            <Ionicons name='person-add-outline' style={styles.headerIcon} />
-          </TouchableOpacity>
           <TouchableOpacity>
             <Ionicons name='notifications-outline' style={[styles.headerIcon, {marginLeft: 10}]} />
           </TouchableOpacity>

@@ -1,19 +1,17 @@
-import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons'
 import { useState } from 'react'
 import { StyleSheet, Text, TextInput, TouchableOpacity, TouchableWithoutFeedback, View } from "react-native"
+import { router, useLocalSearchParams } from 'expo-router'
+
+import Ionicons from '@expo/vector-icons/Ionicons'
+import Entypo from '@expo/vector-icons/Entypo'
 import DateTimePicker, { DateTimePickerEvent } from "@react-native-community/datetimepicker"
 import { useSQLiteContext } from 'expo-sqlite'
-import { router, useLocalSearchParams } from 'expo-router'
 
 import assets from '../../../../data/assets.json'
 import { List } from '..'
+import CustomHeader from '../../../../components/header/customHeader'
 
-type iconType = keyof typeof MaterialCommunityIcons.glyphMap
-
-const CIRCLE_SIZE = 40
-const CIRCLE_RING_SIZE = 2
-const ICON_CIRCLE_SIZE = 35
-const ICON_CIRCLE_RING_SIZE = 2
+type iconType = keyof typeof Ionicons.glyphMap
 
 const editList = () => {
   const db = useSQLiteContext()
@@ -35,7 +33,7 @@ const editList = () => {
       let res = await statement.executeAsync({
         $lid : list.lid,
         $title: list.title,
-        $date: list.date,
+        $date: list.date.toISOString(),
         $color: list.color,
         $icon: list.icon
       })
@@ -52,74 +50,85 @@ const editList = () => {
   const onChange = (event: DateTimePickerEvent, selectedDate?: Date) => {
     setShowDatePicker(false)
     if (selectedDate) {
-      setList({...list, date: selectedDate.toISOString()})
+      setList({...list, date: selectedDate})
     }
   }
 
   return (
-    <View style={styles.container}>
-      <View>
-        <View style={styles.titleWrapper}>
-          <View style={[styles.titleIcon, { backgroundColor: list.color }]}>
-              <MaterialCommunityIcons name={list.icon} style={styles.selectedIcon} />
+    <>
+      <CustomHeader title='Edit List' backTo='Home' action='Save' onPress={putList} />
+      
+      <View style={styles.container}>
+        <View>
+          { /* TITLE */ }
+          <View style={styles.titleWrapper}>
+            <View style={[styles.titleIcon, { backgroundColor: list.color }]}>
+                <Ionicons name={list.icon} style={styles.selectedIcon} />
+            </View>
+            <TextInput
+              value={list.title}
+              onChangeText={(text) => setList({...list, title: text})}
+              placeholder='List Name'
+              placeholderTextColor={'#AFAFAF'} 
+              style={styles.inputTitleText}
+            />
           </View>
-          <TextInput
-            value={list.title}
-            onChangeText={(text) => setList({...list, title: text})}
-            placeholder='List Name'
-            placeholderTextColor={'#B9B6B9'} 
-            style={styles.inputTitleText}
-          />
-        </View>
 
-        <TouchableOpacity onPress={() => setShowDatePicker(true)}>
-          <View style={styles.dateWrapper}>
-            <Text style={styles.dateText}>
-              {new Date(list.date).toLocaleDateString('HU', { year: 'numeric', month: '2-digit', day: '2-digit' }).replace(/\//, '.')}
-            </Text>
-            <MaterialCommunityIcons name="calendar-month-outline" style={styles.dateIcon} />
+          { /* DATETIMEPICKER */ }
+          <TouchableOpacity onPress={() => setShowDatePicker(true)} style={styles.dateContainer}>
+            <View style={styles.dateWrapper}>
+              <Ionicons name="calendar-outline" size={32} color={'#363636'} style={{ marginRight: 10 }} />
+              <View>
+                <Text style={styles.dateLabel}>Schedule List</Text>
+                <Text style={styles.dateText}>
+                  {new Date(list.date).toLocaleDateString('HU', { year: 'numeric', month: '2-digit', day: '2-digit' }).replace(/\//, '.')}
+                </Text>
+              </View>
+            </View>
+            <Entypo name="select-arrows" size={22} color={'#363636'} />
+          </TouchableOpacity>
+          {showDatePicker && (<DateTimePicker value={new Date(list.date)} is24Hour={true} mode={"date"} onChange={onChange} />)}
+
+          { /* COLORS */ }
+          <View style={styles.wrapper}>
+            {colors.map((color, index) => {
+              const isActive = selectedColor === colors[index]
+              return (
+                <View key={color}>
+                  <TouchableOpacity onPress={() => [setList({...list, color: colors[index]}), setSelectedColor(colors[index])]}>
+                    <View style={[styles.circle, { backgroundColor: color }]}>
+                      {isActive && <View style={styles.innerCircle} />}
+                    </View>
+                  </TouchableOpacity>
+                </View>
+              )
+            })}
+            <TouchableOpacity style={[styles.circle, { backgroundColor: '#F5F5F5', }]}>
+              <Ionicons name={'add-sharp'} size={24} color={'#363636'} />
+            </TouchableOpacity>
           </View>
-        </TouchableOpacity>
-        {showDatePicker && (<DateTimePicker value={new Date(list.date)} is24Hour={true} mode={"date"} onChange={onChange} />)}
 
-        <View style={styles.colorWrapper}>
-          {colors.map((color, index) => {
-            const isActive = selectedColor === colors[index]
-            return (
-              <View key={color}>
-                <TouchableOpacity onPress={() => [setList({...list, color: colors[index]}), setSelectedColor(colors[index])]}>
-                  <View style={[styles.circle, isActive && { borderColor: color }]}>
-                    <View style={[styles.circleInner, { backgroundColor: color }]} />
-                  </View>
-                </TouchableOpacity>
-              </View>
-            )
-          })}
-        </View>
-
-        <View style={styles.iconsWrapper}>
-          {icons.map((icon, index) => {
-            const isActive = selectedIcon === icons[index]
-            return (
-              <View key={icon}>
-                <TouchableWithoutFeedback onPress={() => [setList({...list, icon: icons[index]}), setSelectedIcon(icons[index])]}>
-                  <View style={[styles.iconCircle, isActive && { borderColor: '#494949' }]}>
-                    <MaterialCommunityIcons name={icon} style={styles.icon} />
-                  </View>
-                </TouchableWithoutFeedback>
-              </View>
-            )
-          })}
+          { /* ICONS */ }
+          <View style={styles.wrapper}>
+            {icons.map((icon, index) => {
+              const isActive = selectedIcon === icons[index]
+              return (
+                <View key={icon}>
+                  <TouchableOpacity onPress={() => [setList({...list, icon: icons[index]}), setSelectedIcon(icons[index])]}>
+                    <View style={[styles.circle, isActive && { backgroundColor: selectedColor+'20' }]}>
+                      <Ionicons name={icon} style={[styles.icon, isActive && { color: selectedColor }]} />
+                    </View>
+                  </TouchableOpacity>
+                </View>
+              )
+            })}
+            <TouchableOpacity style={[styles.circle, { backgroundColor: '#F5F5F5', }]}>
+              <Ionicons name={'add-sharp'} size={24} color={'#363636'} />
+            </TouchableOpacity>
+          </View>
         </View>
       </View>
-      
-      <TouchableOpacity onPress={putList}>
-        <View style={styles.addButtonWrapper}>
-          <MaterialCommunityIcons name="content-save-check" style={styles.addButtonIcon} />
-          <Text style={styles.addButtonText}>Save</Text>
-        </View>
-      </TouchableOpacity>
-    </View>
+    </>
   )
 }
 
@@ -129,47 +138,13 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
   },
   titleWrapper: {
-    height: 200,
-    backgroundColor: '#FFF',
+    backgroundColor: '#FFFFFF',
+    padding: 20,
     borderRadius: 12,
-    paddingHorizontal: 15,
     marginBottom: 15,
     alignItems: 'center',
     justifyContent: 'space-around',
   },
-  dateWrapper: {
-    height: 60,
-    backgroundColor: '#FFF',
-    borderRadius: 12,
-    paddingHorizontal: 25,
-    marginBottom: 15,
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    flexDirection: 'row',
-  },
-  colorWrapper: {
-    height: 130,
-    backgroundColor: '#fff',
-    borderRadius: 12,
-    paddingHorizontal: 15,
-    marginBottom: 15,
-    alignItems: 'center',
-    justifyContent: 'center',
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-  },
-  iconsWrapper: {
-    height: 190,
-    backgroundColor: '#fff',
-    borderRadius: 12,
-    paddingHorizontal: 15,
-    marginBottom: 15,
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-  },
-
   titleIcon: {
     width: 100,
     height: 100,
@@ -184,80 +159,87 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.29,
     shadowRadius: 4.65,
     elevation: 7,
+    marginBottom: 15,
   },
   selectedIcon: {
     fontSize: 55,
     color: '#FFF',
   },
   inputTitleText: {
-    backgroundColor: '#F4F4F6',
-    borderRadius: 10,
+    backgroundColor: '#FAFAFA',
     width: '100%',
     height: 50,
+    color: '#363636',
+    fontWeight: 'bold',
     fontSize: 20,
     textAlign: 'center',
-  },
-
-  dateText: {
-    fontSize: 18,
-  },
-  dateIcon: {
-    fontSize: 26,
+    borderRadius: 10,
   },
   
-  circle: {
-    width: CIRCLE_SIZE + CIRCLE_RING_SIZE * 4,
-    height: CIRCLE_SIZE + CIRCLE_RING_SIZE * 4,
-    borderRadius: 999,
-    borderWidth: CIRCLE_RING_SIZE,
-    borderColor: 'transparent',
-    marginTop: 10,
-    marginRight: 4,
+  dateContainer: {
+    backgroundColor: '#FFFFFF',
+    borderRadius: 12,
+    paddingVertical: 10,
+    paddingHorizontal: 20,
+    marginBottom: 15,
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    flexDirection: 'row',
   },
-  circleInner: {
-    width: CIRCLE_SIZE,
-    height: CIRCLE_SIZE,
+  dateWrapper: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  dateLabel: {
+    color: '#B3B3B3',
+    fontSize: 12,
+  },
+  dateText: {
+    color: '#363636',
+    fontSize: 16,
+    fontWeight: 'bold',
+  },
+
+  wrapper: {
+    backgroundColor: '#fff',
+    borderRadius: 12,
+    paddingVertical: 10,
+    paddingHorizontal: 15,
+    marginBottom: 15,
+    justifyContent: 'space-evenly',
+    alignItems: 'center',
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+  },
+  circle: {
+    width: 40,
+    height: 40,
     borderRadius: 999,
-    position: 'absolute',
-    top: CIRCLE_RING_SIZE,
-    left: CIRCLE_RING_SIZE,
+    margin: 3,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  innerCircle: {
+    width: 20,
+    height: 20,
+    borderRadius: 999,
+    backgroundColor: '#FFFFFF',
   },
   icon: {
     fontSize: 24,
-    color: '#494949',
-    backgroundColor: '#F4F4F6',
+    color: '#989CA9',
     borderRadius: 999,
     alignItems: 'center',
     justifyContent: 'center',
   },
   iconCircle: {
-    width: ICON_CIRCLE_SIZE + ICON_CIRCLE_RING_SIZE * 4,
-    height: ICON_CIRCLE_SIZE + ICON_CIRCLE_RING_SIZE * 4,
+    backgroundColor: 'red',
+    width: 40,
+    height: 40,
     borderRadius: 999,
-    borderWidth: ICON_CIRCLE_RING_SIZE,
-    backgroundColor: '#F4F4F6',
-    borderColor: 'transparent',
     alignItems: 'center',
     justifyContent: 'center',
-    marginTop: 15,
-    marginRight: 4,
-    marginLeft: 4,
-  },
-
-  addButtonWrapper: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    bottom: 5,
-  },
-  addButtonIcon: {
-    fontSize: 30,
-    marginRight: 8,
-    color: '#4AA0F1',
-  },
-  addButtonText: {
-    fontSize: 17,
-    fontWeight: '500',
-    color: '#4AA0F1',
+    margin: 3,
   },
 })
 
