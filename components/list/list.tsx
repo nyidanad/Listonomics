@@ -1,54 +1,35 @@
-import React, { useRef, useState } from 'react'
+import React, { Dispatch, SetStateAction } from 'react'
 import { StyleSheet, Text, TouchableOpacity, View } from "react-native"
 import { useRouter } from 'expo-router'
 
 import Ionicons from '@expo/vector-icons/Ionicons'
 
 import { List } from '../../app/(tabs)/home'
-import ListOptionsModal from '../../components/modals/listOptionsModal'
 
 type ListComponentProps = {
   list: List
-  index: number
-  getLists: () => Promise<void>
+  setMode: Dispatch<SetStateAction<string>>
 }
 
-const ListComponent = ({ list, index, getLists }: ListComponentProps) => {
+const ListComponent = ({ list, setMode }: ListComponentProps) => {
   const router = useRouter()
-  const [showModal, setShowModal] = useState(false)
-  const [modalPosition, setModalPosition] = useState({ top: 0 })
-  const listsRef = useRef<(View | null)[]>([])
-
-  // Calculating Modal position to selected List
-  const handleModalPosition = (index: number) => {
-    const ref = listsRef.current[index]
-    if (ref) {
-      ref.measureInWindow((x, y, width, height) => {
-        setModalPosition({ top: y + height - 370 })
-      })
-    }
-  }
 
   return (
-    <>
-      <View>
-        <TouchableOpacity 
-          style={styles.container} 
-          onPress={() => router.push({ pathname: 'home/lists/[id]', params: { title: list.title, color: list.color } })}
-          onLongPress={() => [handleModalPosition(index), setShowModal(true)]}
-          ref={(ref) => { listsRef.current[index] = ref }}
-        >
-          <View style={styles.listWrapper}>
-            <View style={[styles.iconWrapper, { backgroundColor: list.color }]}>
-              <Ionicons name={list.icon} style={styles.icon} />
-            </View>
-            <Text style={styles.listTitle}>{list.title}</Text>
-            <Ionicons name="chevron-forward" style={styles.listArrow} />
+    <View>
+      <TouchableOpacity 
+        style={styles.container} 
+        onPress={() => router.push({ pathname: 'home/lists/[id]', params: { title: list.title, color: list.color } })}
+        onLongPress={() => setMode('settings')}
+      >
+        <View style={styles.listWrapper}>
+          <View style={[styles.iconWrapper, { backgroundColor: list.color }]}>
+            <Ionicons name={list.icon} style={styles.icon} />
           </View>
-        </TouchableOpacity>
-      </View>
-      <ListOptionsModal showModal={showModal} setShowModal={setShowModal} modalPosition={modalPosition} selectedList={list} getLists={getLists} />
-    </>
+          <Text style={styles.listTitle}>{list.title}</Text>
+          <Ionicons name="chevron-forward" size={18} color={'#363636'} />
+        </View>
+      </TouchableOpacity>
+    </View>
   )
 }
 
@@ -90,10 +71,6 @@ const styles = StyleSheet.create({
     flex: 1,
     color: '#363636',
     fontSize: 16,
-  },
-  listArrow: {
-    fontSize: 18,
-    color: '#363636',
   },
 })
 

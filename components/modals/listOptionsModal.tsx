@@ -1,12 +1,13 @@
-import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons'
-import Ionicons from '@expo/vector-icons/Ionicons'
 import React, { Dispatch, SetStateAction } from 'react'
 import { Alert, Modal, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
 import { useRouter } from 'expo-router'
 
+import Ionicons from '@expo/vector-icons/Ionicons'
+import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons'
+import { useSQLiteContext } from 'expo-sqlite'
+
 import { List } from '../../app/(tabs)/home'
 import Hr from '../horizontalRules/hr'
-import { useSQLiteContext } from 'expo-sqlite'
 
 export type ModalPositionsProps = {
   top: number
@@ -66,7 +67,7 @@ const ListOptionsModal = ({ showModal, setShowModal, modalPosition, selectedList
 
       let res = await statement.executeAsync({
         $title: nextTitle,
-        $date: list.date,
+        $date: list.date.toISOString(),
         $color: list.color,
         $icon: list.icon,
         $serial: nextSerial + 1,
@@ -130,7 +131,7 @@ const ListOptionsModal = ({ showModal, setShowModal, modalPosition, selectedList
         <View style={[styles.content, { top: modalPosition.top }]}>
           
           {/* EDIT */}
-          <TouchableOpacity onPress={() => [onCloseModal, router.push({pathname: `home/editList/[id]`, params: selectedList})]}>
+          <TouchableOpacity onPress={() => [onCloseModal, router.push({pathname: `home/editList/[id]`, params: {...selectedList, date: selectedList.date.toISOString()},})]}>
             <View style={styles.button}>
               <Text style={styles.text}>Edit</Text>
               <MaterialCommunityIcons name="pencil-outline" style={styles.icon} />
@@ -152,6 +153,15 @@ const ListOptionsModal = ({ showModal, setShowModal, modalPosition, selectedList
             <View style={styles.button}>
               <Text style={styles.text}>Flagged</Text>
               <Ionicons name={selectedList.flagged === 0 ? "flag-outline" : "flag-sharp"} style={styles.icon} />
+            </View>
+          </TouchableOpacity>
+          <Hr color='#EDEEF2' width={1} top={8} bottom={8} />
+
+          {/* SHARE */}
+          <TouchableOpacity>
+            <View style={styles.button}>
+              <Text style={styles.text}>Share</Text>
+              <Ionicons name={'person-add-outline'} style={styles.icon} />
             </View>
           </TouchableOpacity>
           <Hr color='#EDEEF2' width={1} top={8} bottom={8} />

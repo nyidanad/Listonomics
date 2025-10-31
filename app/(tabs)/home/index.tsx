@@ -3,13 +3,14 @@ import { FlatList, StyleSheet, Text, TouchableOpacity, View, Image } from 'react
 import { useNavigation, useRouter } from 'expo-router'
 
 import Ionicons from '@expo/vector-icons/Ionicons'
-import Octions from '@expo/vector-icons/Octicons'
+import Octicons from '@expo/vector-icons/Octicons'
 import AsyncStorage from '@react-native-async-storage/async-storage'
 import { useSQLiteContext } from 'expo-sqlite'
 
 import Searchbar from '../../../components/search/searchbar'
 import ListFilter from '../../../components/filter/list-filter'
 import ListComponent from '../../../components/list/list'
+import DraggableListComponent from '../../../components/list/draggableList'
 import ListOrderModal from '../../../components/modals/listOrderModal'
 
 export type List = {
@@ -38,6 +39,7 @@ export const Home = () => {
   const [searchQuery, setSearchQuery] = useState('')
   const [filter, setFilter] = useState('')
   const [order, setOrder] = useState<Order>({orderBy: 'Alphabetical', orderWay: 'ASC'})
+  const [mode, setMode] = useState('normal')
   const [showOrderModal, setShowOrderModal] = useState(false)
 
   // Fetching List table
@@ -138,16 +140,24 @@ export const Home = () => {
         <View style={styles.listsHeader}>
           <Text style={styles.title}>My Lists</Text>
           <View style={styles.settingsWrapper}>
-            <Text style={styles.settingsText}>{order.orderBy}</Text>
-            {order.orderWay === 'ASC' ?
-              <TouchableOpacity onPress={() => setShowOrderModal(true)}>
-                <Octions name="sort-asc" style={styles.settingsIcon} />
+            {mode === 'normal' ? (
+              <>
+                <Text style={styles.settingsText}>{order.orderBy}</Text>
+                {order.orderWay === 'ASC' ? (
+                  <TouchableOpacity onPress={() => setShowOrderModal(true)}>
+                    <Octicons name="sort-asc" style={styles.settingsIcon} />
+                  </TouchableOpacity>
+                ) : (
+                  <TouchableOpacity onPress={() => setShowOrderModal(true)}>
+                    <Octicons name="sort-desc" style={styles.settingsIcon} />
+                  </TouchableOpacity>
+                )}
+              </>
+            ) : (
+              <TouchableOpacity onPress={() => setMode('normal')}>
+                <Text style={{ color: '#007AFF' }}>Save</Text>
               </TouchableOpacity>
-            :
-              <TouchableOpacity onPress={() => setShowOrderModal(true)}>
-                <Octions name="sort-desc" style={styles.settingsIcon} />
-              </TouchableOpacity>
-            }
+            )}
           </View>
         </View>
         <View style={styles.listContainer}>
@@ -162,7 +172,11 @@ export const Home = () => {
               keyExtractor={(item) => item.lid.toString()}
               contentContainerStyle={{ paddingBottom: 80 }}
               renderItem={({ item, index }) => (
-                <ListComponent list={item} index={index} getLists={() => getLists(filter)} />
+                mode === 'normal'
+                ? 
+                  <ListComponent list={item} setMode={setMode} />
+                :
+                  <DraggableListComponent list={item} index={index} getLists={() => getLists(filter)} />
               )}
             />
           }
