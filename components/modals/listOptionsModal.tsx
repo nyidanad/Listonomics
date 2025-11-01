@@ -67,7 +67,7 @@ const ListOptionsModal = ({ showModal, setShowModal, modalPosition, selectedList
 
       let res = await statement.executeAsync({
         $title: nextTitle,
-        $date: list.date.toISOString(),
+        $date: list.date,
         $color: list.color,
         $icon: list.icon,
         $serial: nextSerial + 1,
@@ -131,7 +131,7 @@ const ListOptionsModal = ({ showModal, setShowModal, modalPosition, selectedList
         <View style={[styles.content, { top: modalPosition.top }]}>
           
           {/* EDIT */}
-          <TouchableOpacity onPress={() => [onCloseModal, router.push({pathname: `home/editList/[id]`, params: {...selectedList, date: selectedList.date.toISOString()},})]}>
+          <TouchableOpacity onPress={() => [onCloseModal, router.push({pathname: `home/editList/[id]`, params: { ...selectedList }})]}>
             <View style={styles.button}>
               <Text style={styles.text}>Edit</Text>
               <MaterialCommunityIcons name="pencil-outline" style={styles.icon} />

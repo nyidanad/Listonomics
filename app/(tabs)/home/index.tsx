@@ -16,7 +16,7 @@ import ListOrderModal from '../../../components/modals/listOrderModal'
 export type List = {
   lid: number
   title: string
-  date: Date
+  date: string
   color: string
   icon: keyof typeof Ionicons.glyphMap
   serial?: number

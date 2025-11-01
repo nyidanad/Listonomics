@@ -33,7 +33,7 @@ const editList = () => {
       let res = await statement.executeAsync({
         $lid : list.lid,
         $title: list.title,
-        $date: list.date.toISOString(),
+        $date: list.date,
         $color: list.color,
         $icon: list.icon
       })
@@ -50,7 +50,7 @@ const editList = () => {
   const onChange = (event: DateTimePickerEvent, selectedDate?: Date) => {
     setShowDatePicker(false)
     if (selectedDate) {
-      setList({...list, date: selectedDate})
+      setList({...list, date: selectedDate.toISOString()})
     }
   }
 
