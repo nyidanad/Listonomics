@@ -1,5 +1,6 @@
 import { Redirect } from 'expo-router'
 import { SQLiteProvider, type SQLiteDatabase } from 'expo-sqlite'
+import { BottomSheetModalProvider } from "@gorhom/bottom-sheet"
 
 async function createTables(db: SQLiteDatabase) {
   try {
@@ -38,9 +39,11 @@ async function createTables(db: SQLiteDatabase) {
 
 const Root = () => {
   return (
-    <SQLiteProvider databaseName="listonomics.db" onInit={createTables}>
-      <Redirect href="home" />
-    </SQLiteProvider>
+    <BottomSheetModalProvider>
+      <SQLiteProvider databaseName="listonomics.db" onInit={createTables}>
+        <Redirect href="home" />
+      </SQLiteProvider>
+    </BottomSheetModalProvider>
   )
 }
 
