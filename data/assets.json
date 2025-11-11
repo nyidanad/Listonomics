@@ -35,5 +35,132 @@
     "barbell",
     "car-sport-outline",
     "location-outline"
+  ],
+  "categories": [
+    {
+      "title": "Bakery & Breads",
+      "color": "#FF9500",
+      "icon": "bread"
+    },
+    {
+      "title": "Meat & Seafood",
+      "color": "#FF453A",
+      "icon": "meat"
+    },
+    {
+      "title": "Frozen Foods",
+      "color": "#30B0C7",
+      "icon": "snow"
+    },
+    {
+      "title": "Produce",
+      "color": "#2ECC71",
+      "icon": "apple"
+    },
+    {
+      "title": "Dairy",
+      "color": "#007AFF",
+      "icon": "milk"
+    },
+    {
+      "title": "Coffee & Tea",
+      "color": "#9C8565",
+      "icon": "coffee"
+    },
+    {
+      "title": "Non-alcoholic Drinks",
+      "color": "#85C1E9",
+      "icon": "water"
+    },
+    {
+      "title": "Alcoholic Beverages",
+      "color": "#953500",
+      "icon": "beer"
+    },
+    {
+      "title": "Snacks",
+      "color": "#E94369",
+      "icon": "candy"
+    },
+    {
+      "title": "Fast Food",
+      "color": "#FFB80E",
+      "icon": "cheeseburger"
+    },
+    {
+      "title": "Household",
+      "color": "#00C7BE",
+      "icon": "house"
+    },
+    {
+      "title": "Cleaning Supplies",
+      "color": "#AF52DE",
+      "icon": "detergent"
+    },
+    {
+      "title": "Beauty Care",
+      "color": "#DEB4F6",
+      "icon": "cream"
+    },
+    {
+      "title": "Health & Medicine",
+      "color": "#FF3B30",
+      "icon": "pills"
+    },
+    {
+      "title": "Clothing",
+      "color": "#99D9EA",
+      "icon": "shirt"
+    },
+    {
+      "title": "Electronics",
+      "color": "#FFE700",
+      "icon": "lightning"
+    },
+    {
+      "title": "Hardware & Tools",
+      "color": "#607DA3",
+      "icon": "tools"
+    },
+    {
+      "title": "Gardening",
+      "color": "#B5E61D",
+      "icon": "hammer"
+    },
+    {
+      "title": "Tinkering",
+      "color": "#5F6773",
+      "icon": "hammer"
+    },
+    {
+      "title": "Sports & Fitness",
+      "color": "#2E86C1",
+      "icon": "muscle"
+    },
+    {
+      "title": "Books & Stationary",
+      "color": "#B97A57",
+      "icon": "book"
+    },
+    {
+      "title": "Toys",
+      "color": "#C8BFE7",
+      "icon": "teddy"
+    },
+    {
+      "title": "Baby Products",
+      "color": "#EFCFCA",
+      "icon": "baby"
+    },
+    {
+      "title": "Pet Supplies",
+      "color": "#D7A69E",
+      "icon": "paw"
+    },
+    {
+      "title": "Base Foods",
+      "color": "#808000",
+      "icon": "paw"
+    }
   ]
 }
