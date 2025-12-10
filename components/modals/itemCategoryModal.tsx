@@ -1,5 +1,5 @@
 import { ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
-import React, { useMemo, forwardRef } from 'react'
+import React, { useMemo, forwardRef, Dispatch, SetStateAction } from 'react'
 import { Image } from 'expo-image'
 
 import { BottomSheetModal, BottomSheetView } from '@gorhom/bottom-sheet'
@@ -7,7 +7,7 @@ import { BottomSheetModal, BottomSheetView } from '@gorhom/bottom-sheet'
 import assets from '../../data/assets.json'
 import ItemCategoryBackdrop from './itemCategoryBackdrop'
 
-const IconMap: Record<string, any> = {
+export const IconMap: Record<string, any> = {
   bread: require('../../assets/icons/bread.svg'),
   meat: require('../../assets/icons/meat.svg'),
   snow: require('../../assets/icons/snow.svg'),
@@ -33,9 +33,16 @@ const IconMap: Record<string, any> = {
   paw: require('../../assets/icons/paw.svg'),
 };
 
-const ItemCategoryModal = forwardRef<BottomSheetModal>((props, ref) => {
+type ItemCategoryModalProps = {
+  selectedCategories: any[]
+  setSelectedCategories: Dispatch<SetStateAction<any[]>>
+}
+
+const ItemCategoryModal = forwardRef<BottomSheetModal, ItemCategoryModalProps>(({ selectedCategories, setSelectedCategories }, ref) => {
   const snapPoints = useMemo(() => ['45%', '45%', '67%'], []);
-  const categories = assets.categories
+  const categories = assets.categories.filter(
+    category => !selectedCategories.some(selected => selected.title === category.title)
+  );
   
   return (
     <BottomSheetModal
@@ -51,7 +58,7 @@ const ItemCategoryModal = forwardRef<BottomSheetModal>((props, ref) => {
         <ScrollView contentContainerStyle={styles.categories}>
           {categories.map((category, index) => {
             return (
-              <TouchableOpacity key={index} style={styles.category}>
+              <TouchableOpacity key={index} style={styles.category} onPress={() => setSelectedCategories(prev => [...prev, category])}>
                 <View style={[styles.image, { backgroundColor: category.color }]} >
                   <Image source={IconMap[category.icon]} style={styles.icon} />
                 </View>

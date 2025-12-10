@@ -40,127 +40,164 @@
     {
       "title": "Bakery & Breads",
       "color": "#FF9500",
-      "icon": "bread"
+      "icon": "bread",
+      "data": [
+        { "id": 1, "name": "Toast slices", "priority": "high" },
+        { "id": 2, "name": "White bread", "priority": null },
+        { "id": 3, "name": "Bolognesse rombus", "priority": "medium" }
+      ]
     },
     {
       "title": "Meat & Seafood",
       "color": "#FF453A",
-      "icon": "meat"
+      "icon": "meat",
+      "data": [
+        { "id": 1, "name": "Chicken breast", "priority": "high" }
+      ]
     },
     {
       "title": "Frozen Foods",
       "color": "#30B0C7",
-      "icon": "snow"
+      "icon": "snow",
+      "data": []
     },
     {
       "title": "Produce",
       "color": "#2ECC71",
-      "icon": "apple"
+      "icon": "apple",
+      "data": [
+        { "id": 1, "name": "Cucumber", "priority": null },
+        { "id": 2, "name": "Tomatoes", "priority": null }
+      ]
     },
     {
       "title": "Dairy",
       "color": "#007AFF",
-      "icon": "milk"
+      "icon": "milk",
+      "data": [
+        { "id": 1, "name": "3.5 UHT Milk", "priority": "high" },
+        { "id": 2, "name": "Eggs", "priority": null }
+      ]
     },
     {
       "title": "Coffee & Tea",
       "color": "#9C8565",
-      "icon": "coffee"
+      "icon": "coffee",
+      "data": []
     },
     {
       "title": "Non-alcoholic Drinks",
       "color": "#85C1E9",
-      "icon": "water"
+      "icon": "water",
+      "data": []
     },
     {
       "title": "Alcoholic Beverages",
       "color": "#953500",
-      "icon": "beer"
+      "icon": "beer",
+      "data": []
     },
     {
       "title": "Snacks",
       "color": "#E94369",
-      "icon": "candy"
+      "icon": "candy",
+      "data": []
     },
     {
       "title": "Fast Food",
       "color": "#FFB80E",
-      "icon": "cheeseburger"
+      "icon": "cheeseburger",
+      "data": []
     },
     {
       "title": "Household",
       "color": "#00C7BE",
-      "icon": "house"
+      "icon": "house",
+      "data": []
     },
     {
       "title": "Cleaning Supplies",
       "color": "#AF52DE",
-      "icon": "detergent"
+      "icon": "detergent",
+      "data": []
     },
     {
       "title": "Beauty Care",
       "color": "#DEB4F6",
-      "icon": "cream"
+      "icon": "cream",
+      "data": []
     },
     {
       "title": "Health & Medicine",
       "color": "#FF3B30",
-      "icon": "pills"
+      "icon": "pills",
+      "data": []
     },
     {
       "title": "Clothing",
       "color": "#99D9EA",
-      "icon": "shirt"
+      "icon": "shirt",
+      "data": []
     },
     {
       "title": "Electronics",
       "color": "#FFE700",
-      "icon": "lightning"
+      "icon": "lightning",
+      "data": []
     },
     {
       "title": "Hardware & Tools",
       "color": "#607DA3",
-      "icon": "tools"
+      "icon": "tools",
+      "data": []
     },
     {
       "title": "Gardening",
       "color": "#B5E61D",
-      "icon": "hammer"
+      "icon": "hammer",
+      "data": []
     },
     {
       "title": "Tinkering",
       "color": "#5F6773",
-      "icon": "hammer"
+      "icon": "hammer",
+      "data": []
     },
     {
       "title": "Sports & Fitness",
       "color": "#2E86C1",
-      "icon": "muscle"
+      "icon": "muscle",
+      "data": []
     },
     {
       "title": "Books & Stationary",
       "color": "#B97A57",
-      "icon": "book"
+      "icon": "book",
+      "data": []
     },
     {
       "title": "Toys",
       "color": "#C8BFE7",
-      "icon": "teddy"
+      "icon": "teddy",
+      "data": []
     },
     {
       "title": "Baby Products",
       "color": "#EFCFCA",
-      "icon": "baby"
+      "icon": "baby",
+      "data": []
     },
     {
       "title": "Pet Supplies",
       "color": "#D7A69E",
-      "icon": "paw"
+      "icon": "paw",
+      "data": []
     },
     {
       "title": "Base Foods",
       "color": "#808000",
-      "icon": "paw"
+      "icon": "paw",
+      "data": []
     }
   ]
 }

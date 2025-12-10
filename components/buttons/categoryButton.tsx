@@ -18,11 +18,12 @@ export default categoryButton
 const styles = StyleSheet.create({
   container: {
     borderBottomWidth: 1,
-    borderBottomColor: '#C3C3C5',
+    borderBottomColor: '#D5D5D5',
     borderStyle: 'dashed',
+    marginTop: 15,
   },
   text: {
-    color: '#C3C3C5',
+    color: '#D5D5D5',
     fontSize: 15,
     marginBottom: 5,
   },
