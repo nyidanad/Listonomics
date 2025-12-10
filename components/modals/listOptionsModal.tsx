@@ -1,4 +1,4 @@
-import React, { Dispatch, SetStateAction } from 'react'
+import React, { Dispatch, SetStateAction, useState } from 'react'
 import { Alert, Modal, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
 import { useRouter } from 'expo-router'
 
@@ -8,6 +8,7 @@ import { useSQLiteContext } from 'expo-sqlite'
 
 import { List } from '../../app/(tabs)/home'
 import Hr from '../horizontalRules/hr'
+import DeleteModal from './deleteModal'
 
 export type ModalPositionsProps = {
   top: number
@@ -29,6 +30,7 @@ type SQLRow = {
 const ListOptionsModal = ({ showModal, setShowModal, modalPosition, selectedList, getLists }: ModalProps) => {
   const db = useSQLiteContext()
   const router = useRouter()
+  const [showDeleteModal, setShowDeleteModal] = useState<boolean>(false)
 
   // Handeling Modal close
   const onCloseModal = () => {
@@ -102,19 +104,9 @@ const ListOptionsModal = ({ showModal, setShowModal, modalPosition, selectedList
   // DELETE List
   const delList = async (lid: number) => {
     try {
-      Alert.alert('Delete List', 'Are you sure want to delete this list?', [
-        {
-          text: 'Cancel'
-        },
-        {
-          text: 'Confirm',
-          onPress: () => {
-            db.runAsync('DELETE FROM Lists WHERE lid = ?', lid)
-            console.log('[DEL] List deleted successfully.')
-            getLists()
-          }
-        }
-      ])
+      db.runAsync('DELETE FROM Lists WHERE lid = ?', lid)
+      console.log('[DEL] List deleted successfully.')
+      getLists()
     } catch (error) {
       console.error('Error while DEL List : ', error)
     }
@@ -167,12 +159,21 @@ const ListOptionsModal = ({ showModal, setShowModal, modalPosition, selectedList
           <Hr color='#EDEEF2' width={1} top={8} bottom={8} />
 
           {/* DELETE */}
-          <TouchableOpacity onPress={() => delList(selectedList.lid)}>
+          <TouchableOpacity onPress={() => setShowDeleteModal(true)}>
             <View style={styles.button}>
               <Text style={[styles.text, { color: 'red' }]}>Delete</Text>
               <Ionicons name="trash" style={[styles.icon, { color: 'red' }]} />
             </View>
           </TouchableOpacity>
+
+          <DeleteModal 
+            showModal={showDeleteModal} 
+            setShowModal={setShowDeleteModal} 
+            title='Are you sure?' 
+            message='The list will be moved to Trash. You can restore or permanently delete it anytime under Profile > Trash.'
+            button='Move to Trash'
+            request={() => delList(selectedList.lid)}
+          />
 
         </View>
       </TouchableOpacity>
