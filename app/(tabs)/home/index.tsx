@@ -112,7 +112,7 @@ export const Home = () => {
   return (
     <>
       <View style={styles.headerContainer}>
-        <View style={styles.profile}>
+        <TouchableOpacity style={styles.profile} onPress={() => router.push('home/profile')}>
           <Image
             style={styles.image}
             source={require("../../../assets/windows.png")}
@@ -121,7 +121,7 @@ export const Home = () => {
             <Text style={styles.welcome}>Welcome Back! 👋</Text>
             <Text style={styles.name}>Nyíri Dániel</Text>
           </View>
-        </View>
+        </TouchableOpacity>
         <View style={styles.buttons}>
           <TouchableOpacity>
             <Ionicons name='notifications-outline' style={[styles.headerIcon, {marginLeft: 10}]} />
