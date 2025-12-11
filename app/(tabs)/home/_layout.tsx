@@ -20,6 +20,9 @@ export const homeLayout = () => {
         <Stack.Screen name='profile/index' options={{
           headerShown: false
         }} />
+        <Stack.Screen name='profile/editProfile' options={{
+          headerShown: false
+        }} />
       </Stack>
     </GestureHandlerRootView>
   )

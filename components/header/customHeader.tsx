@@ -1,21 +1,22 @@
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native'
 import React from 'react'
-import { router } from 'expo-router'
+import { router, UnknownInputParams } from 'expo-router'
 
 import Ionicons from '@expo/vector-icons/Ionicons'
 
 type HeaderProps = {
   title: string
   backTo: string
+  backToPath: string
   action: string
-  onPress: () => Promise<void>
+  onPress: () => Promise<void> | void
 }
 
-const customHeader = ({ title, backTo, action, onPress }: HeaderProps) => {
+const customHeader = ({ title, backTo, backToPath, action, onPress }: HeaderProps) => {
   return (
     <View style={styles.container}>
       <View style={styles.wrapper}>
-        <TouchableOpacity onPress={() => router.back()} style={styles.backButton}>
+        <TouchableOpacity onPress={() => {backToPath === '' ? router.back() : router.replace(backToPath)}} style={styles.backButton}>
           <Ionicons name='chevron-back' color={'#007AFF'} size={24} />
           <Text style={styles.backTo}>{backTo}</Text>
         </TouchableOpacity>

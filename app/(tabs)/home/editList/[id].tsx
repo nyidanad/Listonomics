@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { StyleSheet, Text, TextInput, TouchableOpacity, TouchableWithoutFeedback, View } from "react-native"
-import { router, useLocalSearchParams } from 'expo-router'
+import { router, useLocalSearchParams, UnknownInputParams } from 'expo-router'
 
 import Ionicons from '@expo/vector-icons/Ionicons'
 import Entypo from '@expo/vector-icons/Entypo'
@@ -56,7 +56,13 @@ const editList = () => {
 
   return (
     <>
-      <CustomHeader title='Edit List' backTo='Home' action='Save' onPress={putList} />
+      <CustomHeader 
+        title='Edit List' 
+        backTo='Home' 
+        backToPath={''}
+        action='Save' 
+        onPress={putList} 
+      />
       
       <View style={styles.container}>
         <View>

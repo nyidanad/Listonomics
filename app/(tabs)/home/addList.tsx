@@ -73,7 +73,13 @@ const addList = () => {
 
   return (
     <>
-      <CustomHeader title='Add List' backTo='Home' action='Add' onPress={postList} />
+      <CustomHeader 
+        title='Add List' 
+        backTo='Home' 
+        backToPath={'home'}
+        action='Add' 
+        onPress={postList} 
+      />
       
       <View style={styles.container}>
         <View>

@@ -1,6 +1,7 @@
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native'
 import React, { useState } from 'react'
 import { LinearGradient } from 'expo-linear-gradient'
+import { useRouter } from 'expo-router'
 
 import Ionicons from '@expo/vector-icons/Ionicons'
 
@@ -8,18 +9,22 @@ import CustomHeader from '../../../../components/header/customHeader'
 import { Image } from 'expo-image'
 
 const profile = () => {
+  const router = useRouter()
+
   const [name, setName] = useState<string>('Nyíri Dániel')
   const [email, setEmail] = useState<string>('@example.com')
   const [description, setDescription] = useState<string | null>("Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s.")
   const [som, setSom] = useState<Date>(new Date("2024-12-16"))
 
-  const asd = async () => {
-    await console.log("asd")
-  }
-
   return (
     <>
-      <CustomHeader title='Profile' backTo='Home' action='Edit' onPress={async () => await asd()} />
+      <CustomHeader 
+        title='Profile' 
+        backTo='Home' 
+        backToPath='' 
+        action='Edit' 
+        onPress={() => router.replace('home/profile/editProfile')} 
+      />
       
       <View style={styles.container}>
 
