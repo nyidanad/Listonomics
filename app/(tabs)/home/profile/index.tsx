@@ -1,20 +1,24 @@
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native'
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { LinearGradient } from 'expo-linear-gradient'
-import { useRouter } from 'expo-router'
+import { useLocalSearchParams, useRouter } from 'expo-router'
 
 import Ionicons from '@expo/vector-icons/Ionicons'
 
+import assets from '../../../../data/assets.json'
 import CustomHeader from '../../../../components/header/customHeader'
 import { Image } from 'expo-image'
 
 const profile = () => {
   const router = useRouter()
+  const params = useLocalSearchParams()
+  const bannerColors = assets.banner_colors as [string, string, ...string[]][]
 
   const [name, setName] = useState<string>('Nyíri Dániel')
   const [email, setEmail] = useState<string>('@example.com')
-  const [description, setDescription] = useState<string | null>("Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s.")
+  const [description, setDescription] = useState<string>("Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s.")
   const [som, setSom] = useState<Date>(new Date("2024-12-16"))
+  const [bannerColor, setBannerColor] = useState<[string, string, ...string[]]>(bannerColors[0])
 
   return (
     <>
@@ -23,7 +27,7 @@ const profile = () => {
         backTo='Home' 
         backToPath='' 
         action='Edit' 
-        onPress={() => router.replace('home/profile/editProfile')} 
+        onPress={() => router.replace({ pathname: 'home/profile/editProfile', params: { name, description, bannerColor }})} 
       />
       
       <View style={styles.container}>
@@ -31,7 +35,7 @@ const profile = () => {
         {/* header */}
         <View style={styles.header}>
           <LinearGradient 
-          colors={['#37C5CE', '#3889FD']}
+          colors={bannerColor}
           start={{ x: 0, y: 1 }}
           end={{ x: 1, y: 0 }}
           style={styles.banner} />
@@ -47,7 +51,7 @@ const profile = () => {
 
         {/* details */}
         <View style={styles.details}>
-          {description && (
+          {description !== '' && (
             <View>
               <Text style={styles.detailsTitle}>Description</Text>
               <Text style={styles.descriptionText}>{description}</Text>

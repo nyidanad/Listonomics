@@ -1,21 +1,35 @@
 import { KeyboardAvoidingView, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native'
 import React, { useState } from 'react'
 import { LinearGradient } from 'expo-linear-gradient'
+import { router, useLocalSearchParams } from 'expo-router'
 
 import Ionicons from '@expo/vector-icons/Ionicons'
 import MaterialIcons from '@expo/vector-icons/MaterialIcons'
+import * as ImagePicker from 'expo-image-picker'
 
 import CustomHeader from '../../../../components/header/customHeader'
 import { Image } from 'expo-image'
 
-const editProfile = () => {
-  const [name, setName] = useState<string>('Nyíri Dániel')
-  const [email, setEmail] = useState<string>('@example.com')
-  const [description, setDescription] = useState<string | undefined>("Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s.")
-  const [som, setSom] = useState<Date>(new Date("2024-12-16"))
+const PlaceholderImage = require('../../../../assets/windows.png')
 
-  const asd = async () => {
-    await console.log("asd")
+const editProfile = () => {
+  const params = useLocalSearchParams();
+
+  const [name, setName] = useState<string>(params.name as string)
+  const [email, setEmail] = useState<string>(params.email as string)
+  const [description, setDescription] = useState<string>(params.description as string)
+  const [selectedImage, setSelectedImage] = useState<string | undefined>(undefined)
+  const [bannerColor, setBannerColor] = useState<[string, string, ...string[]]>(params.bannerColor as [string, string, ...string[]])
+
+  const pickImageAsync = async () => {
+    let result = await ImagePicker.launchImageLibraryAsync({
+      allowsEditing: true,
+      quality: 1,
+    })
+
+    if (!result.canceled) {
+      setSelectedImage(result.assets[0].uri)
+    }
   }
 
   return (
@@ -29,7 +43,7 @@ const editProfile = () => {
           backTo='Cancel' 
           backToPath='home/profile'
           action='Save' 
-          onPress={async () => await asd()} 
+          onPress={() => router.replace({ pathname: 'home/profile', params: { name, description } })} 
         />
         
         <View style={styles.container}>
@@ -37,7 +51,7 @@ const editProfile = () => {
           {/* header */}
           <View style={styles.header}>
             <LinearGradient
-              colors={['#37C5CE', '#3889FD']}
+              colors={["#37C5CE", "#444444"]}
               start={{ x: 0, y: 1 }}
               end={{ x: 1, y: 0 }}
               style={styles.banner} 
@@ -45,20 +59,21 @@ const editProfile = () => {
               <TouchableOpacity style={styles.edit}>
                 <MaterialIcons name="mode-edit" size={24} color="#FFFFFF" />
               </TouchableOpacity>
-            </LinearGradient>
-            <View style={styles.headerContent}>
-              <Image
-                style={styles.image}
-                source={require("../../../../assets/windows.png")}
-              />
-              <Text style={styles.name}>{name}</Text>
-              <Text style={styles.email}>{email}</Text>
+              
+              <View style={styles.headerContent}>
+                <Image
+                  style={styles.image}
+                  source={selectedImage || PlaceholderImage}
+                />
+                <Text style={styles.name}>{name}</Text>
+                <Text style={styles.email}>{email}</Text>
 
-              {/* image edit button */}
-              <TouchableOpacity style={styles.camera}>
-                <Ionicons name="camera" size={24} color="#535353" />
-              </TouchableOpacity>
-            </View>
+                {/* image edit button */}
+                <TouchableOpacity style={styles.camera} onPress={pickImageAsync}>
+                  <Ionicons name="camera" size={24} color="#535353" />
+                </TouchableOpacity>
+              </View>
+            </LinearGradient>
           </View>
 
           {/* details */}
@@ -97,19 +112,23 @@ const styles = StyleSheet.create({
     backgroundColor: '#FFFFFF'
   },
   header: {
+    position: 'relative',
     borderBottomWidth: 1,
     borderBottomColor: '#F1F1F1',
     marginBottom: 15,
-    paddingBottom: 120,
+    height: 240,
+    alignItems: 'center',
   },
   banner: {
     position: 'relative',
     width: '100%',
     height: 120,
     borderRadius: 16,
-    alignItems: 'flex-end',
+    alignItems: 'center',
   },
   edit: {
+    position: 'absolute',
+    right: 0,
     width: 30,
     height: 30,
     borderRadius: 10,
@@ -120,7 +139,8 @@ const styles = StyleSheet.create({
   },
   headerContent: {
     position: 'absolute',
-    alignSelf: 'center',
+    justifyContent: 'center',
+    alignItems: 'center',
     top: '50%',
   },
   image: {
@@ -143,9 +163,9 @@ const styles = StyleSheet.create({
     textAlign: 'center',
   },
   camera: {
-    position: 'absolute',
-    top: 65,
-    right: 0,
+    position: 'fixed',
+    top: -90,
+    right: -40,
     alignItems: 'center',
     justifyContent: 'center',
     width: 40,

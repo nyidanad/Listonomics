@@ -170,8 +170,8 @@ const ListOptionsModal = ({ showModal, setShowModal, modalPosition, selectedList
             showModal={showDeleteModal} 
             setShowModal={setShowDeleteModal} 
             title='Are you sure?' 
-            message='The list will be moved to Trash. You can restore or permanently delete it anytime under Profile > Trash.'
-            button='Move to Trash'
+            message='The list will be permanently deleted and cannot be restored.'
+            button='Delete'
             request={() => delList(selectedList.lid)}
           />
 
