@@ -2,13 +2,14 @@ import { KeyboardAvoidingView, ScrollView, StyleSheet, Text, TextInput, Touchabl
 import React, { useState } from 'react'
 import { LinearGradient } from 'expo-linear-gradient'
 import { router, useLocalSearchParams } from 'expo-router'
+import { Image } from 'expo-image'
 
 import Ionicons from '@expo/vector-icons/Ionicons'
 import MaterialIcons from '@expo/vector-icons/MaterialIcons'
 import * as ImagePicker from 'expo-image-picker'
 
 import CustomHeader from '../../../../components/header/customHeader'
-import { Image } from 'expo-image'
+import BannerPickerModal from '../../../../components/modals/bannerPickerModal'
 
 const PlaceholderImage = require('../../../../assets/windows.png')
 
@@ -18,8 +19,9 @@ const editProfile = () => {
   const [name, setName] = useState<string>(params.name as string)
   const [email, setEmail] = useState<string>(params.email as string)
   const [description, setDescription] = useState<string>(params.description as string)
+  const [bannerColor, setBannerColor] = useState<[string, string, ...string[]]>(JSON.parse(params.bannerColor as string))
   const [selectedImage, setSelectedImage] = useState<string | undefined>(undefined)
-  const [bannerColor, setBannerColor] = useState<[string, string, ...string[]]>(params.bannerColor as [string, string, ...string[]])
+  const [showModal, setShowModal] = useState<boolean>(false)
 
   const pickImageAsync = async () => {
     let result = await ImagePicker.launchImageLibraryAsync({
@@ -43,7 +45,7 @@ const editProfile = () => {
           backTo='Cancel' 
           backToPath='home/profile'
           action='Save' 
-          onPress={() => router.replace({ pathname: 'home/profile', params: { name, description } })} 
+          onPress={() => router.replace({ pathname: 'home/profile', params: { name, description, bannerColor: JSON.stringify(bannerColor) } })} 
         />
         
         <View style={styles.container}>
@@ -51,12 +53,12 @@ const editProfile = () => {
           {/* header */}
           <View style={styles.header}>
             <LinearGradient
-              colors={["#37C5CE", "#444444"]}
+              colors={bannerColor}
               start={{ x: 0, y: 1 }}
               end={{ x: 1, y: 0 }}
               style={styles.banner} 
             >
-              <TouchableOpacity style={styles.edit}>
+              <TouchableOpacity style={styles.edit} onPress={() => setShowModal(true)}>
                 <MaterialIcons name="mode-edit" size={24} color="#FFFFFF" />
               </TouchableOpacity>
               
@@ -96,6 +98,8 @@ const editProfile = () => {
             </View>
           </View>
         </View>
+
+        <BannerPickerModal showModal={showModal} setShowModal={setShowModal} bannerColor={bannerColor} setBannerColor={setBannerColor} />
       </ScrollView>
     </KeyboardAvoidingView>
   )

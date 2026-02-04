@@ -20,6 +20,13 @@ const profile = () => {
   const [som, setSom] = useState<Date>(new Date("2024-12-16"))
   const [bannerColor, setBannerColor] = useState<[string, string, ...string[]]>(bannerColors[0])
 
+  useEffect(() => {
+    if (params.bannerColor) {
+      setBannerColor(JSON.parse(params.bannerColor as string));
+      console.log('changed banner')
+    }
+  }, [params.bannerColor]);
+
   return (
     <>
       <CustomHeader 
@@ -27,7 +34,7 @@ const profile = () => {
         backTo='Home' 
         backToPath='' 
         action='Edit' 
-        onPress={() => router.replace({ pathname: 'home/profile/editProfile', params: { name, description, bannerColor }})} 
+        onPress={() => router.replace({ pathname: 'home/profile/editProfile', params: { name, description, bannerColor: JSON.stringify(bannerColor) }})} 
       />
       
       <View style={styles.container}>
