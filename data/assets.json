@@ -211,5 +211,19 @@
       "icon": "paw",
       "data": []
     }
+  ],
+  "languages" : [
+    {
+      "image": "../assets/images/flags/english-logo.png",
+      "text": "English"
+    },
+    {
+      "image": "../assets/images/flags/german-logo.png",
+      "text": "Deutsch"
+    },
+    {
+      "image": "../assets/images/flags/hungary-logo.png",
+      "text": "Magyar"
+    }
   ]
 }

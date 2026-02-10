@@ -1,35 +1,40 @@
 import { ScrollView, StyleSheet, Text, View } from 'react-native'
 
-import SettingsTextInput from '../../../components/inputField/settings-textinput'
-import Hr from '../../../components/horizontalRules/hr'
+import Setting from '../../../components/settings/setting'
+import SettingWithSwitch from '../../../components/settings/settingWithSwitch'
+import UnregisterButton from '../../../components/buttons/unregisterButton'
 import settings from '../../../data/settings.json'
 
+import LanguageModal from '../../../components/modals/settings/languageModal'
+import { useState } from 'react'
+
 const Settings = () => {
+  const [showLanguageModal, setShowLanguageModal] = useState<boolean>(false)
+
   return (
     <ScrollView style={styles.container}>
       <Text style={styles.title}>Settings</Text>
       <View style={styles.section}>
-        <SettingsTextInput title='Language' iconDir='Ionicons' leftIcon='language-outline' color='#84BC28' showLabel label={settings.language} rightIcon='chevron-forward' />
-        <Hr color='#EDEDED' width={1} length={'86%'} top={8} bottom={8} align='flex-end' />
-        <SettingsTextInput title='Currency' iconDir='FontAwesome5' leftIcon='coins' color='#FBC116' showLabel label={settings.currency} rightIcon='chevron-forward' />
-        <Hr color='#EDEDED' width={1} length={'86%'} top={8} bottom={8} align='flex-end' />
-        <SettingsTextInput title='Notification' iconDir='Ionicons' leftIcon='notifications' color='#FB6A18' toggled={JSON.parse(settings.notification)} />
-        <Hr color='#EDEDED' width={1} length={'86%'} top={8} bottom={8} align='flex-end' />
-        <SettingsTextInput title='Dark mode' iconDir='Ionicons' leftIcon='moon' color='#404040' toggled={JSON.parse(settings.darkmode)} />
+        <Setting title='Language' tooltip='Select the main language of the app' iconDir='Ionicons' leftIcon='globe-outline' color='#84BC28' showLabel label={settings.language} rightIcon='chevron-forward' setShowModal={setShowLanguageModal} />
+        <LanguageModal showModal={showLanguageModal} setShowModal={setShowLanguageModal} />
+        <Setting title='Currency' tooltip='Select the main currency of the app' iconDir='FontAwesome5' leftIcon='coins' color='#FBC116' showLabel label={settings.currency} rightIcon='chevron-forward' setShowModal={setShowLanguageModal} />
+        <SettingWithSwitch title='Notifications' tooltip='Turn on or off push notifications' iconDir='Ionicons' leftIcon='notifications' color='#FB6A18' toggled={JSON.parse(settings.notification)} />
+        <Setting title='Apperance' tooltip='Select the theme of the app' iconDir='Ionicons' leftIcon='moon' color='#404040' showLabel label={settings.theme} rightIcon='chevron-forward' setShowModal={setShowLanguageModal} />
       </View>
 
       <View style={[styles.section, { marginTop: 12 }]}>
-        <SettingsTextInput title='Import data' iconDir='FontAwesome5' leftIcon='download' color='#1375F7' rightIcon='chevron-forward' />
-        <Hr color='#EDEDED' width={1} length={'86%'} top={8} bottom={8} align='flex-end' />
-        <SettingsTextInput title='Export data' iconDir='FontAwesome5' leftIcon='upload' color='#1375F7' rightIcon='chevron-forward' />
-        <Hr color='#EDEDED' width={1} length={'86%'} top={8} bottom={8} align='flex-end' />
-        <SettingsTextInput title='Wipe datas' iconDir='Ionicons' leftIcon='trash' color='#FB3D3D' rightIcon='chevron-forward' />
+        <Setting title='Import data' tooltip='Import your lists from other devices' iconDir='FontAwesome5' leftIcon='download' color='#1375F7' rightIcon='chevron-forward' setShowModal={setShowLanguageModal} />
+        <Setting title='Export data' tooltip='Export your lists from this device' iconDir='FontAwesome5' leftIcon='upload' color='#1375F7' rightIcon='chevron-forward' setShowModal={setShowLanguageModal} />
+        <Setting title='Wipe datas' tooltip='Delete all your lists (shared ones included)' iconDir='Ionicons' leftIcon='trash' color='#FB3D3D' rightIcon='chevron-forward' setShowModal={setShowLanguageModal} />
       </View>
 
       <View style={[styles.section, { marginTop: 12 }]}>
-        <SettingsTextInput title='Contact' iconDir='Ionicons' leftIcon='mail' color='#B8BFCB' rightIcon='chevron-forward' />
-        <Hr color='#EDEDED' width={1} length={'86%'} top={8} bottom={8} align='flex-end' />
-        <SettingsTextInput title='Feedback' iconDir='Ionicons' leftIcon='chatbox' color='#B8BFCB' rightIcon='chevron-forward' />
+        <Setting title='Contact' tooltip='Contact us if there is any problem' iconDir='Ionicons' leftIcon='mail' color='#B8BFCB' rightIcon='chevron-forward' setShowModal={setShowLanguageModal} />
+        <Setting title='Feedback' tooltip='Give us feedback or bug report' iconDir='Ionicons' leftIcon='chatbox' color='#B8BFCB' rightIcon='chevron-forward' setShowModal={setShowLanguageModal} />
+      </View>
+
+      <View style={[styles.section, { marginVertical: 12 }]}>
+        <UnregisterButton />
       </View>
     </ScrollView>
   )
@@ -40,16 +45,17 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
   },
   title: {
-    fontSize: 32,
+    color: '#363636',
+    fontSize: 36,
     fontWeight: 'bold',
     textAlign: 'center',
     paddingTop: 100,
-    paddingBottom: 50,
+    paddingBottom: 55,
   },
   section: {
     backgroundColor: '#FFF',
     padding: 10,
-    borderRadius: 10,
+    borderRadius: 20,
   },
 })
 
