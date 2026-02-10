@@ -214,15 +214,15 @@
   ],
   "languages" : [
     {
-      "image": "../assets/images/flags/english-logo.png",
+      "key": "en",
       "text": "English"
     },
     {
-      "image": "../assets/images/flags/german-logo.png",
+      "key": "de",
       "text": "Deutsch"
     },
     {
-      "image": "../assets/images/flags/hungary-logo.png",
+      "key": "hu",
       "text": "Magyar"
     }
   ]
