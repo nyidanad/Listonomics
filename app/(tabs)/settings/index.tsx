@@ -7,11 +7,15 @@ import settings from '../../../data/settings.json'
 
 import LanguageModal from '../../../components/modals/settings/languageModal'
 import ThemeModal from '../../../components/modals/settings/themeModal'
+import ExportModal from '../../../components/modals/settings/exportModal'
+import WipeDataModal from '../../../components/modals/settings/wipeDataModal'
 import { useState } from 'react'
 
 const Settings = () => {
   const [showLanguageModal, setShowLanguageModal] = useState<boolean>(false)
   const [showThemeModal, setShowThemeModal] = useState<boolean>(false)
+  const [showExportModal, setShowExportModal] = useState<boolean>(false)
+  const [showWipeDataModal, setShowWipeDataModal] = useState<boolean>(false)
 
   return (
     <ScrollView style={styles.container}>
@@ -27,8 +31,10 @@ const Settings = () => {
 
       <View style={[styles.section, { marginTop: 12 }]}>
         <Setting title='Import data' tooltip='Import your lists from other devices' iconDir='FontAwesome5' leftIcon='download' color='#1375F7' rightIcon='chevron-forward' setShowModal={setShowLanguageModal} />
-        <Setting title='Export data' tooltip='Export your lists from this device' iconDir='FontAwesome5' leftIcon='upload' color='#1375F7' rightIcon='chevron-forward' setShowModal={setShowLanguageModal} />
-        <Setting title='Wipe datas' tooltip='Delete all your lists (shared ones included)' iconDir='Ionicons' leftIcon='trash' color='#FB3D3D' rightIcon='chevron-forward' setShowModal={setShowLanguageModal} />
+        <Setting title='Export data' tooltip='Export your lists from this device' iconDir='FontAwesome5' leftIcon='upload' color='#1375F7' rightIcon='chevron-forward' setShowModal={setShowExportModal} />
+        <ExportModal showModal={showExportModal} setShowModal={setShowExportModal} />
+        <Setting title='Wipe datas' tooltip='Delete all your lists (shared ones included)' iconDir='Ionicons' leftIcon='trash' color='#FB3D3D' rightIcon='chevron-forward' setShowModal={setShowWipeDataModal} />
+        <WipeDataModal showModal={showWipeDataModal} setShowModal={setShowWipeDataModal} />
       </View>
 
       <View style={[styles.section, { marginTop: 12 }]}>
