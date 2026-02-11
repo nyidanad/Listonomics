@@ -225,5 +225,22 @@
       "key": "hu",
       "text": "Magyar"
     }
+  ],
+  "themes": [
+    {
+      "theme": "Light",
+      "icon": "sunny",
+      "color": "#FFCC00"
+    },
+    {
+      "theme": "System",
+      "icon": "settings-outline",
+      "color": "#607DA3"
+    },
+    {
+      "theme": "Dark",
+      "icon": "moon-outline",
+      "color": "#6C63FF"
+    }
   ]
 }

@@ -5,7 +5,6 @@ import Ionicons from '@expo/vector-icons/Ionicons'
 
 import assets from '../../../data/assets.json'
 import settings from '../../../data/settings.json'
-import { Image } from 'expo-image'
 
 type settingsModalProps = {
   showModal: boolean
@@ -13,22 +12,15 @@ type settingsModalProps = {
   request?: () => Promise<void>
 }
 
-type LanguageKey = keyof typeof languageImages
-
-type Language = {
-  key: string;
-  text: LanguageKey;
+type Theme = {
+  theme: string;
+  icon: keyof typeof Ionicons.glyphMap;
+  color: string;
 }
 
-const languageImages = {
-  English: require('../../../assets/images/flags/english-logo.png'),
-  Deutsch: require('../../../assets/images/flags/german-logo.png'),
-  Magyar:  require('../../../assets/images/flags/hungary-logo.png'),
-}
-
-const languageModal = ({ showModal, setShowModal, request }: settingsModalProps) => {
-  const languages = assets.languages as Language[]
-  const [activeLanguage, setAactiveLanguage] = useState(settings.language)
+const themeModal = ({ showModal, setShowModal, request }: settingsModalProps) => {
+  const themes = assets.themes as Theme[]
+  const [activeTheme, setAactiveTheme] = useState(settings.theme)
 
   const onSave = () => {}
 
@@ -47,25 +39,25 @@ const languageModal = ({ showModal, setShowModal, request }: settingsModalProps)
         <View style={styles.content}>
           {/* Header */}
           <View>
-            <Text style={styles.title}>Select your language</Text>
-            <Text style={styles.message}>This will update menus, labels, and other interface text to match your selection. You can change the language anytime.</Text>
+            <Text style={styles.title}>Select theme</Text>
+            <Text style={styles.message}>Choose how the app looks. You can switch between Light, Dark or System. The System option will automatically match your device's apperance settings.</Text>
           </View>
 
-          {/* Languages */}
+          {/* Themes */}
           <View>
-            {languages.map((language, index) => {
-              const isActive = activeLanguage === language.text
+            {themes.map((theme, index) => {
+              const isActive = activeTheme === theme.theme
 
               return (
                 <TouchableOpacity 
                   key={index} 
-                  style={[styles.languageContainer, isActive && {backgroundColor: '#FFF'}]} 
-                  onPress={() => setAactiveLanguage(language.text)}
+                  style={[styles.themeContainer, isActive && {backgroundColor: '#FFF'}]} 
+                  onPress={() => setAactiveTheme(theme.theme)}
                 >
-                  <View style={styles.languageWrapper}>
-                    <Image style={styles.image} source={languageImages[language.text]} />
-                    <Text style={styles.language}>{language.text}</Text>
-                    {language.text === "English" && <Text style={styles.default}>Default</Text>}
+                  <View style={styles.themeWrapper}>
+                    <Ionicons name={theme.icon} color={theme.color} style={styles.icon} />
+                    <Text style={styles.theme}>{theme.theme}</Text>
+                    {theme.theme === "System" && <Text style={styles.default}>Default</Text>}
                   </View>
                   {isActive && <Ionicons name='checkmark-outline' style={styles.checkmark} />}
                 </TouchableOpacity>
@@ -88,7 +80,7 @@ const languageModal = ({ showModal, setShowModal, request }: settingsModalProps)
   )
 }
 
-export default languageModal
+export default themeModal
 
 const styles = StyleSheet.create({
   container: {
@@ -119,25 +111,26 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
     marginBottom: 17,
   },
-  languageContainer: {
+  themeContainer: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
     paddingVertical: 8,
     marginVertical: 3,
   },
-  languageWrapper: {
+  themeWrapper: {
     flexDirection: 'row',
     alignItems: 'center',
   },
-  image: {
-    width: 35,
-    height: 35,
-    borderRadius: 999,
+  icon: {
+    fontSize: 24,
+    padding: 6,
     marginLeft: 20,
     marginRight: 15,
+    borderRadius: 999,
+    backgroundColor: '#ECEFF3',
   },
-  language: {
+  theme: {
     color: '#363636',
     fontSize: 16,
   },

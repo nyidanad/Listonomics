@@ -6,10 +6,12 @@ import UnregisterButton from '../../../components/buttons/unregisterButton'
 import settings from '../../../data/settings.json'
 
 import LanguageModal from '../../../components/modals/settings/languageModal'
+import ThemeModal from '../../../components/modals/settings/themeModal'
 import { useState } from 'react'
 
 const Settings = () => {
   const [showLanguageModal, setShowLanguageModal] = useState<boolean>(false)
+  const [showThemeModal, setShowThemeModal] = useState<boolean>(false)
 
   return (
     <ScrollView style={styles.container}>
@@ -19,7 +21,8 @@ const Settings = () => {
         <LanguageModal showModal={showLanguageModal} setShowModal={setShowLanguageModal} />
         <Setting title='Currency' tooltip='Select the main currency of the app' iconDir='FontAwesome5' leftIcon='coins' color='#FBC116' showLabel label={settings.currency} rightIcon='chevron-forward' setShowModal={setShowLanguageModal} />
         <SettingWithSwitch title='Notifications' tooltip='Turn on or off push notifications' iconDir='Ionicons' leftIcon='notifications' color='#FB6A18' toggled={JSON.parse(settings.notification)} />
-        <Setting title='Apperance' tooltip='Select the theme of the app' iconDir='Ionicons' leftIcon='moon' color='#404040' showLabel label={settings.theme} rightIcon='chevron-forward' setShowModal={setShowLanguageModal} />
+        <Setting title='Apperance' tooltip='Select the theme of the app' iconDir='Ionicons' leftIcon='moon' color='#404040' showLabel label={settings.theme} rightIcon='chevron-forward' setShowModal={setShowThemeModal} />
+        <ThemeModal showModal={showThemeModal} setShowModal={setShowThemeModal} />
       </View>
 
       <View style={[styles.section, { marginTop: 12 }]}>
