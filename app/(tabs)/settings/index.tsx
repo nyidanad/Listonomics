@@ -6,6 +6,7 @@ import UnregisterButton from '../../../components/buttons/unregisterButton'
 import settings from '../../../data/settings.json'
 
 import LanguageModal from '../../../components/modals/settings/languageModal'
+import CurrencyModal from '../../../components/modals/settings/currencyModal'
 import ThemeModal from '../../../components/modals/settings/themeModal'
 import ExportModal from '../../../components/modals/settings/exportModal'
 import WipeDataModal from '../../../components/modals/settings/wipeDataModal'
@@ -13,6 +14,7 @@ import { useState } from 'react'
 
 const Settings = () => {
   const [showLanguageModal, setShowLanguageModal] = useState<boolean>(false)
+  const [showCurrencyModal, setShowCurrencyModal] = useState<boolean>(false)
   const [showThemeModal, setShowThemeModal] = useState<boolean>(false)
   const [showExportModal, setShowExportModal] = useState<boolean>(false)
   const [showWipeDataModal, setShowWipeDataModal] = useState<boolean>(false)
@@ -23,7 +25,8 @@ const Settings = () => {
       <View style={styles.section}>
         <Setting title='Language' tooltip='Select the main language of the app' iconDir='Ionicons' leftIcon='globe-outline' color='#84BC28' showLabel label={settings.language} rightIcon='chevron-forward' setShowModal={setShowLanguageModal} />
         <LanguageModal showModal={showLanguageModal} setShowModal={setShowLanguageModal} />
-        <Setting title='Currency' tooltip='Select the main currency of the app' iconDir='FontAwesome5' leftIcon='coins' color='#FBC116' showLabel label={settings.currency} rightIcon='chevron-forward' setShowModal={setShowLanguageModal} />
+        <Setting title='Currency' tooltip='Select the main currency of the app' iconDir='FontAwesome5' leftIcon='coins' color='#FBC116' showLabel label={settings.currency} rightIcon='chevron-forward' setShowModal={setShowCurrencyModal} />
+        <CurrencyModal showModal={showCurrencyModal} setShowModal={setShowCurrencyModal} />
         <SettingWithSwitch title='Notifications' tooltip='Turn on or off push notifications' iconDir='Ionicons' leftIcon='notifications' color='#FB6A18' toggled={JSON.parse(settings.notification)} />
         <Setting title='Apperance' tooltip='Select the theme of the app' iconDir='Ionicons' leftIcon='moon' color='#404040' showLabel label={settings.theme} rightIcon='chevron-forward' setShowModal={setShowThemeModal} />
         <ThemeModal showModal={showThemeModal} setShowModal={setShowThemeModal} />

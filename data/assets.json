@@ -226,6 +226,52 @@
       "text": "Magyar"
     }
   ],
+  "currencies": [
+    {
+      "currency": "Euro",
+      "symbol": "€"
+    },
+    {
+      "currency": "Dollar",
+      "symbol": "$"
+    },
+    {
+      "currency": "Forint",
+      "symbol": "Ft"
+    },
+    {
+      "currency": "Pound",
+      "symbol": "£"
+    },
+    {
+      "currency": "Franc",
+      "symbol": "Fr"
+    },
+    {
+      "currency": "Rupee",
+      "symbol": "₹"
+    },
+    {
+      "currency": "Yen",
+      "symbol": "¥"
+    },
+    {
+      "currency": "Won",
+      "symbol": "₩"
+    },
+    {
+      "currency": "Lira",
+      "symbol": "₺"
+    },
+    {
+      "currency": "Ruble",
+      "symbol": "₽"
+    },
+    {
+      "currency": "Hryvnia",
+      "symbol": "₴"
+    }
+  ],
   "themes": [
     {
       "theme": "Light",
