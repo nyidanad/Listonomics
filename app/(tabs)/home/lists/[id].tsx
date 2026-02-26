@@ -24,6 +24,7 @@ const ListPage = () => {
   const { title, color } = useLocalSearchParams() as ListProps
   const [selectedCategories, setSelectedCategories] = useState<any[]>([])
   const [collapsedSections, setCollapsedSections] = useState(new Set())
+  const [readonly, setReadonly] = useState<boolean>(false)
 
   const bottomSheetModalRef = useRef<BottomSheetModal>(null)
 
@@ -46,74 +47,75 @@ const ListPage = () => {
 
   return (
     <>
-      <CustomListHeader />
-        <View style={styles.container}>
-          <View style={styles.details}>
-            <ListDetails title="In cart" icon="shopping-basket" color="#404040" information="3/8" />
-            <ListDetails title="Costs" icon="dollar-sign" color="#2ECC71" information="1940 Ft" />
-          </View>
-          
-          <Text style={[styles.title, { color: color }]}>{title}</Text>
+      <CustomListHeader readonly={readonly} setReadonly={setReadonly} />
+      <View style={styles.container}>
+        {!readonly &&
+        <View style={styles.details}>
+          <ListDetails title="In cart" icon="shopping-basket" color="#404040" information="3/8" />
+          <ListDetails title="Costs" icon="dollar-sign" color="#2ECC71" information="1940 Ft" />
+        </View>}
+        
+        {!readonly && <Text style={[styles.title, { color: color }]}>{title}</Text>}
 
-          <SectionList
-            sections={selectedCategories}
-            extraData={collapsedSections}
-            keyExtractor={(item, index) => item + index}
-            style={{ flexGrow: 0 }}
+        <SectionList
+          sections={selectedCategories}
+          extraData={collapsedSections}
+          keyExtractor={(item, index) => item + index}
+          style={{ flexGrow: 0 }}
 
-            renderSectionHeader={({ section }) => {
-              const isCollapsed = collapsedSections.has(section.title)
+          renderSectionHeader={({ section }) => {
+            const isCollapsed = collapsedSections.has(section.title)
 
-              return (
-                <>
-                  <View style={styles.header}>
-                    <View style={styles.headerWrapper}>
-                      <Image
-                        source={IconMap[section.icon]}
-                        tintColor={section.color}
-                        style={styles.icon}
-                      />
-                      <Text style={[styles.categoryTitle, { color: section.color }]}>
-                        {section.title}
-                      </Text>
-                    </View>
-                    <Ionicons name={isCollapsed ? "chevron-down" : "chevron-up"} size={24} color="#999999" onPress={() => handleToggle(section.title)} />
+            return (
+              <>
+                <View style={styles.header}>
+                  <View style={styles.headerWrapper}>
+                    <Image
+                      source={IconMap[section.icon]}
+                      tintColor={section.color}
+                      style={styles.icon}
+                    />
+                    <Text style={[styles.categoryTitle, { color: section.color }]}>
+                      {section.title}
+                    </Text>
                   </View>
-                </>
-              )
-            }}
-
-            renderItem={({ item, section }) => {
-              const isCollapsed = collapsedSections.has(section.title)
-
-              if (isCollapsed) return null
-
-              return (
-                <View style={{ borderLeftWidth: 4, borderLeftColor: section.color }}>
-                  <Item name={item.name} checked={false} color={section.color} priority={item.priority} />
+                  <Ionicons name={isCollapsed ? "chevron-down" : "chevron-up"} size={24} color="#999999" onPress={() => handleToggle(section.title)} />
                 </View>
-              )
-            }}
+              </>
+            )
+          }}
 
-            renderSectionFooter={({section}) => {
-              const isCollapsed = collapsedSections.has(section.title)
+          renderItem={({ item, section }) => {
+            const isCollapsed = collapsedSections.has(section.title)
 
-              if (isCollapsed) return null 
+            if (isCollapsed) return null
 
-              return (
-                <ItemButton />
-              )
-            }}
-          />
+            return (
+              <View style={{ borderLeftWidth: 4, borderLeftColor: section.color }}>
+                <Item name={item.name} checked={false} color={section.color} priority={item.priority} />
+              </View>
+            )
+          }}
 
-          <CategoryButton onPress={handlePresentModalPress} />
-          <ItemCategoryModal
-            ref={bottomSheetModalRef}
-            selectedCategories={selectedCategories}
-            setSelectedCategories={setSelectedCategories}
-          />
+          renderSectionFooter={({section}) => {
+            const isCollapsed = collapsedSections.has(section.title)
 
-        </View>
+            if (isCollapsed) return null 
+
+            return (
+              readonly ? <View style={{ marginBottom: 15 }} /> : <ItemButton />
+            )
+          }}
+        />
+
+        {!readonly && <CategoryButton onPress={handlePresentModalPress} />}
+        <ItemCategoryModal
+          ref={bottomSheetModalRef}
+          selectedCategories={selectedCategories}
+          setSelectedCategories={setSelectedCategories}
+        />
+
+      </View>
     </>
   )
 }

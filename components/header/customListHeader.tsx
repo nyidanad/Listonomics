@@ -1,10 +1,19 @@
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native'
-import React from 'react'
+import React, { Dispatch, SetStateAction } from 'react'
 import { router } from 'expo-router'
 
 import Ionicons from '@expo/vector-icons/Ionicons'
 
-const customListHeader = () => {
+type customListHeaderProps = {
+  readonly: boolean
+  setReadonly: Dispatch<SetStateAction<boolean>>
+}
+
+const customListHeader = ({ readonly, setReadonly }: customListHeaderProps) => {
+  const onPress = () => {
+    setReadonly(!readonly)
+  }
+
   return (
     <View style={styles.container}>
       <View style={styles.wrapper}>
@@ -14,11 +23,13 @@ const customListHeader = () => {
         </TouchableOpacity>
 
         <View style={styles.buttonWrapper}>
-          <TouchableOpacity>
-            <Ionicons name='book-outline' size={26} color={'#007AFF'} style={{ marginRight: 15 }} />
+          <TouchableOpacity onPress={onPress}>
+            <Ionicons name='book-outline' size={26} color={'#007AFF'} 
+              style={[{ padding: 5, marginRight: 10 }, readonly && styles.active]}
+            />
           </TouchableOpacity>
           <TouchableOpacity>
-            <Ionicons name='ellipsis-horizontal-circle-outline' size={26} color={'#007AFF'} style={{ marginRight: 5 }} />
+            <Ionicons name='ellipsis-horizontal-circle-outline' size={26} color={'#007AFF'} style={{ padding: 5, marginRight: 5 }} />
           </TouchableOpacity>
         </View>
       </View>
@@ -64,4 +75,8 @@ const styles = StyleSheet.create({
   buttonWrapper: {
     flexDirection: 'row',
   },
+  active: {
+    backgroundColor: 'rgba(0, 122, 255, 0.15)',
+    borderRadius: 999,
+  }
 })
