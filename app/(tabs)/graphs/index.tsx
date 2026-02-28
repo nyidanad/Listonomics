@@ -1,8 +1,11 @@
 import { Text } from 'react-native'
+import { SafeAreaView } from 'react-native-safe-area-context'
 
 const Graphs = () => {
   return (
-    <Text>Graphs page</Text>
+    <SafeAreaView style={{ flex: 1, alignItems: 'center', top: '50%' }}>
+      <Text>Graphs page</Text>
+    </SafeAreaView>
   )
 }
 

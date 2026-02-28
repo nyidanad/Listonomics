@@ -14,6 +14,7 @@ import ItemCategoryModal, { IconMap } from "../../../../components/modals/itemCa
 import Item from "../../../../components/item/item"
 
 import assets from "../../../../data/assets.json"
+import { SafeAreaView } from "react-native-safe-area-context"
 
 type ListProps = {
   title: string,
@@ -46,7 +47,7 @@ const ListPage = () => {
   }
 
   return (
-    <>
+    <SafeAreaView style={{ flex: 1 }}>
       <CustomListHeader readonly={readonly} setReadonly={setReadonly} />
       <View style={styles.container}>
         {!readonly &&
@@ -116,7 +117,7 @@ const ListPage = () => {
         />
 
       </View>
-    </>
+    </SafeAreaView>
   )
 }
 

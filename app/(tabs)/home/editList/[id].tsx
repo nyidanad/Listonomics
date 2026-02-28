@@ -10,6 +10,7 @@ import { useSQLiteContext } from 'expo-sqlite'
 import assets from '../../../../data/assets.json'
 import { List } from '..'
 import CustomHeader from '../../../../components/header/customHeader'
+import { SafeAreaView } from 'react-native-safe-area-context'
 
 type iconType = keyof typeof Ionicons.glyphMap
 
@@ -55,7 +56,7 @@ const editList = () => {
   }
 
   return (
-    <>
+    <SafeAreaView style={{ flex: 1 }}>
       <CustomHeader 
         title='Edit List' 
         backTo='Home' 
@@ -134,7 +135,7 @@ const editList = () => {
           </View>
         </View>
       </View>
-    </>
+    </SafeAreaView>
   )
 }
 

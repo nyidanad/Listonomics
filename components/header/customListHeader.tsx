@@ -42,8 +42,7 @@ export default customListHeader
 const styles = StyleSheet.create({
     container: {
     backgroundColor: '#FFFFFF',
-    paddingHorizontal: 10,
-    paddingVertical: 20,
+    padding: 10,
     
   },
   wrapper: {

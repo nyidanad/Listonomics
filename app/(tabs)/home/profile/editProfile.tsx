@@ -10,6 +10,7 @@ import * as ImagePicker from 'expo-image-picker'
 
 import CustomHeader from '../../../../components/header/customHeader'
 import BannerPickerModal from '../../../../components/modals/bannerPickerModal'
+import { SafeAreaView } from 'react-native-safe-area-context'
 
 const PlaceholderImage = require('../../../../assets/windows.png')
 
@@ -35,73 +36,75 @@ const editProfile = () => {
   }
 
   return (
-    <KeyboardAvoidingView style={{ flex: 1, }}>
-       <ScrollView
-        contentContainerStyle={{ flexGrow: 1 }}
-        keyboardShouldPersistTaps="handled"
-      >
-        <CustomHeader 
-          title='Edit Profile' 
-          backTo='Cancel' 
-          backToPath='home/profile'
-          action='Save' 
-          onPress={() => router.replace({ pathname: 'home/profile', params: { name, description, bannerColor: JSON.stringify(bannerColor) } })} 
-        />
-        
-        <View style={styles.container}>
+    <SafeAreaView style={{ flex: 1 }}>
+      <KeyboardAvoidingView style={{ flex: 1, }}>
+        <ScrollView
+          contentContainerStyle={{ flexGrow: 1 }}
+          keyboardShouldPersistTaps="handled"
+        >
+          <CustomHeader 
+            title='Edit Profile' 
+            backTo='Cancel' 
+            backToPath='home/profile'
+            action='Save' 
+            onPress={() => router.replace({ pathname: 'home/profile', params: { name, description, bannerColor: JSON.stringify(bannerColor) } })} 
+          />
+          
+          <View style={styles.container}>
 
-          {/* header */}
-          <View style={styles.header}>
-            <LinearGradient
-              colors={bannerColor}
-              start={{ x: 0, y: 1 }}
-              end={{ x: 1, y: 0 }}
-              style={styles.banner} 
-            >
-              <TouchableOpacity style={styles.edit} onPress={() => setShowModal(true)}>
-                <MaterialIcons name="mode-edit" size={24} color="#FFFFFF" />
-              </TouchableOpacity>
-              
-              <View style={styles.headerContent}>
-                <Image
-                  style={styles.image}
-                  source={selectedImage || PlaceholderImage}
-                />
-                <Text style={styles.name}>{name}</Text>
-                <Text style={styles.email}>{email}</Text>
-
-                {/* image edit button */}
-                <TouchableOpacity style={styles.camera} onPress={pickImageAsync}>
-                  <Ionicons name="camera" size={24} color="#535353" />
+            {/* header */}
+            <View style={styles.header}>
+              <LinearGradient
+                colors={bannerColor}
+                start={{ x: 0, y: 1 }}
+                end={{ x: 1, y: 0 }}
+                style={styles.banner} 
+              >
+                <TouchableOpacity style={styles.edit} onPress={() => setShowModal(true)}>
+                  <MaterialIcons name="mode-edit" size={24} color="#FFFFFF" />
                 </TouchableOpacity>
+                
+                <View style={styles.headerContent}>
+                  <Image
+                    style={styles.image}
+                    source={selectedImage || PlaceholderImage}
+                  />
+                  <Text style={styles.name}>{name}</Text>
+                  <Text style={styles.email}>{email}</Text>
+
+                  {/* image edit button */}
+                  <TouchableOpacity style={styles.camera} onPress={pickImageAsync}>
+                    <Ionicons name="camera" size={24} color="#535353" />
+                  </TouchableOpacity>
+                </View>
+              </LinearGradient>
+            </View>
+
+            {/* details */}
+            <View style={styles.details}>
+              <View>
+                <Text style={styles.detailsTitle}>Name</Text>
+                <TextInput 
+                  value={name}
+                  onChangeText={setName}
+                  style={styles.inputText} />
               </View>
-            </LinearGradient>
-          </View>
-
-          {/* details */}
-          <View style={styles.details}>
-            <View>
-              <Text style={styles.detailsTitle}>Name</Text>
-              <TextInput 
-                value={name}
-                onChangeText={setName}
-                style={styles.inputText} />
-            </View>
-            <View>
-              <Text style={styles.detailsTitle}>Description</Text>
-              <TextInput 
-                value={description}
-                onChangeText={setDescription} 
-                style={[styles.inputText, { minHeight: 100, maxHeight: 155, textAlignVertical: 'top' }]} 
-                multiline
-              />
+              <View>
+                <Text style={styles.detailsTitle}>Description</Text>
+                <TextInput 
+                  value={description}
+                  onChangeText={setDescription} 
+                  style={[styles.inputText, { minHeight: 100, maxHeight: 155, textAlignVertical: 'top' }]} 
+                  multiline
+                />
+              </View>
             </View>
           </View>
-        </View>
 
-        <BannerPickerModal showModal={showModal} setShowModal={setShowModal} bannerColor={bannerColor} setBannerColor={setBannerColor} />
-      </ScrollView>
-    </KeyboardAvoidingView>
+          <BannerPickerModal showModal={showModal} setShowModal={setShowModal} bannerColor={bannerColor} setBannerColor={setBannerColor} />
+        </ScrollView>
+      </KeyboardAvoidingView>
+    </SafeAreaView>
   )
 }
 

@@ -8,6 +8,7 @@ import Ionicons from '@expo/vector-icons/Ionicons'
 import assets from '../../../../data/assets.json'
 import CustomHeader from '../../../../components/header/customHeader'
 import { Image } from 'expo-image'
+import { SafeAreaView } from 'react-native-safe-area-context'
 
 const profile = () => {
   const router = useRouter()
@@ -28,7 +29,7 @@ const profile = () => {
   }, [params.bannerColor]);
 
   return (
-    <>
+    <SafeAreaView style={{ flex: 1 }}>
       <CustomHeader 
         title='Profile' 
         backTo='Home' 
@@ -84,7 +85,7 @@ const profile = () => {
           <Ionicons name="log-out-outline" size={24} color="#FF3B30" />
         </TouchableOpacity>
       </View>
-    </>
+    </SafeAreaView>
   )
 }
 

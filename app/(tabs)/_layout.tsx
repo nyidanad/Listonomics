@@ -1,19 +1,23 @@
-import { Tabs } from 'expo-router'
+import { Redirect, Tabs } from 'expo-router'
 import { SQLiteProvider } from 'expo-sqlite'
-import { StatusBar } from 'expo-status-bar'
 
 import Ionicons from '@expo/vector-icons/Ionicons'
 import { BottomSheetModalProvider } from "@gorhom/bottom-sheet"
 import { GestureHandlerRootView } from 'react-native-gesture-handler'
 
+const isLoggedIn = false
+
 function tabsLayout() {
+  if (!isLoggedIn) {
+    return <Redirect href={'/login'} />
+  }
+
   return (
     <GestureHandlerRootView>
 
       <BottomSheetModalProvider>
 
         <SQLiteProvider databaseName="listonomics.db">
-          <StatusBar style='auto' />
 
           <Tabs screenOptions={{
             headerShadowVisible: false,

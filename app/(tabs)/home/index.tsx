@@ -12,6 +12,7 @@ import ListFilter from '../../../components/filter/list-filter'
 import ListComponent from '../../../components/list/list'
 import DraggableListComponent from '../../../components/list/draggableList'
 import ListOrderModal from '../../../components/modals/listOrderModal'
+import { SafeAreaView } from 'react-native-safe-area-context'
 
 export type List = {
   lid: number
@@ -110,7 +111,7 @@ export const Home = () => {
 
 
   return (
-    <>
+    <SafeAreaView style={{ flex: 1 }}>
       <View style={styles.headerContainer}>
         <TouchableOpacity style={styles.profile} onPress={() => router.push('home/profile')}>
           <Image
@@ -188,7 +189,7 @@ export const Home = () => {
       </View>
 
       <ListOrderModal showModal={showOrderModal} setShowModal={setShowOrderModal} order={order} setOrder={setOrder} />
-    </>
+    </SafeAreaView>
   )
 }
 
