@@ -4,11 +4,18 @@ import { SQLiteProvider } from 'expo-sqlite'
 import Ionicons from '@expo/vector-icons/Ionicons'
 import { BottomSheetModalProvider } from "@gorhom/bottom-sheet"
 import { GestureHandlerRootView } from 'react-native-gesture-handler'
+import { useContext } from 'react'
 
-const isLoggedIn = false
+import { AuthContext } from '../../utils/authContext'
 
 function tabsLayout() {
-  if (!isLoggedIn) {
+  const authState = useContext(AuthContext)
+
+  if (!authState.isReady) {
+    return null;
+  }
+
+  if (!authState.isLoggedIn) {
     return <Redirect href={'/login'} />
   }
 

@@ -1,16 +1,19 @@
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native'
-import React, { useEffect, useState } from 'react'
+import React, { useContext, useEffect, useState } from 'react'
 import { LinearGradient } from 'expo-linear-gradient'
 import { useLocalSearchParams, useRouter } from 'expo-router'
+import { SafeAreaView } from 'react-native-safe-area-context'
+import { Image } from 'expo-image'
 
 import Ionicons from '@expo/vector-icons/Ionicons'
 
 import assets from '../../../../data/assets.json'
 import CustomHeader from '../../../../components/header/customHeader'
-import { Image } from 'expo-image'
-import { SafeAreaView } from 'react-native-safe-area-context'
+import { AuthContext } from '../../../../utils/authContext'
 
 const profile = () => {
+  const authContext = useContext(AuthContext)
+
   const router = useRouter()
   const params = useLocalSearchParams()
   const bannerColors = assets.banner_colors as [string, string, ...string[]][]
@@ -80,7 +83,7 @@ const profile = () => {
         </View> */}
 
         {/* sign out */}
-        <TouchableOpacity style={styles.signout}>
+        <TouchableOpacity style={styles.signout} onPress={authContext.logOut}>
           <Text style={styles.signoutText}>Sign out</Text>
           <Ionicons name="log-out-outline" size={24} color="#FF3B30" />
         </TouchableOpacity>
