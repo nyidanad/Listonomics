@@ -16,6 +16,10 @@ export default function RootLayout() {
           name='(tabs)'
           options={{ headerShown: false, statusBarStyle: 'dark', statusBarBackgroundColor: '#FFFFFF' }}
         />
+        <Stack.Screen 
+          name='(auth)'
+          options={{ headerShown: false, statusBarStyle: 'light' }}
+        />
       </Stack>
     </AuthProvider>
   )

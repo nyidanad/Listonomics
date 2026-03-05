@@ -6,9 +6,11 @@ import Ionicons from '@expo/vector-icons/Ionicons'
 import Checkbox from 'expo-checkbox'
 
 import { AuthContext } from '../utils/authContext'
+import { useRouter } from 'expo-router'
 
 const login = () => {
   const authContext = useContext(AuthContext)
+  const router = useRouter()
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [isChecked, setIsChecked] = useState(false)
@@ -107,7 +109,7 @@ const login = () => {
 
         <View style={styles.footerWrapper}>
           <Text style={styles.footerText}>Don't have an account? </Text>
-          <TouchableOpacity>
+          <TouchableOpacity onPress={() => router.push('/(auth)/signup')}>
             <Text style={styles.footerButtonText}>Sign up</Text>
           </TouchableOpacity>
         </View>
@@ -187,7 +189,8 @@ const styles = StyleSheet.create({
     color: '#92959A',
   },
   forgotText: {
-    color: '#2164E7'
+    color: '#2164E7',
+    textDecorationLine: 'underline',
   },
   loginButton: {
     backgroundColor: '#2164E7',
@@ -243,9 +246,7 @@ const styles = StyleSheet.create({
   },
   footerButtonText: {
     color: '#2164E7',
-  },
-  signup: {
-    
+    textDecorationLine: 'underline',
   },
   backdrop: {
     position: 'absolute',
