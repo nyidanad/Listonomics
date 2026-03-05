@@ -10,7 +10,7 @@ export default function RootLayout() {
       <Stack>
         <Stack.Screen 
           name='login'
-          options={{ headerShown: false, statusBarStyle: 'dark' }}
+          options={{ headerShown: false, statusBarStyle: 'light' }}
         />
         <Stack.Screen 
           name='(tabs)'
