@@ -5,12 +5,15 @@ import { Image } from 'expo-image'
 import { useRouter } from 'expo-router'
 import Ionicons from '@expo/vector-icons/Ionicons'
 
+import VerifyModal from '../../components/modals/verifyModal'
+
 const signup = () => {
   const router = useRouter()
   const [name, setName] = useState('')
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [confirmPassword, setConfirmPassword] = useState('')
+  const [showModal, setShowModal] = useState(false)
 
   const checkPassword = (password: string, confirmPassword: string) => {
     if (password !== confirmPassword) return;
@@ -19,93 +22,100 @@ const signup = () => {
   }
 
   return (
-    <SafeAreaView style={{ flex: 1 }}>
-      <>
-        <Image style={styles.background} source={require("../../assets/images/background.png")} />
-        <View style={styles.backdrop} />
-      </>
+    <>
+      <SafeAreaView style={{ flex: 1 }}>
+        <>
+          <Image style={styles.background} source={require("../../assets/images/background.png")} />
+          <View style={styles.backdrop} />
+        </>
 
-      <View style={styles.header}>
-        <Image style={styles.logo} source={require("../../assets/images/logo/Listify-light.png")} />
-        <Text style={styles.section}>Create your{'\n'}Account</Text>
-        <Text style={styles.description}>Enter your details to create a new account</Text>
-      </View>
-
-      <View style={styles.container}>
-        {/* name */}
-        <View style={styles.inputWrapper}>
-          <Ionicons name={'person-outline'} size={24} style={styles.icon} />
-          <TextInput 
-            value={name}
-            onChangeText={setName}
-            style={styles.textinput}
-            placeholder='Name'
-            placeholderTextColor={'#BBBBBE'}
-          />
+        <View style={styles.header}>
+          <Image style={styles.logo} source={require("../../assets/images/logo/Listify-light.png")} />
+          <Text style={styles.section}>Create your{'\n'}Account</Text>
+          <Text style={styles.description}>Enter your details to create a new account</Text>
         </View>
 
-        {/* email */}
-        <View style={styles.inputWrapper}>
-          <Ionicons name={'mail-open-outline'} size={24} style={styles.icon} />
-          <TextInput 
-            value={email}
-            onChangeText={setEmail}
-            style={styles.textinput}
-            placeholder='Email'
-            placeholderTextColor={'#BBBBBE'}
-          />
-        </View>
-
-        {/* password */}
-        <View style={[styles.inputWrapper, { justifyContent: 'space-between' }]}>
-          <View style={styles.passwordWrapper}>
-            <Ionicons name={'key-outline'} size={24} style={styles.icon} />
+        <View style={styles.container}>
+          {/* name */}
+          <View style={styles.inputWrapper}>
+            <Ionicons name={'person-outline'} size={24} style={styles.icon} />
             <TextInput 
-            value={password}
-            onChangeText={setPassword}
-            style={styles.textinput}
-            placeholder='Password'
-            placeholderTextColor={'#BBBBBE'}
-          />
+              value={name}
+              onChangeText={setName}
+              style={styles.textinput}
+              placeholder='Name'
+              placeholderTextColor={'#BBBBBE'}
+            />
           </View>
-          <Ionicons name={'eye-off-outline'} size={24} style={styles.icon} />
-        </View>
 
-        {/* confirm password */}
-        <View style={[styles.inputWrapper, { justifyContent: 'space-between' }]}>
-          <View style={styles.passwordWrapper}>
-            <Ionicons name={'key-outline'} size={24} style={styles.icon} />
+          {/* email */}
+          <View style={styles.inputWrapper}>
+            <Ionicons name={'mail-open-outline'} size={24} style={styles.icon} />
             <TextInput 
-            value={confirmPassword}
-            onChangeText={setConfirmPassword}
-            style={styles.textinput}
-            placeholder='Confirm password'
-            placeholderTextColor={'#BBBBBE'}
-          />
+              value={email}
+              onChangeText={setEmail}
+              style={styles.textinput}
+              placeholder='Email'
+              placeholderTextColor={'#BBBBBE'}
+              autoCapitalize='none'
+            />
           </View>
-          <Ionicons name={'eye-off-outline'} size={24} style={styles.icon} />
-        </View>
 
-        {/* Signup button */}
-        <TouchableOpacity style={styles.signupButton}>
-          <Text style={styles.signupText}>Sign up</Text>
-        </TouchableOpacity>
+          {/* password */}
+          <View style={[styles.inputWrapper, { justifyContent: 'space-between' }]}>
+            <View style={styles.passwordWrapper}>
+              <Ionicons name={'key-outline'} size={24} style={styles.icon} />
+              <TextInput 
+              value={password}
+              onChangeText={setPassword}
+              style={styles.textinput}
+              placeholder='Password'
+              placeholderTextColor={'#BBBBBE'}
+              autoCapitalize='none'
+            />
+            </View>
+            <Ionicons name={'eye-off-outline'} size={24} style={styles.icon} />
+          </View>
 
-        <Text style={styles.gtc}>
-          By signing up, you're agree to our{' '}
-          <Text style={styles.link}>Terms & Conditions</Text>
-          {' '}and{' '}
-          <Text style={styles.link}>Privacy Policy</Text>.
-        </Text>
+          {/* confirm password */}
+          <View style={[styles.inputWrapper, { justifyContent: 'space-between' }]}>
+            <View style={styles.passwordWrapper}>
+              <Ionicons name={'key-outline'} size={24} style={styles.icon} />
+              <TextInput 
+              value={confirmPassword}
+              onChangeText={setConfirmPassword}
+              style={styles.textinput}
+              placeholder='Confirm password'
+              placeholderTextColor={'#BBBBBE'}
+              autoCapitalize='none'
+            />
+            </View>
+            <Ionicons name={'eye-off-outline'} size={24} style={styles.icon} />
+          </View>
 
-        <View style={styles.footerWrapper}>
-          <Text style={styles.footerText}>Already have an account? </Text>
-          <TouchableOpacity onPress={() => [router.replace('login'), router.dismissAll()]}>
-            <Text style={styles.footerButtonText}>Sign in</Text>
+          {/* Signup button */}
+          <TouchableOpacity style={styles.signupButton} onPress={() => setShowModal(true)}>
+            <Text style={styles.signupText}>Sign up</Text>
           </TouchableOpacity>
+
+          <Text style={styles.gtc}>
+            By signing up, you're agree to our{' '}
+            <Text style={styles.link}>Terms & Conditions</Text>
+            {' '}and{' '}
+            <Text style={styles.link}>Privacy Policy</Text>.
+          </Text>
+
+          <View style={styles.footerWrapper}>
+            <Text style={styles.footerText}>Already have an account? </Text>
+            <TouchableOpacity onPress={() => [router.replace('login'), router.dismissAll()]}>
+              <Text style={styles.footerButtonText}>Sign in</Text>
+            </TouchableOpacity>
+          </View>
         </View>
-      </View>
-    </SafeAreaView>
+      </SafeAreaView>
+
+      <VerifyModal email={email} showModal={showModal} setShowModal={setShowModal} />
+    </>
   )
 }
 
