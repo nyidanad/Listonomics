@@ -7,6 +7,14 @@ export default function AuthLayout() {
         name='signup'
         options={{ headerShown: false, statusBarStyle: 'light' }}
       />
+      <Stack.Screen 
+        name='forgotPassword'
+        options={{ headerShown: false, statusBarStyle: 'light' }}
+      />
+      <Stack.Screen 
+        name='changePassword'
+        options={{ headerShown: false, statusBarStyle: 'light' }}
+      />
     </Stack>
   )
 }
