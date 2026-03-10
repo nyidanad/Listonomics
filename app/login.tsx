@@ -14,6 +14,16 @@ const login = () => {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [isChecked, setIsChecked] = useState(false)
+  const [errorMsg, setErrorMsg] = useState('')
+
+  const handleLogin = async () => {
+    setErrorMsg('');
+    try {
+      await authContext.logIn(email.trim(), password);
+    } catch (err: any) {
+      setErrorMsg(err.message || 'Unable to log in');
+    }
+  };
 
   return (
     <SafeAreaView style={{ flex: 1 }}>
@@ -38,6 +48,7 @@ const login = () => {
             style={styles.textinput}
             placeholder='Email'
             placeholderTextColor={'#BBBBBE'}
+            autoCapitalize='none'
           />
         </View>
 
@@ -51,6 +62,8 @@ const login = () => {
             style={styles.textinput}
             placeholder='Password'
             placeholderTextColor={'#BBBBBE'}
+            autoCapitalize='none'
+            secureTextEntry
           />
           </View>
           <Ionicons name={'eye-off-outline'} size={24} style={styles.icon} />
@@ -75,7 +88,7 @@ const login = () => {
         </View>
 
         {/* Login button */}
-        <TouchableOpacity style={styles.loginButton} onPress={authContext.logIn}>
+        <TouchableOpacity style={styles.loginButton} onPress={handleLogin}>
           <Text style={styles.loginText}>Log in</Text>
         </TouchableOpacity>
 
