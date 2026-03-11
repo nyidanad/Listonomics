@@ -1,4 +1,4 @@
-import { StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native'
+import { ActivityIndicator, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import React, { useContext, useState } from 'react'
 import { Image } from 'expo-image'
@@ -14,14 +14,16 @@ const login = () => {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [isChecked, setIsChecked] = useState(false)
-  const [errorMsg, setErrorMsg] = useState('')
+  const [loading, setLoading] = useState(false)
 
   const handleLogin = async () => {
-    setErrorMsg('');
+    setLoading(true);
     try {
       await authContext.logIn(email.trim(), password);
     } catch (err: any) {
-      setErrorMsg(err.message || 'Unable to log in');
+      console.log(err);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -88,8 +90,16 @@ const login = () => {
         </View>
 
         {/* Login button */}
-        <TouchableOpacity style={styles.loginButton} onPress={handleLogin}>
-          <Text style={styles.loginText}>Log in</Text>
+        <TouchableOpacity 
+          style={styles.loginButton} 
+          onPress={handleLogin}
+          disabled={loading}
+        >
+          {loading ? (
+            <ActivityIndicator color="#FAFAFA" size="small" />
+          ) : (
+            <Text style={styles.loginText}>Log in</Text>
+          )}
         </TouchableOpacity>
 
         {/* social ruler */}

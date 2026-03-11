@@ -1,24 +1,60 @@
-import { StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native'
+import { StyleSheet, Text, TextInput, TouchableOpacity, View, ActivityIndicator } from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
-import React, { useState } from 'react'
+import React, { useState, useContext } from 'react'
 import { Image } from 'expo-image'
 import { useRouter } from 'expo-router'
 import Ionicons from '@expo/vector-icons/Ionicons'
 
 import VerifyModal from '../../components/modals/verifyModal'
+import { AuthContext } from '../../utils/authContext'
+import ToastMessage, { Toast, ToastType } from '../../components/toastMessage/toastMessage'
 
 const signup = () => {
   const router = useRouter()
+  const { signUp } = useContext(AuthContext)
   const [name, setName] = useState('')
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [confirmPassword, setConfirmPassword] = useState('')
   const [showModal, setShowModal] = useState(false)
+  const [loading, setLoading] = useState(false)
+  const [toast, setToast] = useState<Toast>()
 
-  const checkPassword = (password: string, confirmPassword: string) => {
-    if (password !== confirmPassword) return;
+  const showToast = (message: string, type: ToastType) => {
+    setToast({ message, type })
+  }
 
-    // TODO
+  const checkForm = async () => {
+    if (!name.trim()) {
+      showToast('Please enter your name', 'warning')
+      return
+    }
+
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+    if (!emailRegex.test(email)) {
+      showToast('Please enter a valid email', 'warning')
+      return
+    }
+
+    if (password.length < 8) {
+      showToast('Password must be at least 8 characters', 'warning')
+      return
+    }
+    
+    if (password !== confirmPassword) {
+      showToast('Passwords do not match', 'error')
+      return
+    }
+
+    try {
+      setLoading(true)
+      await signUp(name, email, password)
+      setShowModal(true)
+    } catch (error) {
+      console.log('Sign up error:', error)
+    } finally {
+      setLoading(false)
+    }
   }
 
   return (
@@ -71,6 +107,7 @@ const signup = () => {
               style={styles.textinput}
               placeholder='Password'
               placeholderTextColor={'#BBBBBE'}
+              secureTextEntry
               autoCapitalize='none'
             />
             </View>
@@ -87,6 +124,7 @@ const signup = () => {
               style={styles.textinput}
               placeholder='Confirm password'
               placeholderTextColor={'#BBBBBE'}
+              secureTextEntry
               autoCapitalize='none'
             />
             </View>
@@ -94,8 +132,16 @@ const signup = () => {
           </View>
 
           {/* Signup button */}
-          <TouchableOpacity style={styles.signupButton} onPress={() => setShowModal(true)}>
-            <Text style={styles.signupText}>Sign up</Text>
+          <TouchableOpacity 
+            style={styles.signupButton} 
+            onPress={checkForm}
+            disabled={loading}
+          >
+            {loading ? (
+              <ActivityIndicator color="#FAFAFA" size="small" />
+            ) : (
+              <Text style={styles.signupText}>Sign up</Text>
+            )}
           </TouchableOpacity>
 
           <Text style={styles.gtc}>
@@ -115,6 +161,7 @@ const signup = () => {
       </SafeAreaView>
 
       <VerifyModal email={email} showModal={showModal} setShowModal={setShowModal} />
+      {toast && <ToastMessage message={toast.message} type={toast.type} onHide={() => setToast(undefined)} />}
     </>
   )
 }

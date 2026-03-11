@@ -14,6 +14,7 @@ type AuthState = {
   isLoggedIn: boolean;
   isReady: boolean;
   logIn: (email: string, password: string) => Promise<void>;
+  signUp: (name: string, email: string, password: string) => Promise<void>;
   logOut: () => void;
 }
 
@@ -24,6 +25,7 @@ export const AuthContext = createContext<AuthState>({
   isLoggedIn: false,
   isReady: false,
   logIn: async () => {},
+  signUp: async () => {},
   logOut: () => {},
 });
 
@@ -73,6 +75,41 @@ export function AuthProvider({ children }: PropsWithChildren) {
     }
   };
 
+  const signUp = async (name: string, email: string, password: string) => {
+    // basic validation
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!name || !emailRegex.test(email) || password.length < 6) {
+      showToast('Please provide valid name, email, and password (min 8 characters).', 'warning');
+      throw new Error('Please provide valid details.');
+    }
+
+    // registration
+    try {
+      const { data, error } = await supabase.auth.signUp({ 
+        email, 
+        password,
+        options: {
+          data: {
+            name: name,
+          }
+        }
+      });
+
+      if (!data.user) {
+        showToast('Sign up failed. Please try again.', 'error');
+        throw new Error('User creation failed');
+      }
+
+      const userObj: User = { email: data.user.email || '' };
+      setUser(userObj);
+      await storageAuthState({ isLoggedIn: false, user: userObj });
+      showToast('Account created! Please verify your email.', 'success');
+    } catch (err) {
+      console.log('Sign up error:', err);
+      throw err;
+    }
+  };
+
   const logOut = () => {
     setUser(null);
     setIsLoggedIn(false);
@@ -99,7 +136,7 @@ export function AuthProvider({ children }: PropsWithChildren) {
   }, []);
 
   return (
-    <AuthContext.Provider value={{ user, isLoggedIn, isReady, logIn, logOut }}>
+    <AuthContext.Provider value={{ user, isLoggedIn, isReady, logIn, signUp, logOut }}>
       {children}
       {toast && <ToastMessage message={toast.message} type={toast.type} onHide={() => setToast(undefined)} />}
     </AuthContext.Provider>
