@@ -6,6 +6,7 @@ import Ionicons from '@expo/vector-icons/Ionicons'
 import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons'
 import { useSQLiteContext } from 'expo-sqlite'
 
+import { supabase } from '../../utils/supabase'
 import { List } from '../../app/(tabs)/home'
 import Hr from '../horizontalRules/hr'
 import DeleteModal from './deleteModal'
@@ -39,45 +40,47 @@ const ListOptionsModal = ({ showModal, setShowModal, modalPosition, selectedList
 
   // DUPLICATE List
   const dupList = async (list: List) => {
-    const statement = await db.prepareAsync('INSERT INTO Lists (title, date, color, icon, serial, flagged) VALUES ($title, $date, $color, $icon, $serial, $flagged)')
-    let nextTitle: string = list.title.replace(/\s\(\d+\)$/, "")
-    let nextSerial: number = 0
-    let count: number = 2
-
     try {
-      // get highest serial number
-      for await (const row of db.getEachAsync<SQLRow>('SELECT serial FROM Lists')) {
-        const serial = parseInt(row.serial)
-        if(serial >= nextSerial) {
-          nextSerial = serial
-        }
-      }
+      let nextTitle = list.title.replace(/\s\(\d+\)$/, "")
+      let count = 2
 
-      // get highest version of the same titled List
-      for await (const row of db.getEachAsync<SQLRow>('SELECT title FROM Lists')) {
-        const checkTitle = row.title
+      // get existing titles
+      const { data, error } = await supabase
+        .from('lists')
+        .select('title')
 
-        if (checkTitle.startsWith(nextTitle)) {
-          const version = checkTitle.match(/\((\d+)\)$/)
-          
+      if (error) throw error
+
+      data?.forEach((row) => {
+        if (row.title.startsWith(nextTitle)) {
+          const version = row.title.match(/\((\d+)\)$/)
           if (version) {
             count = Math.max(count, parseInt(version[1]) + 1)
           }
         }
-      }
+      })
+
       nextTitle = `${nextTitle} (${count})`
 
-      let res = await statement.executeAsync({
-        $title: nextTitle,
-        $date: list.date,
-        $color: list.color,
-        $icon: list.icon,
-        $serial: nextSerial + 1,
-        $flagged: list.flagged
-      })
+      const { error: insertError } = await supabase
+        .from('lists')
+        .insert([
+          {
+            title: nextTitle,
+            color: list.color,
+            icon: list.icon,
+            scheduled: list.scheduled,
+            flagged: list.flagged,
+            uid: list.uid
+          }
+        ])
+
+      if (insertError) throw insertError
+
       console.log('[POST] List duplicated successfully.')
+
     } catch (error) {
-      console.error('Error while DUPLICATE List : ', error)
+      console.error('Error while DUPLICATE List:', error)
     } finally {
       getLists()
       onCloseModal()
@@ -85,30 +88,42 @@ const ListOptionsModal = ({ showModal, setShowModal, modalPosition, selectedList
   }
 
   // FLAGGED List
-  const flagList = async (lid: number, flag: number) => {
+  const flagList = async (id: number, flag: number) => {
     try {
-      if(flag === 0) {
-        flag = 1
-      } else {
-        flag = 0
-      }
-      await db.runAsync('UPDATE Lists SET flagged = ? WHERE lid = ?', flag, lid)
+      const newFlag = flag ? false : true
+
+      const { error } = await supabase
+        .from('lists')
+        .update({ flagged: newFlag })
+        .eq('id', id)
+
+      if (error) throw error
+
       console.log('[PUT] List flag updated successfully.')
+
     } catch (error) {
-      console.error('Error while FLAGGED List : ', error)
+      console.error('Error while FLAGGED List:', error)
     } finally {
       getLists()
     }
   }
 
   // DELETE List
-  const delList = async (lid: number) => {
+  const delList = async (id: number) => {
     try {
-      db.runAsync('DELETE FROM Lists WHERE lid = ?', lid)
+      const { error } = await supabase
+        .from('lists')
+        .delete()
+        .eq('id', id)
+
+      if (error) throw error
+
       console.log('[DEL] List deleted successfully.')
-      getLists()
+
     } catch (error) {
-      console.error('Error while DEL List : ', error)
+      console.error('Error while DEL List:', error)
+    } finally {
+      getLists()
     }
   }
 
@@ -141,10 +156,10 @@ const ListOptionsModal = ({ showModal, setShowModal, modalPosition, selectedList
           <Hr color='#EDEEF2' width={1} top={8} bottom={8} />
 
           {/* FLAGGED */}
-          <TouchableOpacity onPress={() => flagList(selectedList.lid, selectedList.flagged)}>
+          <TouchableOpacity onPress={() => flagList(selectedList.id, selectedList.flagged)}>
             <View style={styles.button}>
               <Text style={styles.text}>Flagged</Text>
-              <Ionicons name={selectedList.flagged === 0 ? "flag-outline" : "flag-sharp"} style={styles.icon} />
+              <Ionicons name={selectedList.flagged ? "flag-sharp" : "flag-outline"} style={styles.icon} />
             </View>
           </TouchableOpacity>
           <Hr color='#EDEEF2' width={1} top={8} bottom={8} />
@@ -172,7 +187,7 @@ const ListOptionsModal = ({ showModal, setShowModal, modalPosition, selectedList
             title='Are you sure?' 
             message='The list will be permanently deleted and cannot be restored.'
             button='Delete'
-            request={() => delList(selectedList.lid)}
+            request={() => delList(selectedList.id)}
           />
 
         </View>
