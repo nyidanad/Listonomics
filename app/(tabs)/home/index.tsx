@@ -1,12 +1,13 @@
-import React, { useEffect, useState } from 'react'
+import React, { useContext, useEffect, useState } from 'react'
 import { FlatList, StyleSheet, Text, TouchableOpacity, View, Image } from 'react-native'
 import { useNavigation, useRouter } from 'expo-router'
 
 import Ionicons from '@expo/vector-icons/Ionicons'
 import Octicons from '@expo/vector-icons/Octicons'
 import AsyncStorage from '@react-native-async-storage/async-storage'
-import { useSQLiteContext } from 'expo-sqlite'
+import { supabase } from '../../../utils/supabase'
 
+import { AuthContext } from '../../../utils/authContext'
 import Searchbar from '../../../components/search/searchbar'
 import ListFilter from '../../../components/filter/list-filter'
 import ListComponent from '../../../components/list/list'
@@ -15,13 +16,14 @@ import ListOrderModal from '../../../components/modals/listOrderModal'
 import { SafeAreaView } from 'react-native-safe-area-context'
 
 export type List = {
-  lid: number
+  id: number
   title: string
-  date: string
   color: string
   icon: keyof typeof Ionicons.glyphMap
+  scheduled: string
   serial?: number
   flagged: number
+  uid: string
 }
 
 export type Order = {
@@ -30,7 +32,7 @@ export type Order = {
 }
 
 export const Home = () => {
-  const db = useSQLiteContext()
+  const { user } = useContext(AuthContext);
   const router = useRouter()
   const navigation = useNavigation()
   const [lists, setLists] = useState<List[]>([])
@@ -45,54 +47,58 @@ export const Home = () => {
 
   // Fetching List table
   const getLists = async (filter: string) => {
-    let filterQuery = ''
-    let orderQuery = ''
-    let orderBy = await AsyncStorage.getItem('orderBy')
-    let orderWay = await AsyncStorage.getItem('orderWay')
-
-    if(orderBy === null || orderWay === null) {
-      await AsyncStorage.setItem('orderBy', 'Alphabetical')                   // ** DEFAULT VALUE OF ORDER_BY **
-      await AsyncStorage.setItem('orderWay', 'ASC')                           // ** DEFAULT VALUE OF ORDER_WAY **
-    }
-    console.log(order)
+    if (!user) return;
 
     try {
-      // FILTER statements
-      if(filter === 'Today') {
-        filterQuery = ' WHERE STRFTIME("%Y-%m-%d", date) = STRFTIME("%Y-%m-%d", "now")'
-      }
-      else if(filter === 'Flagged') {
-        filterQuery = ' WHERE flagged = 1'
+      let query = supabase.from('lists').select('*').eq('uid', user.id)
+
+      if (filter === 'Today') {
+        const today = new Date().toISOString().split('T')[0]
+
+        query = query
+          .gte('scheduled', `${today}T00:00:00`)
+          .lt('scheduled', `${today}T23:59:59`)
       }
 
-      // ORDER BY statements
-      if(order.orderBy === 'Alphabetical') {
-        orderQuery = ' ORDER BY title'
-      }
-      else if(order.orderBy === 'Date') {
-        orderQuery = ' ORDER BY date'
-      }
-      else if(order.orderBy === 'Custom') {
-        orderQuery = ' ORDER BY serial'
+      if (filter === 'Flagged') {
+        query = query.eq('flagged', true)
       }
 
-      // ORDER WAY statement
-      order.orderWay === 'ASC' ? orderQuery += ' ASC' : orderQuery += ' DESC'
+      if (order.orderBy === 'Alphabetical') {
+        query = query.order('title', { ascending: order.orderWay === 'ASC' })
+      }
 
-      const allRows: List[] = await db.getAllAsync('SELECT * FROM Lists' + filterQuery + orderQuery)
-      const all: any[] = await db.getAllAsync('SELECT COUNT(*) FROM Lists')
-      const today: any[] = await db.getAllAsync('SELECT COUNT(*) FROM Lists WHERE STRFTIME("%Y-%m-%d", date) = STRFTIME("%Y-%m-%d", "now")')
-      const flagged: any[] = await db.getAllAsync('SELECT COUNT(*) FROM Lists WHERE flagged = 1')
-      
-      setLists(allRows)
-      setAllFilter(all[0]['COUNT(*)'])
-      setTodayFilter(today[0]['COUNT(*)'])
-      setFlaggedFilter(flagged[0]['COUNT(*)'])
+      if (order.orderBy === 'Date') {
+        query = query.order('scheduled', { ascending: order.orderWay === 'ASC' })
+      }
+
+      if (order.orderBy === 'Custom') {
+        query = query.order('serial', { ascending: order.orderWay === 'ASC' })
+      }
+
+      const { data, error } = await query
+
+      if (error) throw error
+
+      setLists(data || [])
+
+      const all = data?.length || 0
+      const todayCount = data?.filter(row => {
+        const today = new Date().toISOString().split('T')[0]
+        const scheduledDate = row.scheduled.split('T')[0]
+        return scheduledDate === today
+      }).length || 0
+
+      const flaggedCount = data?.filter(row => row.flagged === true).length || 0
+
+      setAllFilter(all)
+      setTodayFilter(todayCount)
+      setFlaggedFilter(flaggedCount)
 
       setSearchQuery('')
       console.log('[GET] Lists fetched successfully.')
     } catch (error) {
-      console.error('Error while fetching List : ', error)
+      console.error('Error fetching lists from Supabase:', error)
     }
   }
 
@@ -120,7 +126,7 @@ export const Home = () => {
           />
           <View>
             <Text style={styles.welcome}>Welcome Back! 👋</Text>
-            <Text style={styles.name}>Nyíri Dániel</Text>
+            <Text style={styles.name}>{user?.name}</Text>
           </View>
         </TouchableOpacity>
         <View style={styles.buttons}>
@@ -170,7 +176,7 @@ export const Home = () => {
           ) :
             <FlatList 
               data={filteredLists}
-              keyExtractor={(item) => item.lid.toString()}
+              keyExtractor={(item) => item.id.toString()}
               contentContainerStyle={{ paddingBottom: 80 }}
               renderItem={({ item, index }) => (
                 mode === 'normal'

@@ -6,6 +6,8 @@ import { supabase } from './supabase';
 import ToastMessage, { Toast, ToastType } from '../components/toastMessage/toastMessage';
 
 type User = {
+  id: string;
+  name: string;
   email: string;
 };
 
@@ -64,7 +66,13 @@ export function AuthProvider({ children }: PropsWithChildren) {
         showToast('Invalid email or password.', 'error');
         throw error || new Error('Login failed');
       }
-      const userObj: User = { email: data.user.email || '' };
+
+      const userObj: User = {
+        id: data.user.id,
+        name: data.user.user_metadata?.name || 'User',
+        email: data.user.email || '',
+      };
+
       setUser(userObj);
       setIsLoggedIn(true);
       await storageAuthState({ isLoggedIn: true, user: userObj });
@@ -100,7 +108,12 @@ export function AuthProvider({ children }: PropsWithChildren) {
         throw new Error('User creation failed');
       }
 
-      const userObj: User = { email: data.user.email || '' };
+      const userObj: User = {
+        id: data.user.id,
+        name: name,
+        email: data.user.email || '',
+      };
+
       setUser(userObj);
       await storageAuthState({ isLoggedIn: false, user: userObj });
       showToast('Account created! Please verify your email.', 'success');
