@@ -1,12 +1,13 @@
 import { useState } from 'react'
-import { StyleSheet, Text, TextInput, TouchableOpacity, TouchableWithoutFeedback, View } from "react-native"
-import { router, useLocalSearchParams, UnknownInputParams } from 'expo-router'
+import { StyleSheet, Text, TextInput, TouchableOpacity, View } from "react-native"
+import { router, useLocalSearchParams } from 'expo-router'
 
 import Ionicons from '@expo/vector-icons/Ionicons'
 import Entypo from '@expo/vector-icons/Entypo'
 import DateTimePicker, { DateTimePickerEvent } from "@react-native-community/datetimepicker"
 import { useSQLiteContext } from 'expo-sqlite'
 
+import { supabase } from '../../../../utils/supabase'
 import assets from '../../../../data/assets.json'
 import { List } from '..'
 import CustomHeader from '../../../../components/header/customHeader'
@@ -28,22 +29,23 @@ const editList = () => {
 
   // UPDATE List
   const putList = async () => {
-    const statement = await db.prepareAsync('UPDATE Lists SET title = $title, date = $date, color = $color, icon = $icon WHERE lid = $lid')
-
     try {
-      let res = await statement.executeAsync({
-        $lid : list.lid,
-        $title: list.title,
-        $date: list.date,
-        $color: list.color,
-        $icon: list.icon
-      })
+      const { error } = await supabase
+        .from('lists')
+        .update({
+          title: list.title,
+          scheduled: list.scheduled.toString(),
+          color: list.color,
+          icon: list.icon
+        })
+        .eq('id', list.id)
+
+      if (error) throw error
+
       console.log('[PUT] List updated successfully.')
-    } catch (error) {
-      console.log('Error while PUT List : ', error)
-    }
-    finally {
       router.back()
+    } catch (error) {
+      console.log('Error while PUT List:', error)
     }
   }
 
@@ -51,7 +53,7 @@ const editList = () => {
   const onChange = (event: DateTimePickerEvent, selectedDate?: Date) => {
     setShowDatePicker(false)
     if (selectedDate) {
-      setList({...list, date: selectedDate.toISOString()})
+      setList({...list, scheduled: selectedDate.toISOString()})
     }
   }
 
@@ -88,13 +90,13 @@ const editList = () => {
               <View>
                 <Text style={styles.dateLabel}>Schedule List</Text>
                 <Text style={styles.dateText}>
-                  {new Date(list.date).toLocaleDateString('HU', { year: 'numeric', month: '2-digit', day: '2-digit' }).replace(/\//, '.')}
+                  {new Date(list.scheduled).toLocaleDateString('HU', { year: 'numeric', month: '2-digit', day: '2-digit' }).replace(/\//, '.')}
                 </Text>
               </View>
             </View>
             <Entypo name="select-arrows" size={22} color={'#363636'} />
           </TouchableOpacity>
-          {showDatePicker && (<DateTimePicker value={new Date(list.date)} is24Hour={true} mode={"date"} onChange={onChange} />)}
+          {showDatePicker && (<DateTimePicker value={new Date(list.scheduled)} is24Hour={true} mode={"date"} onChange={onChange} />)}
 
           { /* COLORS */ }
           <View style={styles.wrapper}>

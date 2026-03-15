@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useContext, useState } from 'react'
 import { StyleSheet, Text, TextInput, TouchableOpacity, View } from "react-native"
 import { router } from 'expo-router'
 
@@ -7,6 +7,8 @@ import Entypo from '@expo/vector-icons/Entypo'
 import DateTimePicker, { DateTimePickerEvent } from "@react-native-community/datetimepicker"
 import { useSQLiteContext } from 'expo-sqlite'
 
+import { supabase } from '../../../utils/supabase'
+import { AuthContext } from '../../../utils/authContext'
 import assets from '../../../data/assets.json'
 import CustomHeader from '../../../components/header/customHeader'
 import { SafeAreaView } from 'react-native-safe-area-context'
@@ -15,7 +17,7 @@ type iconType = keyof typeof Ionicons.glyphMap
 
 type List = {
   title: string
-  date: Date
+  scheduled: Date
   color: string
   icon: keyof typeof Ionicons.glyphMap
 }
@@ -25,42 +27,53 @@ type SQLRow = {
 }
 
 const addList = () => {
+  const { user } = useContext(AuthContext);
   const db = useSQLiteContext()
   const colors = assets.colors
   const icons = assets.icons as iconType[]
   
-  const [list, setList] = useState<List>({ title: '', date: new Date(), color: colors[3], icon: icons[1] })
+  const [list, setList] = useState<List>({ title: '', scheduled: new Date(), color: colors[3], icon: icons[1] })
   const [selectedColor, setSelectedColor] = useState(list.color)
   const [selectedIcon, setSelectedIcon] = useState(list.icon)
   const [showDatePicker, setShowDatePicker] = useState(false)
 
   // POST List
   const postList = async () => {
-    const statement = await db.prepareAsync('INSERT INTO Lists (title, date, color, icon, serial, flagged) VALUES ($title, $date, $color, $icon, $serial, $flagged)')
-    let nextSerial: number = 0
+    if (!user) return
 
     try {
-      // get highest serial number
-      for await (const row of db.getEachAsync<SQLRow>('SELECT serial FROM Lists')) {
-        const serial = parseInt(row.serial)
-        if(serial >= nextSerial) {
-          nextSerial = serial
-        }
-      }
-      let res = await statement.executeAsync({
-        $title: list.title,
-        $date: list.date.toISOString(),
-        $color: list.color,
-        $icon: list.icon,
-        $serial: nextSerial + 1,
-        $flagged: 0
-      })
-      console.log('[POST] List added successfully.')
-    } catch (error) {
-      console.log('Error while POST List : ', error)
-    }
-    finally {
+      // get highest serial
+      const { data: serialData, error: serialError } = await supabase
+        .from('lists')
+        .select('serial')
+        .eq('uid', user.id)
+        .order('serial', { ascending: false })
+        .limit(1)
+
+      if (serialError) throw serialError
+
+      const nextSerial = serialData?.length ? serialData[0].serial + 1 : 1
+
+      const { error } = await supabase
+        .from('lists')
+        .insert({
+          title: list.title,
+          color: list.color,
+          icon: list.icon,
+          flagged: false,
+          scheduled: list.scheduled.toISOString(),
+          uid: user.id,
+          serial: nextSerial
+        })
+
+      if (error) throw error
+
+      console.log('[POST] List added successfully')
+
       router.back()
+
+    } catch (error) {
+      console.log('Error while POST List:', error)
     }
   }
 
@@ -68,7 +81,7 @@ const addList = () => {
   const onChange = (event: DateTimePickerEvent, selectedDate?: Date) => {
     setShowDatePicker(false)
     if (selectedDate) {
-      setList({...list, date: selectedDate})
+      setList({...list, scheduled: selectedDate})
     }
   }
 
@@ -105,13 +118,13 @@ const addList = () => {
               <View>
                 <Text style={styles.dateLabel}>Schedule List</Text>
                 <Text style={styles.dateText}>
-                  {list.date.toLocaleDateString('HU', { year: 'numeric', month: '2-digit', day: '2-digit' }).replace(/\//, '.')}
+                  {list.scheduled.toLocaleDateString('HU', { year: 'numeric', month: '2-digit', day: '2-digit' }).replace(/\//, '.')}
                 </Text>
               </View>
             </View>
             <Entypo name="select-arrows" size={22} color={'#363636'} />
           </TouchableOpacity>
-          {showDatePicker && (<DateTimePicker value={list.date} is24Hour={true} mode={"date"} onChange={onChange} />)}
+          {showDatePicker && (<DateTimePicker value={list.scheduled} is24Hour={true} mode={"date"} onChange={onChange} />)}
 
           { /* COLORS */ }
           <View style={styles.wrapper}>
