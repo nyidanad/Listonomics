@@ -3,22 +3,24 @@ import React, { useState } from 'react'
 import { LinearGradient } from 'expo-linear-gradient'
 import { router, useLocalSearchParams } from 'expo-router'
 import { Image } from 'expo-image'
+import { SafeAreaView } from 'react-native-safe-area-context'
 
 import Ionicons from '@expo/vector-icons/Ionicons'
 import MaterialIcons from '@expo/vector-icons/MaterialIcons'
 import * as ImagePicker from 'expo-image-picker'
 
+import { supabase } from '../../../../utils/supabase'
 import CustomHeader from '../../../../components/header/customHeader'
 import BannerPickerModal from '../../../../components/modals/bannerPickerModal'
-import { SafeAreaView } from 'react-native-safe-area-context'
 
 const PlaceholderImage = require('../../../../assets/windows.png')
 
 const editProfile = () => {
   const params = useLocalSearchParams();
 
+  const uid: string = params.uid as string
+  const email: string  = params.email as string
   const [name, setName] = useState<string>(params.name as string)
-  const [email, setEmail] = useState<string>(params.email as string)
   const [description, setDescription] = useState<string>(params.description as string)
   const [bannerColor, setBannerColor] = useState<[string, string, ...string[]]>(JSON.parse(params.bannerColor as string))
   const [selectedImage, setSelectedImage] = useState<string | undefined>(undefined)
@@ -35,6 +37,43 @@ const editProfile = () => {
     }
   }
 
+  const handleSave = async () => { 
+    try {
+      if (!uid) return
+
+      const { error: authError } = await supabase.auth.updateUser({
+        data: { name: name }
+      })
+
+      const { error: updateError } = await supabase
+        .from('profile_settings')
+        .update({
+          description: description,
+          banner_color: bannerColor
+        })
+        .eq('uid', uid)
+
+      console.log('[PUT] Profile updated successfully.')
+      router.replace({ 
+        pathname: 'home/profile', 
+        params: { 
+          name, 
+          description, 
+          bannerColor: JSON.stringify(bannerColor) 
+        } 
+      })
+
+      if (updateError || authError) {
+        console.log("Auth error:", authError)
+        console.log("Update error:", updateError)
+        return
+      }
+
+    } catch (error) {
+      console.log("Update failed:", error)
+    }
+  }
+
   return (
     <SafeAreaView style={{ flex: 1 }}>
       <KeyboardAvoidingView style={{ flex: 1, }}>
@@ -47,7 +86,7 @@ const editProfile = () => {
             backTo='Cancel' 
             backToPath='home/profile'
             action='Save' 
-            onPress={() => router.replace({ pathname: 'home/profile', params: { name, description, bannerColor: JSON.stringify(bannerColor) } })} 
+            onPress={handleSave} 
           />
           
           <View style={styles.container}>

@@ -9,6 +9,7 @@ type User = {
   id: string;
   name: string;
   email: string;
+  created_at: string;
 };
 
 type AuthState = {
@@ -28,7 +29,7 @@ export const AuthContext = createContext<AuthState>({
   isReady: false,
   logIn: async () => {},
   signUp: async () => {},
-  logOut: () => {},
+  logOut: async () => {},
 });
 
 export function AuthProvider({ children }: PropsWithChildren) {
@@ -71,6 +72,7 @@ export function AuthProvider({ children }: PropsWithChildren) {
         id: data.user.id,
         name: data.user.user_metadata?.name || 'User',
         email: data.user.email || '',
+        created_at: data.user.created_at,
       };
 
       setUser(userObj);
@@ -112,6 +114,7 @@ export function AuthProvider({ children }: PropsWithChildren) {
         id: data.user.id,
         name: name,
         email: data.user.email || '',
+        created_at: data.user.created_at,
       };
 
       setUser(userObj);
@@ -123,7 +126,8 @@ export function AuthProvider({ children }: PropsWithChildren) {
     }
   };
 
-  const logOut = () => {
+  const logOut = async () => {
+    await supabase.auth.signOut()
     setUser(null);
     setIsLoggedIn(false);
     storageAuthState({ isLoggedIn: false, user: null });

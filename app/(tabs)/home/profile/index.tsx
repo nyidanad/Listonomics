@@ -1,35 +1,45 @@
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native'
 import React, { useContext, useEffect, useState } from 'react'
 import { LinearGradient } from 'expo-linear-gradient'
-import { useLocalSearchParams, useRouter } from 'expo-router'
+import { useNavigation, useRouter } from 'expo-router'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { Image } from 'expo-image'
 
 import Ionicons from '@expo/vector-icons/Ionicons'
-
-import assets from '../../../../data/assets.json'
 import CustomHeader from '../../../../components/header/customHeader'
 import { AuthContext } from '../../../../utils/authContext'
+import { supabase } from '../../../../utils/supabase'
+
+type ProfileSettings = {
+  id: number,
+  banner_color: [string, string, ...string[]],
+  description: string,
+  uid: string
+}
 
 const profile = () => {
   const authContext = useContext(AuthContext)
-
   const router = useRouter()
-  const params = useLocalSearchParams()
-  const bannerColors = assets.banner_colors as [string, string, ...string[]][]
+  const navigation = useNavigation()
+  const [profileSettings, setProfileSettings] = useState<ProfileSettings>()
 
-  const [name, setName] = useState<string>('Nyíri Dániel')
-  const [email, setEmail] = useState<string>('@example.com')
-  const [description, setDescription] = useState<string>("Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s.")
-  const [som, setSom] = useState<Date>(new Date("2024-12-16"))
-  const [bannerColor, setBannerColor] = useState<[string, string, ...string[]]>(bannerColors[0])
+  const getProfileData = async () => {
+    let query = supabase.from('profile_settings').select('*').eq('uid', authContext.user?.id).single()
+
+    const { data, error } = await query
+
+    setProfileSettings(data)
+    console.log('[GET] Profile fetched successfully.')
+  }
 
   useEffect(() => {
-    if (params.bannerColor) {
-      setBannerColor(JSON.parse(params.bannerColor as string));
-      console.log('changed banner')
-    }
-  }, [params.bannerColor]);
+    if (!authContext.user?.id) return
+
+    const loadProfile = () => getProfileData()
+    loadProfile()
+    const unsubscribe = navigation.addListener('focus', loadProfile)
+    return () => unsubscribe()
+  }, [navigation])
 
   return (
     <SafeAreaView style={{ flex: 1 }}>
@@ -38,7 +48,16 @@ const profile = () => {
         backTo='Home' 
         backToPath='' 
         action='Edit' 
-        onPress={() => router.replace({ pathname: 'home/profile/editProfile', params: { name, description, bannerColor: JSON.stringify(bannerColor) }})} 
+        onPress={() => router.replace({ 
+          pathname: 'home/profile/editProfile', 
+          params: {
+            uid: authContext.user?.id,
+            name: authContext.user?.name, 
+            email: authContext.user?.email,
+            description: profileSettings?.description, 
+            bannerColor: JSON.stringify(profileSettings?.banner_color) 
+          }
+        })}
       />
       
       <View style={styles.container}>
@@ -46,7 +65,7 @@ const profile = () => {
         {/* header */}
         <View style={styles.header}>
           <LinearGradient 
-          colors={bannerColor}
+          colors={profileSettings?.banner_color || ['#FAFAFA', '#F1F1F1']}
           start={{ x: 0, y: 1 }}
           end={{ x: 1, y: 0 }}
           style={styles.banner} />
@@ -55,24 +74,24 @@ const profile = () => {
               style={styles.image}
               source={require("../../../../assets/windows.png")}
             />
-            <Text style={styles.name}>{name}</Text>
-            <Text style={styles.email}>{email}</Text>
+            <Text style={styles.name}>{authContext.user?.name}</Text>
+            <Text style={styles.email}>{authContext.user?.email}</Text>
           </View>
         </View>
 
         {/* details */}
         <View style={styles.details}>
-          {description !== '' && (
+          {profileSettings?.description && (
             <View>
               <Text style={styles.detailsTitle}>Description</Text>
-              <Text style={styles.descriptionText}>{description}</Text>
+              <Text style={styles.descriptionText}>{profileSettings?.description}</Text>
             </View>
           )}
           <View>
             <Text style={styles.detailsTitle}>Start of Membership</Text>
             <View style={styles.somWrapper}>
               <Ionicons name="calendar" size={14} color="#5B5E63" />
-              <Text style={styles.som}>{som.toLocaleDateString("hu-HU")}</Text>
+              <Text style={styles.som}>{new Date(authContext.user?.created_at ?? '').toLocaleDateString("hu-HU")}</Text>
             </View>
           </View>
         </View>
