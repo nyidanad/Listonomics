@@ -1,5 +1,5 @@
 import { SectionList, StyleSheet, Text, View } from "react-native"
-import { useCallback, useRef, useState } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 import { useLocalSearchParams } from 'expo-router'
 import { Image } from "expo-image"
 
@@ -13,21 +13,118 @@ import ItemButton from "../../../../components/buttons/itemButton"
 import ItemCategoryModal, { IconMap } from "../../../../components/modals/itemCategoryModal"
 import Item from "../../../../components/item/item"
 
-import assets from "../../../../data/assets.json"
+import { supabase } from "../../../../utils/supabase"
 import { SafeAreaView } from "react-native-safe-area-context"
 
 type ListProps = {
+  id: string,
   title: string,
   color: string,
 }
 
 const ListPage = () => {
-  const { title, color } = useLocalSearchParams() as ListProps
+  const { id, title, color } = useLocalSearchParams() as ListProps
   const [selectedCategories, setSelectedCategories] = useState<any[]>([])
   const [collapsedSections, setCollapsedSections] = useState(new Set())
   const [readonly, setReadonly] = useState<boolean>(false)
+  const [inCartCount, setInCartCount] = useState<number>(0)
+  const [totalCost, setTotalCost] = useState<number>(0)
 
   const bottomSheetModalRef = useRef<BottomSheetModal>(null)
+
+  const onToggle = async (item: any) => {
+    try {
+      const { error } = await supabase
+        .from('items')
+        .update({ checked: !item.checked })
+        .eq('id', item.id)
+
+      if (error) {
+        throw Error('Toggle failed ', error)
+      }
+
+      setSelectedCategories(prev =>
+        prev.map(section => ({
+          ...section,
+          data: section.data.map((i: any) =>
+            i.id === item.id ? { ...i, checked: !i.checked } : i
+          )
+        }))
+      )
+    } catch (err) {
+      console.log('Toggle failed:', err)
+    }
+  }
+
+  useEffect(() => {
+    const fetchStats = async () => {
+      const { data, error } = await supabase
+        .from('items')
+        .select('*, categories(*)')
+        .eq('lid', id)
+      
+      if (error) {
+        throw Error('Error fetching items ', error)
+      }
+  
+      const inCart = data.reduce((count: number, item: any) => {
+        return item.checked ? count + 1 : count
+      }, 0)
+  
+      const costs = data.reduce((sum: number, item: any) => {
+        if (!item.checked) return sum
+  
+        const price = Number(item.price ?? 0)
+        const quantity = Number(item.quantity ?? 1)
+        if (Number.isNaN(price) || Number.isNaN(quantity)) return sum
+  
+        return sum + price * quantity
+      }, 0)
+  
+      setInCartCount(inCart)
+      setTotalCost(costs)
+    }
+
+    fetchStats()
+  }, [onToggle])
+
+  useEffect(() => {
+    const fetchItems = async () => {
+      try {
+        const { data, error } = await supabase
+          .from('items')
+          .select('*, categories(*)')
+          .eq('lid', id)
+        
+        if (error) {
+          throw Error('Error fetching items ', error)
+        }
+
+        // Group items by category
+        const grouped = data.reduce((acc: any, item: any) => {
+          const cat = item.categories
+          if (!acc[cat.id]) {
+            acc[cat.id] = {
+              title: cat.title,
+              icon: cat.icon,
+              color: cat.color,
+              data: []
+            }
+          }
+          acc[cat.id].data.push(item)
+          return acc
+        }, {})
+        
+        const sections = Object.values(grouped)
+        setSelectedCategories(sections)
+      } catch (error) {
+        console.error('Error fetching items:', error)
+        return;
+      }
+    }
+
+    fetchItems()
+  }, [])
 
   // callbacks
   const handlePresentModalPress = useCallback(() => {
@@ -52,8 +149,8 @@ const ListPage = () => {
       <View style={styles.container}>
         {!readonly &&
         <View style={styles.details}>
-          <ListDetails title="In cart" icon="shopping-basket" color="#404040" information="3/8" />
-          <ListDetails title="Costs" icon="dollar-sign" color="#2ECC71" information="1940 Ft" />
+          <ListDetails title="In cart" icon="shopping-basket" color="#404040" information={`${inCartCount}/${selectedCategories.reduce((s, section) => s + (section.data?.length ?? 0), 0)}`} />
+          <ListDetails title="Costs" icon="dollar-sign" color="#2ECC71" information={`${totalCost} Ft`} />
         </View>}
         
         {!readonly && <Text style={[styles.title, { color: color }]}>{title}</Text>}
@@ -93,7 +190,7 @@ const ListPage = () => {
 
             return (
               <View style={{ borderLeftWidth: 4, borderLeftColor: section.color }}>
-                <Item name={item.name} checked={false} color={section.color} priority={item.priority} />
+                <Item name={item.name} checked={item.checked} color={section.color} priority={item.priority} onToggle={() => onToggle(item)} />
               </View>
             )
           }}

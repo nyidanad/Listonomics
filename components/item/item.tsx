@@ -1,5 +1,5 @@
 import { StyleSheet, Text, View } from 'react-native'
-import React, { useState } from 'react'
+import React from 'react'
 import Checkbox from 'expo-checkbox'
 
 type ItemProps = {
@@ -11,11 +11,10 @@ type ItemProps = {
   priority: 'medium' | 'high' | null
   // unit?: string
   // description?: string
+  onToggle: () => void
 }
 
-const item = ({ name, checked, color, priority }: ItemProps) => {
-  const [isChecked, setIsChecked] = useState<boolean>(checked)
-
+const item = ({ name, checked, color, priority, onToggle }: ItemProps) => {
   const getPriorityColor = (priority: string | null) => {
     switch (priority) {
       case 'medium': {
@@ -34,12 +33,12 @@ const item = ({ name, checked, color, priority }: ItemProps) => {
     <View style={styles.container}>
       <View style={styles.wrapper}>
         <Checkbox 
-          value={isChecked} 
-          onValueChange={() => setIsChecked(!isChecked)} 
-          color={isChecked ? '#D9D9D9' : undefined} 
-          style={[styles.checkbox, !isChecked && { borderColor: '#363636', borderWidth: 1.5 }]} 
+          value={checked} 
+          onValueChange={() => onToggle()} 
+          color={checked ? color+'85' : undefined} 
+          style={[styles.checkbox, !checked && { borderColor: '#363636', borderWidth: 1.5 }]} 
         />
-        <Text style={isChecked ? styles.textChecked : styles.text}>{name}</Text>
+        <Text style={checked ? styles.textChecked : styles.text}>{name}</Text>
       </View>
       <View style={[styles.priority, { backgroundColor: getPriorityColor(priority) }]} />
     </View>
@@ -65,8 +64,8 @@ const styles = StyleSheet.create({
   checkbox: {
     borderRadius: 999,
     marginRight: 13,
-    width: 22,
-    height: 22,
+    width: 20,
+    height: 20,
   },
   text: {
     fontSize: 16,

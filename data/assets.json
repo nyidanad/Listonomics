@@ -53,19 +53,13 @@
       "title": "Bakery & Breads",
       "color": "#FF9500",
       "icon": "bread",
-      "data": [
-        { "id": 1, "name": "Toast slices", "priority": "high" },
-        { "id": 2, "name": "White bread", "priority": null },
-        { "id": 3, "name": "Bolognesse rombus", "priority": "medium" }
-      ]
+      "data": []
     },
     {
       "title": "Meat & Seafood",
       "color": "#FF453A",
       "icon": "meat",
-      "data": [
-        { "id": 1, "name": "Chicken breast", "priority": "high" }
-      ]
+      "data": []
     },
     {
       "title": "Frozen Foods",
@@ -77,19 +71,13 @@
       "title": "Produce",
       "color": "#2ECC71",
       "icon": "apple",
-      "data": [
-        { "id": 1, "name": "Cucumber", "priority": null },
-        { "id": 2, "name": "Tomatoes", "priority": null }
-      ]
+      "data": []
     },
     {
       "title": "Dairy",
       "color": "#007AFF",
       "icon": "milk",
-      "data": [
-        { "id": 1, "name": "3.5 UHT Milk", "priority": "high" },
-        { "id": 2, "name": "Eggs", "priority": null }
-      ]
+      "data": []
     },
     {
       "title": "Coffee & Tea",

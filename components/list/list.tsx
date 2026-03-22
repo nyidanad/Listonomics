@@ -18,7 +18,7 @@ const ListComponent = ({ list, setMode }: ListComponentProps) => {
     <View>
       <TouchableOpacity 
         style={styles.container} 
-        onPress={() => router.push({ pathname: 'home/lists/[id]', params: { title: list.title, color: list.color } })}
+        onPress={() => router.push({ pathname: 'home/lists/[id]', params: { id: list.id, title: list.title, color: list.color } })}
         onLongPress={() => setMode('settings')}
       >
         <View style={styles.listWrapper}>
