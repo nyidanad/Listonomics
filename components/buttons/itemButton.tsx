@@ -3,7 +3,12 @@ import React, { useState } from 'react'
 
 import ItemAddModal from '../modals/itemAddModal'
 
-const itemButton = () => {
+type ItemButonProps = {
+  lid: string,
+  category: string,
+}
+
+const itemButton = ({ lid, category }: ItemButonProps) => {
   const [showModal, setShowModal] = useState<boolean>(false)
 
   const onPress = () => {
@@ -17,7 +22,7 @@ const itemButton = () => {
         <Text style={styles.text}>+ Add item</Text>
       </TouchableOpacity>
 
-      <ItemAddModal showModal={showModal} setShowModal={setShowModal} />
+      <ItemAddModal lid={lid} category={category} showModal={showModal} setShowModal={setShowModal} />
     </>
   )
 }

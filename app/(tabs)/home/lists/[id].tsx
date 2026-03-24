@@ -2,6 +2,7 @@ import { SectionList, StyleSheet, Text, View } from "react-native"
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { useLocalSearchParams } from 'expo-router'
 import { Image } from "expo-image"
+import { SafeAreaView } from "react-native-safe-area-context"
 
 import { BottomSheetModal } from "@gorhom/bottom-sheet"
 import Ionicons from '@expo/vector-icons/Ionicons'
@@ -14,7 +15,8 @@ import ItemCategoryModal, { IconMap } from "../../../../components/modals/itemCa
 import Item from "../../../../components/item/item"
 
 import { supabase } from "../../../../utils/supabase"
-import { SafeAreaView } from "react-native-safe-area-context"
+import fetchItems from "../../../../utils/fetchItems"
+import fetchStats from "../../../../utils/fetchItemStats"
 
 type ListProps = {
   id: string,
@@ -57,74 +59,37 @@ const ListPage = () => {
   }
 
   useEffect(() => {
-    const fetchStats = async () => {
-      const { data, error } = await supabase
-        .from('items')
-        .select('*, categories(*)')
-        .eq('lid', id)
-      
-      if (error) {
-        throw Error('Error fetching items ', error)
-      }
-  
-      const inCart = data.reduce((count: number, item: any) => {
-        return item.checked ? count + 1 : count
-      }, 0)
-  
-      const costs = data.reduce((sum: number, item: any) => {
-        if (!item.checked) return sum
-  
-        const price = Number(item.price ?? 0)
-        const quantity = Number(item.quantity ?? 1)
-        if (Number.isNaN(price) || Number.isNaN(quantity)) return sum
-  
-        return sum + price * quantity
-      }, 0)
-  
-      setInCartCount(inCart)
-      setTotalCost(costs)
-    }
-
-    fetchStats()
+    fetchStats({ id, setInCartCount, setTotalCost })
   }, [onToggle])
 
   useEffect(() => {
-    const fetchItems = async () => {
-      try {
-        const { data, error } = await supabase
-          .from('items')
-          .select('*, categories(*)')
-          .eq('lid', id)
-        
-        if (error) {
-          throw Error('Error fetching items ', error)
-        }
-
-        // Group items by category
-        const grouped = data.reduce((acc: any, item: any) => {
-          const cat = item.categories
-          if (!acc[cat.id]) {
-            acc[cat.id] = {
-              title: cat.title,
-              icon: cat.icon,
-              color: cat.color,
-              data: []
-            }
-          }
-          acc[cat.id].data.push(item)
-          return acc
-        }, {})
-        
-        const sections = Object.values(grouped)
-        setSelectedCategories(sections)
-      } catch (error) {
-        console.error('Error fetching items:', error)
-        return;
-      }
-    }
-
-    fetchItems()
+    fetchItems({ id, setSelectedCategories })
   }, [])
+
+  // >> real-time channel ::
+  // listen to changes in 'items' table for the current list and refresh data
+  useEffect(() => {
+    const channel = supabase
+      .channel('items-changes')
+      .on(
+        'postgres_changes',
+        {
+          event: '*',
+          schema: 'public',
+          table: 'items',
+          filter: `lid=eq.${id}`,
+        },
+        () => {
+          fetchItems({ id, setSelectedCategories })
+          fetchStats({ id, setInCartCount, setTotalCost })
+        }
+      )
+      .subscribe()
+
+    return () => {
+      supabase.removeChannel(channel)
+    }
+  }, [id])
 
   // callbacks
   const handlePresentModalPress = useCallback(() => {
@@ -201,7 +166,7 @@ const ListPage = () => {
             if (isCollapsed) return null 
 
             return (
-              readonly ? <View style={{ marginBottom: 15 }} /> : <ItemButton />
+              readonly ? <View style={{ marginBottom: 15 }} /> : <ItemButton lid={id} category={section.title} />
             )
           }}
         />

@@ -1,17 +1,26 @@
 import { Modal, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native'
 import React, { Dispatch, SetStateAction, useState } from 'react'
-
 import Ionicons from '@expo/vector-icons/Ionicons'
 
+import { supabase } from '../../utils/supabase'
+
 type itemAddModalProps = {
+  lid: string,
+  category: string,
   showModal: boolean
   setShowModal: Dispatch<SetStateAction<boolean>>
+}
+
+type ErrorType = {
+  nameError?: boolean,
+  price?: boolean,
+  quantity?: boolean,
 }
 
 type Priority = 'medium' | 'high' | null
 type Unit = 'ml' | 'cl' | 'l' | 'mg' | 'g' | 'kg' | 'ton' | 'mm' | 'cm' | 'm' | 'km' | 'inch' | 'feet' | 'yard' | 'mile' | 'pieces' | 'pack' | 'box' | 'pair' | 'set' | 'roll' | 'bundle' | 'slice' | 'bag' | 'cup' | 'tbsp' | 'tsp' | 'Wh' | 'kWh' | null
 
-const itemAddModal = ({ showModal, setShowModal }: itemAddModalProps) => {
+const itemAddModal = ({ lid, category, showModal, setShowModal }: itemAddModalProps) => {
   const [name, setName] = useState<string>('')
   const [priority, setPriority] = useState<Priority>(null)
   const [unit, setUnit] = useState<Unit>(null)
@@ -19,6 +28,17 @@ const itemAddModal = ({ showModal, setShowModal }: itemAddModalProps) => {
   const [quantity, setQuantity] = useState<number>(1)
   const [description, setDescription] = useState<string>('')
   const [showDescription, setShowDescription] = useState<boolean>(false)
+  const [showError, setShowError] = useState<ErrorType>({ nameError: false, price: false, quantity: false })
+
+  const checkForm = () => {
+    if (name.trim() === '') {
+      setShowError({ nameError: true })
+      return
+    }
+
+    setShowError({ nameError: false, price: false, quantity: false })
+    return true
+  }
 
   const onClose = () => {
     setName('')
@@ -29,12 +49,47 @@ const itemAddModal = ({ showModal, setShowModal }: itemAddModalProps) => {
     setDescription('')
     setShowDescription(false)
     setShowModal(false)
+    setShowError({ nameError: false, price: false, quantity: false })
+  }
+
+  const onSave = () => {
+    if (checkForm()) {
+      postItem()
+    }
   }
 
   const decreasePrice = () => setPrice(prev => Math.max(0, prev - 1))
   const increasePrice = () => setPrice(prev => prev + 1)
   const decreaseQuantity = () => setQuantity(prev => Math.max(1, prev - 1))
   const increaseQuantity = () => setQuantity(prev => prev + 1)
+
+  const postItem = async () => {
+    let cid = await supabase.from('categories').select('id').eq('title', category).single();
+
+    try {
+      const { error } = await supabase
+        .from('items')
+        .insert({
+          name,
+          price,
+          quantity,
+          priority,
+          unit,
+          description,
+          lid,
+          cid: cid.data?.id,
+        })
+
+        if (error) {
+          throw Error('Item creation failed ', error)
+        }
+
+        console.log('[POST] Item created successfully.')
+        onClose()
+    } catch (err) {
+      console.log('Item creation failed:', err)
+    }
+  }
 
   return (
     <Modal
@@ -60,7 +115,7 @@ const itemAddModal = ({ showModal, setShowModal }: itemAddModalProps) => {
             <View style={styles.detailsBox}>
               <Text style={styles.text}>Name</Text>
               <TextInput 
-                style={styles.textInput} 
+                style={showError.nameError ? [styles.textInput, styles.error] : styles.textInput} 
                 value={name} 
                 onChangeText={setName} 
                 placeholder='Type name here...' 
@@ -123,7 +178,7 @@ const itemAddModal = ({ showModal, setShowModal }: itemAddModalProps) => {
               <TouchableOpacity style={styles.cancelButton} onPress={onClose}>
                 <Text style={styles.cancelText}>Cancel</Text>
               </TouchableOpacity>
-              <TouchableOpacity style={styles.saveButton}>
+              <TouchableOpacity style={styles.saveButton} onPress={onSave}>
                 <Text style={styles.saveText}>Save</Text>
               </TouchableOpacity>
             </View>
@@ -296,5 +351,9 @@ const styles = StyleSheet.create({
   },
   saveText: {
     color: '#ffffff',
+  },
+  error: {
+    borderColor: '#FF3B30',
+    borderWidth: 1.5,
   },
 })
