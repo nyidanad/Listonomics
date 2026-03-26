@@ -1,6 +1,8 @@
 import Ionicons from '@expo/vector-icons/Ionicons'
 import { Dispatch, SetStateAction } from 'react'
-import { StyleSheet, Text, TouchableOpacity, View } from 'react-native'
+import { StyleSheet, Text, TouchableOpacity, useColorScheme, View } from 'react-native'
+
+import { Colors } from '../../constants/colors'
 
 type listFilterProps = {
   title: string,
@@ -11,16 +13,21 @@ type listFilterProps = {
 }
 
 const listFilter = ({ title, icon, quantity, backgroundColor, setFilter }: listFilterProps) => {
+  const colorScheme = useColorScheme()
+      
+  if (!colorScheme) return null
+  const theme = Colors[colorScheme] ?? Colors.light
+
   return (
-    <TouchableOpacity style={styles.filter} onPress={() => setFilter(title)}>
+    <TouchableOpacity style={[styles.filter, { backgroundColor: theme.filters }]} onPress={() => setFilter(title)}>
       <View style={styles.iconContainer}>
         <View style={[styles.icon, {backgroundColor}]}>
           <Ionicons style={styles.filterIcon} name={icon} />
         </View>
-        <Text style={styles.filterTitle}>{title}</Text>
+        <Text style={[styles.filterTitle, { color: theme.text }]}>{title}</Text>
       </View>
       <View>
-        <Text style={styles.filterNumber}>{quantity}</Text>
+        <Text style={[styles.filterNumber, { color: theme.text }]}>{quantity}</Text>
       </View>
     </TouchableOpacity>
   )
@@ -31,7 +38,6 @@ const styles = StyleSheet.create({
     width: '31%', 
     height: 55,
     borderRadius: 10,
-    backgroundColor: '#FFF',
     justifyContent: 'space-between',
     flexDirection: 'row',
     paddingHorizontal: 10,
@@ -53,11 +59,9 @@ const styles = StyleSheet.create({
   },
   filterTitle: {
     fontSize: 10,
-    color: '#363636'
   },
   filterNumber: {
     fontSize: 18,
-    color: '#363636',
     fontWeight: 'bold',
   },
 })

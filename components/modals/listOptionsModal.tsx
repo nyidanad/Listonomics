@@ -1,15 +1,15 @@
 import React, { Dispatch, SetStateAction, useState } from 'react'
-import { Alert, Modal, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
+import { Modal, StyleSheet, Text, TouchableOpacity, useColorScheme, View } from 'react-native'
 import { useRouter } from 'expo-router'
 
 import Ionicons from '@expo/vector-icons/Ionicons'
 import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons'
-import { useSQLiteContext } from 'expo-sqlite'
 
 import { supabase } from '../../utils/supabase'
 import { List } from '../../app/(tabs)/home'
 import Hr from '../horizontalRules/hr'
 import DeleteModal from './deleteModal'
+import { Colors } from '../../constants/colors'
 
 export type ModalPositionsProps = {
   top: number
@@ -23,13 +23,12 @@ type ModalProps = {
   getLists: () => Promise<void>
 }
 
-type SQLRow = {
-  title: string
-  serial: string
-}
-
 const ListOptionsModal = ({ showModal, setShowModal, modalPosition, selectedList, getLists }: ModalProps) => {
-  const db = useSQLiteContext()
+  const colorScheme = useColorScheme()
+  
+  if (!colorScheme) return null
+  const theme = Colors[colorScheme] ?? Colors.light
+
   const router = useRouter()
   const [showDeleteModal, setShowDeleteModal] = useState<boolean>(false)
 
@@ -135,49 +134,49 @@ const ListOptionsModal = ({ showModal, setShowModal, modalPosition, selectedList
       onRequestClose={onCloseModal}
     >
       <TouchableOpacity style={styles.container} onPress={onCloseModal}>
-        <View style={[styles.content, { top: modalPosition.top }]}>
+        <View style={[styles.content, { top: modalPosition.top, backgroundColor: theme.modalBackground }]}>
           
           {/* EDIT */}
           <TouchableOpacity onPress={() => [onCloseModal, router.push({pathname: `home/editList/[id]`, params: { ...selectedList }})]}>
             <View style={styles.button}>
-              <Text style={styles.text}>Edit</Text>
-              <MaterialCommunityIcons name="pencil-outline" style={styles.icon} />
+              <Text style={[styles.text, { color: theme.text }]}>Edit</Text>
+              <MaterialCommunityIcons name="pencil-outline" style={[styles.icon, { color: theme.text }]} />
             </View>
           </TouchableOpacity>
-          <Hr color='#EDEEF2' width={1} top={8} bottom={8} />
+          <Hr color={theme.ruler} width={1} top={8} bottom={8} />
 
           {/* DUPLICATE */}
           <TouchableOpacity onPress={() => dupList(selectedList)}>
             <View style={styles.button}>
-              <Text style={styles.text}>Duplicate</Text>
-              <Ionicons name="duplicate-outline" style={styles.icon} />
+              <Text style={[styles.text, { color: theme.text }]}>Duplicate</Text>
+              <Ionicons name="duplicate-outline" style={[styles.icon, { color: theme.text }]} />
             </View>
           </TouchableOpacity>
-          <Hr color='#EDEEF2' width={1} top={8} bottom={8} />
+          <Hr color={theme.ruler} width={1} top={8} bottom={8} />
 
           {/* FLAGGED */}
           <TouchableOpacity onPress={() => flagList(selectedList.id, selectedList.flagged)}>
             <View style={styles.button}>
-              <Text style={styles.text}>Flagged</Text>
-              <Ionicons name={selectedList.flagged ? "flag-sharp" : "flag-outline"} style={styles.icon} />
+              <Text style={[styles.text, { color: theme.text }]}>Flagged</Text>
+              <Ionicons name={selectedList.flagged ? "flag-sharp" : "flag-outline"} style={[styles.icon, { color: theme.text }]} />
             </View>
           </TouchableOpacity>
-          <Hr color='#EDEEF2' width={1} top={8} bottom={8} />
+          <Hr color={theme.ruler} width={1} top={8} bottom={8} />
 
           {/* SHARE */}
           <TouchableOpacity>
             <View style={styles.button}>
-              <Text style={styles.text}>Share</Text>
-              <Ionicons name={'person-add-outline'} style={styles.icon} />
+              <Text style={[styles.text, { color: theme.text }]}>Share</Text>
+              <Ionicons name={'person-add-outline'} style={[styles.icon, { color: theme.text }]} />
             </View>
           </TouchableOpacity>
-          <Hr color='#EDEEF2' width={1} top={8} bottom={8} />
+          <Hr color={theme.ruler} width={1} top={8} bottom={8} />
 
           {/* DELETE */}
           <TouchableOpacity onPress={() => setShowDeleteModal(true)}>
             <View style={styles.button}>
-              <Text style={[styles.text, { color: 'red' }]}>Delete</Text>
-              <Ionicons name="trash" style={[styles.icon, { color: 'red' }]} />
+              <Text style={[styles.text, { color: '#FB3D3D' }]}>Delete</Text>
+              <Ionicons name="trash" style={[styles.icon, { color: '#FB3D3D' }]} />
             </View>
           </TouchableOpacity>
 
@@ -219,11 +218,9 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   text: {
-    color: '#363636',
     fontSize: 16,
   },
   icon: {
-    color: '#363636',
     fontSize: 18,
   },
 })

@@ -1,12 +1,11 @@
 import React, { useContext, useEffect, useState } from 'react'
-import { FlatList, StyleSheet, Text, TouchableOpacity, View, Image } from 'react-native'
+import { FlatList, StyleSheet, Text, TouchableOpacity, View, Image, useColorScheme } from 'react-native'
 import { useNavigation, useRouter } from 'expo-router'
 
 import Ionicons from '@expo/vector-icons/Ionicons'
 import Octicons from '@expo/vector-icons/Octicons'
-import AsyncStorage from '@react-native-async-storage/async-storage'
-import { supabase } from '../../../utils/supabase'
 
+import { supabase } from '../../../utils/supabase'
 import { AuthContext } from '../../../utils/authContext'
 import Searchbar from '../../../components/search/searchbar'
 import ListFilter from '../../../components/filter/list-filter'
@@ -14,6 +13,7 @@ import ListComponent from '../../../components/list/list'
 import DraggableListComponent from '../../../components/list/draggableList'
 import ListOrderModal from '../../../components/modals/listOrderModal'
 import { SafeAreaView } from 'react-native-safe-area-context'
+import { Colors } from '../../../constants/colors'
 
 export type List = {
   id: number
@@ -32,6 +32,11 @@ export type Order = {
 }
 
 export const Home = () => {
+  const colorScheme = useColorScheme()
+
+  if (!colorScheme) return null
+  const theme = Colors[colorScheme] ?? Colors.light
+
   const { user } = useContext(AuthContext);
   const router = useRouter()
   const navigation = useNavigation()
@@ -70,10 +75,6 @@ export const Home = () => {
 
       if (order.orderBy === 'Date') {
         query = query.order('scheduled', { ascending: order.orderWay === 'ASC' })
-      }
-
-      if (order.orderBy === 'Custom') {
-        query = query.order('serial', { ascending: order.orderWay === 'ASC' })
       }
 
       const { data, error } = await query
@@ -117,8 +118,8 @@ export const Home = () => {
 
 
   return (
-    <SafeAreaView style={{ flex: 1 }}>
-      <View style={styles.headerContainer}>
+    <SafeAreaView style={{ flex: 1, backgroundColor: theme.background }}>
+      <View style={[styles.headerContainer, { backgroundColor: theme.header }]}>
         <TouchableOpacity style={styles.profile} onPress={() => router.push('home/profile')}>
           <Image
             style={styles.image}
@@ -126,7 +127,7 @@ export const Home = () => {
           />
           <View>
             <Text style={styles.welcome}>Welcome Back! 👋</Text>
-            <Text style={styles.name}>{user?.name}</Text>
+            <Text style={[styles.name, { color: theme.text }]}>{user?.name}</Text>
           </View>
         </TouchableOpacity>
         <View style={styles.buttons}>
@@ -145,18 +146,18 @@ export const Home = () => {
         </View>
 
         <View style={styles.listsHeader}>
-          <Text style={styles.title}>My Lists</Text>
+          <Text style={[styles.title, { color: theme.text }]}>My Lists</Text>
           <View style={styles.settingsWrapper}>
             {mode === 'normal' ? (
               <>
                 <Text style={styles.settingsText}>{order.orderBy}</Text>
                 {order.orderWay === 'ASC' ? (
                   <TouchableOpacity onPress={() => setShowOrderModal(true)}>
-                    <Octicons name="sort-asc" style={styles.settingsIcon} />
+                    <Octicons name="sort-asc" style={styles.settingsIcon} color={theme.text} />
                   </TouchableOpacity>
                 ) : (
                   <TouchableOpacity onPress={() => setShowOrderModal(true)}>
-                    <Octicons name="sort-desc" style={styles.settingsIcon} />
+                    <Octicons name="sort-desc" style={styles.settingsIcon} color={theme.text} />
                   </TouchableOpacity>
                 )}
               </>
@@ -170,8 +171,8 @@ export const Home = () => {
         <View style={styles.listContainer}>
           {lists.length === 0 ? (
             <View style={styles.emptyContainer}>
-              <Text style={styles.emptyTitle}>SUCH EMPTINESS</Text>
-              <Text style={styles.emptyMessage}>Create your first shopping list!</Text>
+              <Text style={[styles.emptyTitle, { color: theme.listEmpty }]}>SUCH EMPTINESS</Text>
+              <Text style={[styles.emptyMessage, { color: theme.listEmpty }]}>Create your first shopping list!</Text>
             </View>
           ) :
             <FlatList 
@@ -201,7 +202,6 @@ export const Home = () => {
 
 const styles = StyleSheet.create({
   headerContainer: {
-    backgroundColor: '#FFF',
     justifyContent: 'space-between',
     flexDirection: 'row',
     paddingVertical: 15,
@@ -216,8 +216,6 @@ const styles = StyleSheet.create({
     maxHeight: 50,
     maxWidth: 50,
     resizeMode: 'contain',
-    borderColor: 'rgba(255, 255, 255, 0.3)',
-    borderWidth: 2,
     borderRadius: 999,
     marginRight: 10,
   },
@@ -226,7 +224,6 @@ const styles = StyleSheet.create({
     fontSize: 12,
   },
   name: {
-    color: '#363636',
     fontSize: 16,
     fontWeight: 'bold',
   },
@@ -269,7 +266,6 @@ const styles = StyleSheet.create({
   },
   settingsIcon: {
     fontSize: 24,
-    color: '#363636',
   },
   filters: {
     flexDirection: 'row',
@@ -300,12 +296,10 @@ const styles = StyleSheet.create({
   },
   emptyTitle: {
     fontSize: 16,
-    color: '#DEDEDE',
   },
   emptyMessage: {
     fontSize: 14,
     fontWeight: 'bold',
-    color: '#DEDEDE',
   },
 })
 

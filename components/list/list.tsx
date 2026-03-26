@@ -1,10 +1,11 @@
 import React, { Dispatch, SetStateAction } from 'react'
-import { StyleSheet, Text, TouchableOpacity, View } from "react-native"
+import { StyleSheet, Text, TouchableOpacity, useColorScheme, View } from "react-native"
 import { useRouter } from 'expo-router'
 
 import Ionicons from '@expo/vector-icons/Ionicons'
 
 import { List } from '../../app/(tabs)/home'
+import { Colors } from '../../constants/colors'
 
 type ListComponentProps = {
   list: List
@@ -12,21 +13,26 @@ type ListComponentProps = {
 }
 
 const ListComponent = ({ list, setMode }: ListComponentProps) => {
+  const colorScheme = useColorScheme()
+  
+  if (!colorScheme) return null
+  const theme = Colors[colorScheme] ?? Colors.light
+
   const router = useRouter()
 
   return (
     <View>
       <TouchableOpacity 
-        style={styles.container} 
+        style={[styles.container, { backgroundColor: theme.list, shadowColor: theme.listShadowColor }]} 
         onPress={() => router.push({ pathname: 'home/lists/[id]', params: { id: list.id, title: list.title, color: list.color } })}
         onLongPress={() => setMode('settings')}
       >
         <View style={styles.listWrapper}>
           <View style={[styles.iconWrapper, { backgroundColor: list.color }]}>
-            <Ionicons name={list.icon} style={styles.icon} />
+            <Ionicons name={list.icon} size={20} color={theme.list} />
           </View>
-          <Text style={styles.listTitle}>{list.title}</Text>
-          <Ionicons name="chevron-forward" size={18} color={'#363636'} />
+          <Text style={[styles.listTitle, { color: theme.text }]}>{list.title}</Text>
+          <Ionicons name="chevron-forward" size={18} color={theme.text} />
         </View>
       </TouchableOpacity>
     </View>
@@ -35,13 +41,11 @@ const ListComponent = ({ list, setMode }: ListComponentProps) => {
 
 const styles = StyleSheet.create({
   container: {
-    backgroundColor: '#FFF',
     borderRadius: 10,
     paddingHorizontal: 12,
     height: 55,
     justifyContent: 'center',
     marginBottom: 8,
-    shadowColor: '#B8BFCB',
     shadowOffset: {
         width: 0,
         height: 4,
@@ -63,13 +67,8 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
   },
-  icon: {
-    fontSize: 20,
-    color: 'white',
-  },
   listTitle: {
     flex: 1,
-    color: '#363636',
     fontSize: 16,
   },
 })

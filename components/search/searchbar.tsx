@@ -12,7 +12,7 @@ const Searchbar = ({ placeholder, searchQuery, setSearchQuery }: SearchbarProps)
   return (
     <View style={styles.search}>
       <Ionicons name="search" style={styles.searchIcon} />
-      <TextInput placeholder={placeholder} placeholderTextColor={'rgba(0, 0, 0, 0.3)'} style={styles.searchText} value={searchQuery} onChangeText={(text) => setSearchQuery(text)} />
+      <TextInput placeholder={placeholder} placeholderTextColor={'#A4A4A5'} style={styles.searchText} value={searchQuery} onChangeText={(text) => setSearchQuery(text)} />
     </View>
   )
 }
@@ -20,7 +20,7 @@ const Searchbar = ({ placeholder, searchQuery, setSearchQuery }: SearchbarProps)
 const styles = StyleSheet.create({
   search: {
     height: 38,
-    backgroundColor: 'rgba(118, 118, 128, 0.12)',
+    backgroundColor: '#7676801f',
     borderRadius: 15,
     paddingHorizontal: 15,
     marginBottom: 20,
@@ -28,9 +28,9 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   searchIcon: {
-    color: 'rgba(0, 0, 0, 0.08)',
+    color: '#D7D7D8',
     marginRight: 8,
-    fontSize: 18,
+    fontSize: 22,
   },
   searchText: {
     color: '#363636',

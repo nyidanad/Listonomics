@@ -1,0 +1,37 @@
+export const Colors = {
+  primary: '#007AFF',
+
+  light: {
+    header: '#FFFFFF',
+    background: '#FAFAFA',
+    tabbar: '#FFFFFF',
+    tabbarIcon: '#B1B1B1',
+    text: '#363636',
+    list: '#FFFFFF',
+    listShadowColor: '#B8BFCB',
+    listDragger: '#00000014',
+    listEmpty: '#DEDEDE',
+    modalBackground: '#FFFFFF',
+    ruler: '#EDEEF2',
+    notificationIcon: '#F6F6F6',
+    filters: '#FFFFFF',
+    order: '#5a5a5a4d',
+  },
+  
+  dark: {
+    header: '#1E1E1E',
+    background: '#222222',
+    tabbar: '#1E1E1E',
+    tabbarIcon: '#5A5A5A',
+    text: '#E6E6E6',
+    list: '#2C2C2C',
+    listShadowColor: '#000000',
+    listDragger: '#434343',
+    listEmpty: '#5A5A5A',
+    modalBackground: '#222222',
+    ruler: '#434343',
+    notificationIcon: '#2C2C2C',
+    filters: '#7676801f',
+    order: '#5A5A5A',
+  },
+}

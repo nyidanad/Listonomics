@@ -1,5 +1,7 @@
-import { Modal, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
+import { Modal, StyleSheet, Text, TouchableOpacity, useColorScheme, View } from 'react-native'
 import React, { Dispatch, SetStateAction } from 'react'
+
+import { Colors } from '../../constants/colors'
 
 type deleteModalProps = {
   title: string
@@ -11,6 +13,11 @@ type deleteModalProps = {
 }
 
 const deleteModal = ({ title, message, button, showModal, setShowModal, request }: deleteModalProps) => {
+  const colorScheme = useColorScheme()
+    
+  if (!colorScheme) return null
+  const theme = Colors[colorScheme] ?? Colors.light
+
   const onClose = () => {
     setShowModal(false)
   }
@@ -23,8 +30,8 @@ const deleteModal = ({ title, message, button, showModal, setShowModal, request 
       onRequestClose={onClose}
     >
       <View style={styles.container}>
-        <View style={styles.content}>
-          <Text style={styles.title}>{title}</Text>
+        <View style={[styles.content, { backgroundColor: theme.modalBackground }]}>
+          <Text style={[styles.title, { color: theme.text }]}>{title}</Text>
           <Text style={styles.message}>{message}</Text>
           <View style={styles.buttonWrapper}>
             <TouchableOpacity style={[styles.button, styles.cancelButton]} onPress={onClose}>
@@ -59,7 +66,6 @@ const styles = StyleSheet.create({
     height: 'auto',
   },
   title: {
-    color: '#363636',
     fontSize: 18,
     fontWeight: 'bold',
     marginBottom: 15,

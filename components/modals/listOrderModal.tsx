@@ -1,11 +1,12 @@
 import React, { Dispatch, SetStateAction } from 'react'
-import { Modal, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
+import { Modal, StyleSheet, Text, TouchableOpacity, useColorScheme, View } from 'react-native'
 import AsyncStorage from '@react-native-async-storage/async-storage'
 import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons'
 import Ionicons from '@expo/vector-icons/Ionicons'
 
 import Hr from '../horizontalRules/hr'
 import { Order } from '../../app/(tabs)/home'
+import { Colors } from '../../constants/colors'
 
 type ModalProps = {
   showModal: boolean
@@ -15,6 +16,10 @@ type ModalProps = {
 }
 
 const ListOptionsModal = ({ showModal, setShowModal, order, setOrder }: ModalProps) => {
+  const colorScheme = useColorScheme()
+  
+  if (!colorScheme) return null
+  const theme = Colors[colorScheme] ?? Colors.light
 
   // Handeling Modal close
   const onCloseModal = () => {
@@ -48,43 +53,34 @@ const ListOptionsModal = ({ showModal, setShowModal, order, setOrder }: ModalPro
       onRequestClose={() => setShowModal(false)}
     >
       <TouchableOpacity style={{ flex: 1 }} onPress={onCloseModal}>
-        <View style={styles.container}>
+        <View style={[styles.container, { backgroundColor: theme.modalBackground }]}>
 
             {/* HEADER */}
             <View style={styles.header}>
               <View style={styles.headerWrapper}>
-                <Ionicons name="swap-vertical" style={styles.icon} />
+                <Ionicons name="swap-vertical" style={styles.icon} color={theme.text} />
                 <View>
-                  <Text style={styles.headerTitle}>Sorting aspect</Text>
-                  <Text style={styles.headerOrderBy}>{order.orderBy} ({order.orderWay})</Text>
+                  <Text style={[styles.headerTitle, { color: theme.text }]}>Sorting aspect</Text>
+                  <Text style={[styles.headerOrderBy, { color: theme.order }]}>{order.orderBy} ({order.orderWay})</Text>
                 </View>
               </View>
             </View>
-            <Hr color='#EDEEF2' width={1} top={8} bottom={8} />
+            <Hr color={theme.ruler} width={1} top={8} bottom={8} />
             
             {/* ALPHABETICAL */}
             <TouchableOpacity onPress={() => handleOrderChange('Alphabetical')}>
               <View style={styles.button}>
-                {order.orderBy === 'Alphabetical' ? <MaterialCommunityIcons name="check" style={styles.icon} /> : <View style={styles.emptyIconSpace} />}
-                <Text style={styles.text}>Alphabetical</Text>
+                {order.orderBy === 'Alphabetical' ? <MaterialCommunityIcons name="check" style={styles.icon} color={theme.text} /> : <View style={styles.emptyIconSpace} />}
+                <Text style={{ color: theme.text }}>Alphabetical</Text>
               </View>
             </TouchableOpacity>
-            <Hr color='#EDEEF2' width={1} top={8} bottom={8} />
+            <Hr color={theme.ruler} width={1} top={8} bottom={8} />
 
             {/* DATE */}
             <TouchableOpacity onPress={() => handleOrderChange('Date')}>
               <View style={styles.button}>
-                {order.orderBy === 'Date' ? <MaterialCommunityIcons name="check" style={styles.icon} /> : <View style={styles.emptyIconSpace} />}
-                <Text style={styles.text}>Date</Text>
-              </View>
-            </TouchableOpacity>
-            <Hr color='#EDEEF2' width={1} top={8} bottom={8} />
-
-            {/* CUSTOM */}
-            <TouchableOpacity onPress={() => handleOrderChange('Custom')}>
-              <View style={styles.button}>
-                {order.orderBy === 'Custom' ? <MaterialCommunityIcons name="check" style={styles.icon} /> : <View style={styles.emptyIconSpace} />}
-                <Text style={styles.text}>Custom</Text>
+                {order.orderBy === 'Date' ? <MaterialCommunityIcons name="check" style={styles.icon} color={theme.text} /> : <View style={styles.emptyIconSpace} />}
+                <Text style={{ color: theme.text }}>Date</Text>
               </View>
             </TouchableOpacity>
         </View>
@@ -104,7 +100,6 @@ const styles = StyleSheet.create({
     right: 10,
     top: 245,
     width: 190,
-    backgroundColor: '#FFF',
   },
   header: {
     flexDirection: 'row',
@@ -121,21 +116,15 @@ const styles = StyleSheet.create({
   },
   headerTitle: {
     fontWeight: 'bold',
-    color: '#363636',
   },
   headerOrderBy: {
-    color: '#DADADA',
     fontSize: 12,
   },
   button: {
     flexDirection: 'row',
     alignItems: 'center',
   },
-  text: {
-    color: '#363636',
-  },
   icon: {
-    color: '#363636',
     fontSize: 18,
     marginRight: 15,
   },

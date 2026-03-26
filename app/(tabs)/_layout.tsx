@@ -5,10 +5,17 @@ import Ionicons from '@expo/vector-icons/Ionicons'
 import { BottomSheetModalProvider } from "@gorhom/bottom-sheet"
 import { GestureHandlerRootView } from 'react-native-gesture-handler'
 import { useContext } from 'react'
+import { useColorScheme } from 'react-native'
 
 import { AuthContext } from '../../utils/authContext'
+import { Colors } from '../../constants/colors'
 
 function tabsLayout() {
+  const colorScheme = useColorScheme()
+      
+  if (!colorScheme) return null
+  const theme = Colors[colorScheme] ?? Colors.light
+
   const authState = useContext(AuthContext)
 
   if (!authState.isReady) {
@@ -29,11 +36,11 @@ function tabsLayout() {
           <Tabs screenOptions={{
             headerShadowVisible: false,
             tabBarActiveTintColor: '#007AFF',
-            tabBarInactiveTintColor: '#B1B1B1',
+            tabBarInactiveTintColor: theme.tabbarIcon,
             tabBarHideOnKeyboard: true,
             tabBarStyle: {
               height: 55,
-              backgroundColor: '#F6F6F6',
+              backgroundColor: theme.tabbar,
               alignItems: 'center',
               paddingTop: 3,
               paddingBottom: 5,
