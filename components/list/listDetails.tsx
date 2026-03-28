@@ -1,7 +1,8 @@
-import { StyleSheet, Text, View } from 'react-native'
+import { StyleSheet, Text, useColorScheme, View } from 'react-native'
 import React from 'react'
-
 import FontAwesome5 from '@expo/vector-icons/FontAwesome5'
+
+import { Colors } from '../../constants/colors'
 
 type ListDetailsProps = {
   title: string
@@ -11,6 +12,11 @@ type ListDetailsProps = {
 }
 
 const listDetails = ({ title, icon, color, information }: ListDetailsProps) => {
+  const colorScheme = useColorScheme()
+    
+  if (!colorScheme) return null
+  const theme = Colors[colorScheme] ?? Colors.light
+
   return (
     <View style={styles.container}>
       <View style={styles.wrapper}>
@@ -18,9 +24,9 @@ const listDetails = ({ title, icon, color, information }: ListDetailsProps) => {
           <View style={[styles.icon, { backgroundColor: color }]}>
             <FontAwesome5 name={icon} size={16} color={'#FAFAFA'} />
           </View>
-          <Text style={styles.title}>{title}</Text>
+          <Text style={[styles.title, { color: theme.text }]}>{title}</Text>
         </View>
-        <Text style={styles.information}>{information}</Text>
+        <Text style={[styles.information, { color: theme.text }]}>{information}</Text>
       </View>
     </View>
   )
@@ -30,7 +36,7 @@ export default listDetails
 
 const styles = StyleSheet.create({
   container: {
-    backgroundColor: '#EAEAEB',
+    backgroundColor: '#7676801f',
     paddingHorizontal: 15,
     paddingVertical: 8,
     borderRadius: 8,
@@ -48,12 +54,10 @@ const styles = StyleSheet.create({
     borderRadius: 8,
   },
   title: {
-    color: '#363636',
     fontSize: 12,
     marginTop: 3,
   },
   information: {
-    color: '#363636',
     fontSize: 18,
     fontWeight: 'bold',
     textAlign: 'right',

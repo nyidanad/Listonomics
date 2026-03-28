@@ -1,8 +1,9 @@
-import { Modal, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native'
+import { Modal, StyleSheet, Text, TextInput, TouchableOpacity, useColorScheme, View } from 'react-native'
 import React, { Dispatch, SetStateAction, useState } from 'react'
 import Ionicons from '@expo/vector-icons/Ionicons'
 
 import { supabase } from '../../utils/supabase'
+import { Colors } from '../../constants/colors'
 
 type itemAddModalProps = {
   lid: string,
@@ -21,6 +22,11 @@ type Priority = 'medium' | 'high' | null
 type Unit = 'ml' | 'cl' | 'l' | 'mg' | 'g' | 'kg' | 'ton' | 'mm' | 'cm' | 'm' | 'km' | 'inch' | 'feet' | 'yard' | 'mile' | 'pieces' | 'pack' | 'box' | 'pair' | 'set' | 'roll' | 'bundle' | 'slice' | 'bag' | 'cup' | 'tbsp' | 'tsp' | 'Wh' | 'kWh' | null
 
 const itemAddModal = ({ lid, category, showModal, setShowModal }: itemAddModalProps) => {
+  const colorScheme = useColorScheme()
+
+  if (!colorScheme) return null
+  const theme = Colors[colorScheme] ?? Colors.light
+
   const [name, setName] = useState<string>('')
   const [priority, setPriority] = useState<Priority>(null)
   const [unit, setUnit] = useState<Unit>(null)
@@ -99,23 +105,27 @@ const itemAddModal = ({ lid, category, showModal, setShowModal }: itemAddModalPr
       onRequestClose={onClose}
     >
       <View style={styles.container}>
-        <View style={styles.content}>
+        <View style={[styles.content, { backgroundColor: theme.background }]}>
           
           {/* Header */}
           <View style={styles.headerWrapper}>
-            <Text style={styles.headerTitle}>Amount</Text>
+            <Text style={[styles.headerTitle, { color: theme.text }]}>Amount</Text>
             <View style={styles.sumBox}>
-              <Text style={styles.headerCurrency}>$</Text>
-              <Text style={styles.headerSum}>{price*quantity}</Text>
+              <Text style={[styles.headerCurrency, { color: theme.currency }]}>$</Text>
+              <Text style={[styles.headerSum, { color: theme.text }]}>{price*quantity}</Text>
             </View>
           </View>
 
           {/* Details */}
-          <View style={styles.detailsWrapper}>
+          <View style={[styles.detailsWrapper, { borderBottomColor: theme.ruler }]}>
             <View style={styles.detailsBox}>
               <Text style={styles.text}>Name</Text>
               <TextInput 
-                style={showError.nameError ? [styles.textInput, styles.error] : styles.textInput} 
+                style={
+                  showError.nameError 
+                  ? [styles.textInput, styles.error, { backgroundColor: theme.itemInput  }] 
+                  : [styles.textInput, { backgroundColor: theme.itemInput, borderColor: theme.itemInputBorder }]
+                } 
                 value={name} 
                 onChangeText={setName} 
                 placeholder='Type name here...' 
@@ -125,29 +135,29 @@ const itemAddModal = ({ lid, category, showModal, setShowModal }: itemAddModalPr
 
             <View style={styles.detailsBox}>
               <Text style={styles.text}>Attributes</Text>
-              <TouchableOpacity style={[styles.attributebuttons, styles.prioritybuttons]}>
-                <View style={styles.priorityView}>
+              <TouchableOpacity style={[styles.attributebuttons, styles.prioritybuttons, { borderColor: theme.itemInputBorder, backgroundColor: theme.itemInput }]}>
+                <View style={[styles.priorityView, { backgroundColor: theme.priority }]}>
                   <View style={styles.priorityCircle} />
                 </View>
-                <Text style={styles.attributeText}>{priority == null ? 'Priority' : priority }</Text>
-                <Ionicons name="add" size={16} color="#363636" style={{ marginLeft: 5 }} />
+                <Text style={[styles.attributeText, { color: theme.text }]}>{priority == null ? 'Priority' : priority }</Text>
+                <Ionicons name="add" size={16} color={theme.text} style={{ marginLeft: 5 }} />
               </TouchableOpacity>
 
-              <TouchableOpacity style={[styles.attributebuttons, styles.unitbuttons]}>
-                <Text style={styles.attributeText}>{unit == null ? 'Unit' : unit }</Text>
-                <Ionicons name="add" size={16} color="#363636" style={{ marginLeft: 5 }} />
+              <TouchableOpacity style={[styles.attributebuttons, styles.unitbuttons, { borderColor: theme.itemInputBorder, backgroundColor: theme.itemInput  }]}>
+                <Text style={[styles.attributeText, { color: theme.text }]}>{unit == null ? 'Unit' : unit }</Text>
+                <Ionicons name="add" size={16} color={theme.text} style={{ marginLeft: 5 }} />
               </TouchableOpacity>
             </View>
           </View>
 
           {/* Price & Quantity */}
-          <View style={styles.pqWrapper}>
+          <View style={[styles.pqWrapper, { borderBottomColor: theme.ruler }]}>
             <View style={[styles.pqBox, { marginBottom: 10, }]}>
               <Text style={styles.text}>Price</Text>
-              <View style={styles.pqButton}>
+              <View style={[styles.pqButton, { borderColor: theme.itemInputBorder, backgroundColor: theme.itemInput }]}>
                 <Ionicons name="remove" style={styles.pqIcon} onPress={decreasePrice} />
                 <TextInput 
-                  style={styles.numberInput} 
+                  style={[styles.numberInput, { color: theme.text }]} 
                   value={price.toString()} 
                   onChangeText={(text) => setPrice(Number(text) || 0)}
                   keyboardType='numeric'
@@ -158,10 +168,10 @@ const itemAddModal = ({ lid, category, showModal, setShowModal }: itemAddModalPr
 
             <View style={styles.pqBox}>
               <Text style={styles.text}>Quantity</Text>
-              <View style={styles.pqButton}>
+              <View style={[styles.pqButton, { borderColor: theme.itemInputBorder, backgroundColor: theme.itemInput }]}>
                 <Ionicons name="remove" style={styles.pqIcon} onPress={decreaseQuantity} />
                 <TextInput 
-                  style={styles.numberInput} 
+                  style={[styles.numberInput, { color: theme.text }]} 
                   value={quantity.toString()} 
                   onChangeText={(text) => setQuantity(Number(text) || 1)}
                   keyboardType='numeric'
@@ -175,8 +185,8 @@ const itemAddModal = ({ lid, category, showModal, setShowModal }: itemAddModalPr
           <View style={styles.buttonsWrapper}>
             <Text style={styles.text}>+ Description</Text>
             <View style={styles.buttons}>
-              <TouchableOpacity style={styles.cancelButton} onPress={onClose}>
-                <Text style={styles.cancelText}>Cancel</Text>
+              <TouchableOpacity style={[styles.cancelButton, { borderColor: theme.itemCancelBorder }]} onPress={onClose}>
+                <Text style={[styles.cancelText, { color: theme.text }]}>Cancel</Text>
               </TouchableOpacity>
               <TouchableOpacity style={styles.saveButton} onPress={onSave}>
                 <Text style={styles.saveText}>Save</Text>
@@ -220,7 +230,6 @@ const styles = StyleSheet.create({
   },
   headerCurrency: {
     fontSize: 18,
-    color: '#C7C7CC',
     textAlign: 'right',
     position: 'absolute',
     top: -2,
@@ -228,7 +237,6 @@ const styles = StyleSheet.create({
   },
   headerSum: {
     fontSize: 32,
-    color: '#363636',
   },
   text: {
     width: '35%',
@@ -272,7 +280,6 @@ const styles = StyleSheet.create({
     paddingHorizontal: 3,
   },
   priorityView: {
-    backgroundColor: '#989CA9',
     width: 20,
     height: 20,
     borderRadius: 5,
@@ -287,7 +294,6 @@ const styles = StyleSheet.create({
     borderRadius: 999,
   },
   attributeText: {
-    color: '#363636',
     marginLeft: 8,
   },
   pqWrapper: {
@@ -337,7 +343,6 @@ const styles = StyleSheet.create({
     paddingVertical: 7,
     borderRadius: 10,
     borderWidth: 1,
-    borderColor: '#E2E2E2',
   },
   saveButton: {
     paddingHorizontal: 12,

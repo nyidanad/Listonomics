@@ -154,7 +154,7 @@
     {
       "title": "Gardening",
       "color": "#B5E61D",
-      "icon": "hammer",
+      "icon": "leaf",
       "data": []
     },
     {
@@ -196,7 +196,7 @@
     {
       "title": "Base Foods",
       "color": "#808000",
-      "icon": "paw",
+      "icon": "basefoods",
       "data": []
     }
   ],

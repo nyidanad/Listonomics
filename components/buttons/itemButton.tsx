@@ -1,7 +1,8 @@
-import { StyleSheet, Text, TouchableOpacity, View } from 'react-native'
+import { StyleSheet, Text, TouchableOpacity, useColorScheme, View } from 'react-native'
 import React, { useState } from 'react'
 
 import ItemAddModal from '../modals/itemAddModal'
+import { Colors } from '../../constants/colors'
 
 type ItemButonProps = {
   lid: string,
@@ -9,6 +10,11 @@ type ItemButonProps = {
 }
 
 const itemButton = ({ lid, category }: ItemButonProps) => {
+  const colorScheme = useColorScheme()
+      
+  if (!colorScheme) return null
+  const theme = Colors[colorScheme] ?? Colors.light
+
   const [showModal, setShowModal] = useState<boolean>(false)
 
   const onPress = () => {
@@ -17,9 +23,9 @@ const itemButton = ({ lid, category }: ItemButonProps) => {
 
   return (
     <>
-      <TouchableOpacity style={styles.container} onPress={onPress}>
-        <View style={styles.checkbox} />
-        <Text style={styles.text}>+ Add item</Text>
+      <TouchableOpacity style={[styles.container, { borderBottomColor: theme.addItemButton }]} onPress={onPress}>
+        <View style={[styles.checkbox, { borderColor: theme.addItemButton }]} />
+        <Text style={[styles.text, { color: theme.addItemButton }]}>+ Add item</Text>
       </TouchableOpacity>
 
       <ItemAddModal lid={lid} category={category} showModal={showModal} setShowModal={setShowModal} />
@@ -34,14 +40,12 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     paddingVertical: 3, 
     borderBottomWidth: 1,
-    borderBottomColor: '#DEDEDE',
     borderStyle: 'dashed',
     marginLeft: 15,
     marginBottom: 15,
     marginTop: 5,
   },
   text: {
-    color: '#DEDEDE',
     fontSize: 15,
     marginBottom: 5,
   },
@@ -51,7 +55,6 @@ const styles = StyleSheet.create({
     marginRight: 13,
     borderRadius: 999,
     borderWidth: 1,
-    borderColor: '#DEDEDE',
     borderStyle: 'dashed',
   },
 })

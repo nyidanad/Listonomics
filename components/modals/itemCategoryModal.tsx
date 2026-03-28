@@ -1,4 +1,4 @@
-import { ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
+import { ScrollView, StyleSheet, Text, TouchableOpacity, useColorScheme, View } from 'react-native'
 import React, { useMemo, forwardRef, Dispatch, SetStateAction } from 'react'
 import { Image } from 'expo-image'
 
@@ -6,6 +6,7 @@ import { BottomSheetModal, BottomSheetView } from '@gorhom/bottom-sheet'
 
 import assets from '../../data/assets.json'
 import ItemCategoryBackdrop from './itemCategoryBackdrop'
+import { Colors } from '../../constants/colors'
 
 export const IconMap: Record<string, any> = {
   bread: require('../../assets/icons/bread.svg'),
@@ -25,12 +26,14 @@ export const IconMap: Record<string, any> = {
   shirt: require('../../assets/icons/shirt.svg'),
   lightning: require('../../assets/icons/lightning-bolt.svg'),
   tools: require('../../assets/icons/tools.svg'),
+  leaf: require('../../assets/icons/leaf.svg'),
   hammer: require('../../assets/icons/hammer.svg'),
   muscle: require('../../assets/icons/muscle.svg'),
   book: require('../../assets/icons/book.svg'),
   teddy: require('../../assets/icons/teddy-bear.svg'),
   baby: require('../../assets/icons/baby-bottle.svg'),
   paw: require('../../assets/icons/paw.svg'),
+  basefoods: require('../../assets/icons/base-foods.svg'),
 };
 
 type ItemCategoryModalProps = {
@@ -39,6 +42,11 @@ type ItemCategoryModalProps = {
 }
 
 const ItemCategoryModal = forwardRef<BottomSheetModal, ItemCategoryModalProps>(({ selectedCategories, setSelectedCategories }, ref) => {
+  const colorScheme = useColorScheme()
+
+  if (!colorScheme) return null
+  const theme = Colors[colorScheme] ?? Colors.light
+  
   const snapPoints = useMemo(() => ['45%', '45%', '67%'], []);
   const categories = assets.categories.filter(
     category => !selectedCategories.some(selected => selected.title === category.title)
@@ -50,10 +58,11 @@ const ItemCategoryModal = forwardRef<BottomSheetModal, ItemCategoryModalProps>((
       enablePanDownToClose
       enableDismissOnClose
       snapPoints={snapPoints}
+      backgroundStyle={{ backgroundColor: theme.modalBackground }}
       backdropComponent={ItemCategoryBackdrop}
     >
       <BottomSheetView style={styles.container}>
-        <Text style={styles.title}>Categories</Text>
+        <Text style={[styles.title, { color: theme.text }]}>Categories</Text>
 
         <ScrollView contentContainerStyle={styles.categories}>
           {categories.map((category, index) => {
@@ -94,7 +103,6 @@ const styles = StyleSheet.create({
     marginBottom: 5,
   },
   title: {
-    color: '#363636',
     fontWeight: 'bold',
   },
   image: {

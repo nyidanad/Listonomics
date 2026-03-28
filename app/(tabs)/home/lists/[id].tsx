@@ -1,9 +1,8 @@
-import { SectionList, StyleSheet, Text, View } from "react-native"
+import { SectionList, StyleSheet, Text, useColorScheme, View } from "react-native"
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { useLocalSearchParams } from 'expo-router'
 import { Image } from "expo-image"
 import { SafeAreaView } from "react-native-safe-area-context"
-
 import { BottomSheetModal } from "@gorhom/bottom-sheet"
 import Ionicons from '@expo/vector-icons/Ionicons'
 
@@ -17,6 +16,7 @@ import Item from "../../../../components/item/item"
 import { supabase } from "../../../../utils/supabase"
 import fetchItems from "../../../../utils/fetchItems"
 import fetchStats from "../../../../utils/fetchItemStats"
+import { Colors } from "../../../../constants/colors"
 
 type ListProps = {
   id: string,
@@ -25,6 +25,11 @@ type ListProps = {
 }
 
 const ListPage = () => {
+  const colorScheme = useColorScheme()
+    
+  if (!colorScheme) return null
+  const theme = Colors[colorScheme] ?? Colors.light
+
   const { id, title, color } = useLocalSearchParams() as ListProps
   const [selectedCategories, setSelectedCategories] = useState<any[]>([])
   const [collapsedSections, setCollapsedSections] = useState(new Set())
@@ -111,7 +116,7 @@ const ListPage = () => {
   return (
     <SafeAreaView style={{ flex: 1 }}>
       <CustomListHeader readonly={readonly} setReadonly={setReadonly} />
-      <View style={styles.container}>
+      <View style={[styles.container, { backgroundColor: theme.background }]}>
         {!readonly &&
         <View style={styles.details}>
           <ListDetails title="In cart" icon="shopping-basket" color="#404040" information={`${inCartCount}/${selectedCategories.reduce((s, section) => s + (section.data?.length ?? 0), 0)}`} />
@@ -131,7 +136,7 @@ const ListPage = () => {
 
             return (
               <>
-                <View style={styles.header}>
+                <View style={[styles.header, { borderBottomColor: theme.ruler }]}>
                   <View style={styles.headerWrapper}>
                     <Image
                       source={IconMap[section.icon]}
@@ -187,7 +192,6 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     padding: 20,
-    backgroundColor: '#FAFAFA',
   }, 
   details: {
     flexDirection: 'row',

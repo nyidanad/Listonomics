@@ -7,21 +7,28 @@ export const homeLayout = () => {
       <Stack>
         <Stack.Screen name='index' options={{
           headerShown: false,
+          statusBarStyle: 'auto'
         }} />
         <Stack.Screen name='addList' options={{
-          headerShown: false
+          headerShown: false,
+          statusBarStyle: 'auto'
         }} />
         <Stack.Screen name='editList/[id]' options={{
-          headerShown: false
+          headerShown: false,
+          statusBarStyle: 'auto'
         }} />
         <Stack.Screen name='lists/[id]' options={{
-          headerShown: false
+          headerShown: false,
+          statusBarStyle: 'auto'
+          
         }} />
         <Stack.Screen name='profile/index' options={{
-          headerShown: false
+          headerShown: false,
+          statusBarStyle: 'auto'
         }} />
         <Stack.Screen name='profile/editProfile' options={{
-          headerShown: false
+          headerShown: false,
+          statusBarStyle: 'auto'
         }} />
       </Stack>
     </GestureHandlerRootView>

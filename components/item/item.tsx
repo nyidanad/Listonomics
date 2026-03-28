@@ -1,6 +1,8 @@
-import { StyleSheet, Text, View } from 'react-native'
+import { StyleSheet, Text, useColorScheme, View } from 'react-native'
 import React from 'react'
 import Checkbox from 'expo-checkbox'
+
+import { Colors } from '../../constants/colors'
 
 type ItemProps = {
   name: string
@@ -15,6 +17,11 @@ type ItemProps = {
 }
 
 const item = ({ name, checked, color, priority, onToggle }: ItemProps) => {
+  const colorScheme = useColorScheme()
+    
+  if (!colorScheme) return null
+  const theme = Colors[colorScheme] ?? Colors.light
+
   const getPriorityColor = (priority: string | null) => {
     switch (priority) {
       case 'medium': {
@@ -30,15 +37,17 @@ const item = ({ name, checked, color, priority, onToggle }: ItemProps) => {
   }
 
   return (
-    <View style={styles.container}>
+    <View style={[styles.container, { borderBottomColor: theme.ruler }]}>
       <View style={styles.wrapper}>
         <Checkbox 
           value={checked} 
           onValueChange={() => onToggle()} 
-          color={checked ? color+'85' : undefined} 
-          style={[styles.checkbox, !checked && { borderColor: '#363636', borderWidth: 1.5 }]} 
+          color={checked ? color+'99' : undefined} 
+          style={[styles.checkbox, !checked && { borderColor: theme.text, borderWidth: 1.5 }]} 
         />
-        <Text style={checked ? styles.textChecked : styles.text}>{name}</Text>
+        <Text style={checked ? [styles.textChecked, { color: theme.cheked }] : [styles.text, { color: theme.text }]}>
+          {name}
+        </Text>
       </View>
       <View style={[styles.priority, { backgroundColor: getPriorityColor(priority) }]} />
     </View>
@@ -55,7 +64,6 @@ const styles = StyleSheet.create({
     paddingVertical: 6,
     marginLeft: 10,
     borderBottomWidth: 1,
-    borderBottomColor: '#DEDEDE',
     borderStyle: 'dashed',
   },
   wrapper: {
@@ -71,7 +79,6 @@ const styles = StyleSheet.create({
     fontSize: 16,
   },
   textChecked: {
-    color: '#D9D9D9',
     fontSize: 16,
     textDecorationLine: 'line-through',
   },

@@ -1,14 +1,21 @@
-import { StyleSheet, Text, TouchableOpacity } from 'react-native'
+import { StyleSheet, Text, TouchableOpacity, useColorScheme } from 'react-native'
 import React from 'react'
+
+import { Colors } from '../../constants/colors'
 
 type CategoryButtonProps = {
   onPress: () => void
 }
 
 const categoryButton = ({ onPress }: CategoryButtonProps) => {
+  const colorScheme = useColorScheme()
+
+  if (!colorScheme) return null
+  const theme = Colors[colorScheme] ?? Colors.light
+
   return (
-    <TouchableOpacity style={styles.container} onPress={onPress}>
-      <Text style={styles.text}>+ Add category</Text>
+    <TouchableOpacity style={[styles.container, { borderBottomColor: theme.addCategoryButton }]} onPress={onPress}>
+      <Text style={[styles.text, { color: theme.addCategoryButton }]}>+ Add category</Text>
     </TouchableOpacity>
   )
 }

@@ -1,7 +1,7 @@
 import { useContext, useState } from 'react'
-import { StyleSheet, Text, TextInput, TouchableOpacity, View } from "react-native"
+import { StyleSheet, Text, TextInput, TouchableOpacity, useColorScheme, View } from "react-native"
 import { router } from 'expo-router'
-
+import { SafeAreaView } from 'react-native-safe-area-context'
 import Ionicons from '@expo/vector-icons/Ionicons'
 import Entypo from '@expo/vector-icons/Entypo'
 import DateTimePicker, { DateTimePickerEvent } from "@react-native-community/datetimepicker"
@@ -11,7 +11,7 @@ import { supabase } from '../../../utils/supabase'
 import { AuthContext } from '../../../utils/authContext'
 import assets from '../../../data/assets.json'
 import CustomHeader from '../../../components/header/customHeader'
-import { SafeAreaView } from 'react-native-safe-area-context'
+import { Colors } from '../../../constants/colors'
 
 type iconType = keyof typeof Ionicons.glyphMap
 
@@ -22,13 +22,13 @@ type List = {
   icon: keyof typeof Ionicons.glyphMap
 }
 
-type SQLRow = {
-  serial: string
-}
-
 const addList = () => {
+  const colorScheme = useColorScheme()
+  
+  if (!colorScheme) return null
+  const theme = Colors[colorScheme] ?? Colors.light
+
   const { user } = useContext(AuthContext);
-  const db = useSQLiteContext()
   const colors = assets.colors
   const icons = assets.icons as iconType[]
   
@@ -86,7 +86,7 @@ const addList = () => {
   }
 
   return (
-    <SafeAreaView style={{ flex: 1}}>
+    <SafeAreaView style={{ flex: 1, backgroundColor: theme.background }}>
       <CustomHeader 
         title='Add List' 
         backTo='Home' 
@@ -98,7 +98,7 @@ const addList = () => {
       <View style={styles.container}>
         <View>
           { /* TITLE */ }
-          <View style={styles.titleWrapper}>
+          <View style={[styles.titleWrapper, { backgroundColor: theme.list }]}>
             <View style={[styles.titleIcon, { backgroundColor: list.color }]}>
                 <Ionicons name={list.icon} style={styles.selectedIcon} />
             </View>
@@ -107,46 +107,46 @@ const addList = () => {
               onChangeText={(text) => setList({...list, title: text})}
               placeholder='List Name'
               placeholderTextColor={'#AFAFAF'} 
-              style={styles.inputTitleText}
+              style={[styles.inputTitleText, { backgroundColor: theme.listInput, color: theme.text }]}
             />
           </View>
 
           { /* DATETIMEPICKER */ }
-          <TouchableOpacity onPress={() => setShowDatePicker(true)} style={styles.dateContainer}>
+          <TouchableOpacity onPress={() => setShowDatePicker(true)} style={[styles.dateContainer, { backgroundColor: theme.list }]}>
             <View style={styles.dateWrapper}>
-              <Ionicons name="calendar-outline" size={32} color={'#363636'} style={{ marginRight: 10 }} />
+              <Ionicons name="calendar-outline" size={32} color={theme.text} style={{ marginRight: 10 }} />
               <View>
                 <Text style={styles.dateLabel}>Schedule List</Text>
-                <Text style={styles.dateText}>
+                <Text style={[styles.dateText, { color: theme.text }]}>
                   {list.scheduled.toLocaleDateString('HU', { year: 'numeric', month: '2-digit', day: '2-digit' }).replace(/\//, '.')}
                 </Text>
               </View>
             </View>
-            <Entypo name="select-arrows" size={22} color={'#363636'} />
+            <Entypo name="select-arrows" size={22} color={theme.text} />
           </TouchableOpacity>
           {showDatePicker && (<DateTimePicker value={list.scheduled} is24Hour={true} mode={"date"} onChange={onChange} />)}
 
           { /* COLORS */ }
-          <View style={styles.wrapper}>
+          <View style={[styles.wrapper, { backgroundColor: theme.list }]}>
             {colors.map((color, index) => {
               const isActive = selectedColor === colors[index]
               return (
                 <View key={color}>
                   <TouchableOpacity onPress={() => [setList({...list, color: colors[index]}), setSelectedColor(colors[index])]}>
                     <View style={[styles.circle, { backgroundColor: color }]}>
-                      {isActive && <View style={styles.innerCircle} />}
+                      {isActive && <View style={[styles.innerCircle, { backgroundColor: theme.list }]} />}
                     </View>
                   </TouchableOpacity>
                 </View>
               )
             })}
-            <TouchableOpacity style={[styles.circle, { backgroundColor: '#F5F5F5', }]}>
-              <Ionicons name={'add-sharp'} size={24} color={'#363636'} />
+            <TouchableOpacity style={[styles.circle, { backgroundColor: theme.listButtonBackground, }]}>
+              <Ionicons name={'add-sharp'} size={24} color={theme.listButtonIcon} />
             </TouchableOpacity>
           </View>
 
           { /* ICONS */ }
-          <View style={styles.wrapper}>
+          <View style={[styles.wrapper, { backgroundColor: theme.list }]}>
             {icons.map((icon, index) => {
               const isActive = selectedIcon === icons[index]
               return (
@@ -159,8 +159,8 @@ const addList = () => {
                 </View>
               )
             })}
-            <TouchableOpacity style={[styles.circle, { backgroundColor: '#F5F5F5', }]}>
-              <Ionicons name={'add-sharp'} size={24} color={'#363636'} />
+            <TouchableOpacity style={[styles.circle, { backgroundColor: theme.listButtonBackground, }]}>
+              <Ionicons name={'add-sharp'} size={24} color={theme.listButtonIcon} />
             </TouchableOpacity>
           </View>
         </View>
@@ -175,7 +175,6 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
   },
   titleWrapper: {
-    backgroundColor: '#FFFFFF',
     padding: 20,
     borderRadius: 12,
     marginBottom: 15,
@@ -203,7 +202,6 @@ const styles = StyleSheet.create({
     color: '#FFF',
   },
   inputTitleText: {
-    backgroundColor: '#FAFAFA',
     width: '100%',
     height: 50,
     color: '#363636',

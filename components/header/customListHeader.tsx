@@ -1,8 +1,9 @@
-import { StyleSheet, Text, TouchableOpacity, View } from 'react-native'
+import { StyleSheet, Text, TouchableOpacity, useColorScheme, View } from 'react-native'
 import React, { Dispatch, SetStateAction } from 'react'
 import { router } from 'expo-router'
-
 import Ionicons from '@expo/vector-icons/Ionicons'
+
+import { Colors } from '../../constants/colors'
 
 type customListHeaderProps = {
   readonly: boolean
@@ -10,12 +11,17 @@ type customListHeaderProps = {
 }
 
 const customListHeader = ({ readonly, setReadonly }: customListHeaderProps) => {
+  const colorScheme = useColorScheme()
+      
+  if (!colorScheme) return null
+  const theme = Colors[colorScheme] ?? Colors.light
+
   const onPress = () => {
     setReadonly(!readonly)
   }
 
   return (
-    <View style={styles.container}>
+    <View style={[styles.container, { backgroundColor: theme.header }]}>
       <View style={styles.wrapper}>
         <TouchableOpacity onPress={() => router.back()} style={styles.backButton}>
           <Ionicons name='chevron-back' color={'#007AFF'} size={24} />
