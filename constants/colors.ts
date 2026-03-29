@@ -27,6 +27,8 @@ export const Colors = {
     itemCancelBorder: '#E2E2E2',
     currency: '#C7C7CC',
     priority: '#989CA9',
+    profileInputBorder: '#EBEBEB',
+    cancelButtonBorder: '#00000014',
   },
   
   dark: {
@@ -55,5 +57,7 @@ export const Colors = {
     itemCancelBorder: '#434343',
     currency: '#5A5A5A',
     priority: '#757575',
+    profileInputBorder: '#434343',
+    cancelButtonBorder: '#434343',
   },
 }

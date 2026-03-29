@@ -1,14 +1,15 @@
-import { StyleSheet, Text, TouchableOpacity, View } from 'react-native'
+import { StyleSheet, Text, TouchableOpacity, useColorScheme, View } from 'react-native'
 import React, { useContext, useEffect, useState } from 'react'
 import { LinearGradient } from 'expo-linear-gradient'
 import { useNavigation, useRouter } from 'expo-router'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { Image } from 'expo-image'
-
 import Ionicons from '@expo/vector-icons/Ionicons'
+
 import CustomHeader from '../../../../components/header/customHeader'
 import { AuthContext } from '../../../../utils/authContext'
 import { supabase } from '../../../../utils/supabase'
+import { Colors } from '../../../../constants/colors'
 
 type ProfileSettings = {
   id: number,
@@ -18,6 +19,11 @@ type ProfileSettings = {
 }
 
 const profile = () => {
+  const colorScheme = useColorScheme()
+
+  if (!colorScheme) return null
+  const theme = Colors[colorScheme] ?? Colors.light
+
   const authContext = useContext(AuthContext)
   const router = useRouter()
   const navigation = useNavigation()
@@ -42,7 +48,7 @@ const profile = () => {
   }, [navigation])
 
   return (
-    <SafeAreaView style={{ flex: 1 }}>
+    <SafeAreaView style={{ flex: 1, backgroundColor: theme.background }}>
       <CustomHeader 
         title='Profile' 
         backTo='Home' 
@@ -60,10 +66,10 @@ const profile = () => {
         })}
       />
       
-      <View style={styles.container}>
+      <View style={[styles.container, { backgroundColor: theme.list }]}>
 
         {/* header */}
-        <View style={styles.header}>
+        <View style={[styles.header, { borderBottomColor: theme.ruler }]}>
           <LinearGradient 
           colors={profileSettings?.banner_color || ['#FAFAFA', '#F1F1F1']}
           start={{ x: 0, y: 1 }}
@@ -71,10 +77,10 @@ const profile = () => {
           style={styles.banner} />
           <View style={styles.headerContent}>
             <Image
-              style={styles.image}
+              style={[styles.image, { borderColor: theme.list }]}
               source={require("../../../../assets/windows.png")}
             />
-            <Text style={styles.name}>{authContext.user?.name}</Text>
+            <Text style={[styles.name, { color: theme.text }]}>{authContext.user?.name}</Text>
             <Text style={styles.email}>{authContext.user?.email}</Text>
           </View>
         </View>
@@ -83,12 +89,12 @@ const profile = () => {
         <View style={styles.details}>
           {profileSettings?.description && (
             <View>
-              <Text style={styles.detailsTitle}>Description</Text>
+              <Text style={[styles.detailsTitle, { color: theme.text }]}>Description</Text>
               <Text style={styles.descriptionText}>{profileSettings?.description}</Text>
             </View>
           )}
           <View>
-            <Text style={styles.detailsTitle}>Start of Membership</Text>
+            <Text style={[styles.detailsTitle, { color: theme.text }]}>Start of Membership</Text>
             <View style={styles.somWrapper}>
               <Ionicons name="calendar" size={14} color="#5B5E63" />
               <Text style={styles.som}>{new Date(authContext.user?.created_at ?? '').toLocaleDateString("hu-HU")}</Text>

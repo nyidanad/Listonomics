@@ -1,10 +1,9 @@
-import { KeyboardAvoidingView, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native'
+import { KeyboardAvoidingView, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, useColorScheme, View } from 'react-native'
 import React, { useState } from 'react'
 import { LinearGradient } from 'expo-linear-gradient'
 import { router, useLocalSearchParams } from 'expo-router'
 import { Image } from 'expo-image'
 import { SafeAreaView } from 'react-native-safe-area-context'
-
 import Ionicons from '@expo/vector-icons/Ionicons'
 import MaterialIcons from '@expo/vector-icons/MaterialIcons'
 import * as ImagePicker from 'expo-image-picker'
@@ -12,10 +11,16 @@ import * as ImagePicker from 'expo-image-picker'
 import { supabase } from '../../../../utils/supabase'
 import CustomHeader from '../../../../components/header/customHeader'
 import BannerPickerModal from '../../../../components/modals/bannerPickerModal'
+import { Colors } from '../../../../constants/colors'
 
 const PlaceholderImage = require('../../../../assets/windows.png')
 
 const editProfile = () => {
+  const colorScheme = useColorScheme()
+
+  if (!colorScheme) return null
+  const theme = Colors[colorScheme] ?? Colors.light
+
   const params = useLocalSearchParams();
 
   const uid: string = params.uid as string
@@ -75,7 +80,7 @@ const editProfile = () => {
   }
 
   return (
-    <SafeAreaView style={{ flex: 1 }}>
+    <SafeAreaView style={{ flex: 1, backgroundColor: theme.background }}>
       <KeyboardAvoidingView style={{ flex: 1, }}>
         <ScrollView
           contentContainerStyle={{ flexGrow: 1 }}
@@ -89,10 +94,10 @@ const editProfile = () => {
             onPress={handleSave} 
           />
           
-          <View style={styles.container}>
+          <View style={[styles.container, { backgroundColor: theme.list }]}>
 
             {/* header */}
-            <View style={styles.header}>
+            <View style={[styles.header, { borderBottomColor: theme.ruler }]}>
               <LinearGradient
                 colors={bannerColor}
                 start={{ x: 0, y: 1 }}
@@ -105,15 +110,15 @@ const editProfile = () => {
                 
                 <View style={styles.headerContent}>
                   <Image
-                    style={styles.image}
+                    style={[styles.image, { borderColor: theme.list }]}
                     source={selectedImage || PlaceholderImage}
                   />
-                  <Text style={styles.name}>{name}</Text>
+                  <Text style={[styles.name, { color: theme.text }]}>{name}</Text>
                   <Text style={styles.email}>{email}</Text>
 
                   {/* image edit button */}
-                  <TouchableOpacity style={styles.camera} onPress={pickImageAsync}>
-                    <Ionicons name="camera" size={24} color="#535353" />
+                  <TouchableOpacity style={[styles.camera, { backgroundColor: theme.list }]} onPress={pickImageAsync}>
+                    <Ionicons name="camera" size={24} color={theme.text} />
                   </TouchableOpacity>
                 </View>
               </LinearGradient>
@@ -122,18 +127,18 @@ const editProfile = () => {
             {/* details */}
             <View style={styles.details}>
               <View>
-                <Text style={styles.detailsTitle}>Name</Text>
+                <Text style={[styles.detailsTitle, { color: theme.text }]}>Name</Text>
                 <TextInput 
                   value={name}
                   onChangeText={setName}
-                  style={styles.inputText} />
+                  style={[styles.inputText, { color: theme.text, borderColor: theme.profileInputBorder }]} />
               </View>
               <View>
-                <Text style={styles.detailsTitle}>Description</Text>
+                <Text style={[styles.detailsTitle, { color: theme.text }]}>Description</Text>
                 <TextInput 
                   value={description}
                   onChangeText={setDescription} 
-                  style={[styles.inputText, { minHeight: 100, maxHeight: 155, textAlignVertical: 'top' }]} 
+                  style={[styles.inputText, { color: theme.text, borderColor: theme.profileInputBorder, minHeight: 100, maxHeight: 155, textAlignVertical: 'top' }]} 
                   multiline
                 />
               </View>
@@ -231,7 +236,6 @@ const styles = StyleSheet.create({
     color: '#363636',
     marginBottom: 20,
     borderWidth: 1,
-    borderColor: '#EBEBEB',
     borderRadius: 10,
     padding: 10,
   }

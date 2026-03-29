@@ -1,8 +1,9 @@
-import { Modal, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
+import { Modal, StyleSheet, Text, TouchableOpacity, useColorScheme, View } from 'react-native'
 import React, { Dispatch, SetStateAction, useState } from 'react'
+import { LinearGradient } from 'expo-linear-gradient'
 
 import assets from '../../data/assets.json'
-import { LinearGradient } from 'expo-linear-gradient'
+import { Colors } from '../../constants/colors'
 
 type bannerPickerModalProps = {
   showModal: boolean
@@ -12,6 +13,11 @@ type bannerPickerModalProps = {
 }
 
 const bannerPickerModal = ({ showModal, setShowModal, bannerColor, setBannerColor }: bannerPickerModalProps) => {
+  const colorScheme = useColorScheme()
+
+  if (!colorScheme) return null
+  const theme = Colors[colorScheme] ?? Colors.light
+
   const bannerColors = assets.banner_colors as [string, string, ...string[]][]
   const [selectedBanner, setSelectedBanner] = useState(bannerColor)
 
@@ -32,8 +38,8 @@ const bannerPickerModal = ({ showModal, setShowModal, bannerColor, setBannerColo
       onRequestClose={onClose}
     >
       <View style={styles.container}>
-        <View style={styles.content}>
-          <Text style={styles.title}>Choose banner color</Text>
+        <View style={[styles.content, { backgroundColor: theme.modalBackground }]}>
+          <Text style={[styles.title, { color: theme.text }]}>Choose banner color</Text>
           <View style={styles.colorWrapper}>
             {bannerColors.map((banner, index) => {
               return (
@@ -44,15 +50,15 @@ const bannerPickerModal = ({ showModal, setShowModal, bannerColor, setBannerColo
                     end={{ x: 1, y: 0 }}
                     style={styles.banner} 
                   >
-                    {JSON.stringify(selectedBanner) === JSON.stringify(banner) && <View style={styles.bannerInnerCircle} /> }
+                    {JSON.stringify(selectedBanner) === JSON.stringify(banner) && <View style={[styles.bannerInnerCircle, { backgroundColor: theme.modalBackground }]} /> }
                   </LinearGradient>
                 </TouchableOpacity>
               )
             })}
           </View>
           <View style={styles.buttonWrapper}>
-            <TouchableOpacity style={[styles.button, styles.buttonCancel]} onPress={onClose}>
-              <Text style={styles.buttonCancelText}>Cancel</Text>
+            <TouchableOpacity style={[styles.button, styles.buttonCancel, { borderColor: theme.cancelButtonBorder }]} onPress={onClose}>
+              <Text style={{ color: theme.text }}>Cancel</Text>
             </TouchableOpacity>
             <TouchableOpacity style={[styles.button, styles.buttonSave]} onPress={onSave}>
               <Text style={styles.buttonSaveText}>Save</Text>
@@ -121,10 +127,6 @@ const styles = StyleSheet.create({
   buttonCancel: {
     marginRight: 10,
     borderWidth: 1,
-    borderColor: 'rgba(0,0,0,0.08)',
-  },
-  buttonCancelText: {
-    color: '#363636',
   },
   buttonSave: {
     backgroundColor: '#007AFF',
