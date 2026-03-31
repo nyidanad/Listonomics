@@ -160,7 +160,15 @@ const ListPage = () => {
 
             return (
               <View style={{ borderLeftWidth: 4, borderLeftColor: section.color }}>
-                <Item name={item.name} checked={item.checked} color={section.color} priority={item.priority} onToggle={() => onToggle(item)} />
+                <Item 
+                  name={item.name} 
+                  price={item.price} 
+                  quantity={item.quantity} 
+                  checked={item.checked} 
+                  color={section.color} 
+                  priority={item.priority} 
+                  onToggle={() => onToggle(item)} 
+                />
               </View>
             )
           }}

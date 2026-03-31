@@ -52,7 +52,7 @@ const styles = StyleSheet.create({
   checkbox: {
     width: 22,
     height: 22,
-    marginRight: 13,
+    marginRight: 10,
     borderRadius: 999,
     borderWidth: 1,
     borderStyle: 'dashed',

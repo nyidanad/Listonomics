@@ -2,6 +2,7 @@ import { Modal, StyleSheet, Text, TextInput, TouchableOpacity, useColorScheme, V
 import React, { Dispatch, SetStateAction, useState } from 'react'
 import Ionicons from '@expo/vector-icons/Ionicons'
 
+import PriorityModal from './priorityModal'
 import { supabase } from '../../utils/supabase'
 import { Colors } from '../../constants/colors'
 
@@ -35,6 +36,7 @@ const itemAddModal = ({ lid, category, showModal, setShowModal }: itemAddModalPr
   const [description, setDescription] = useState<string>('')
   const [showDescription, setShowDescription] = useState<boolean>(false)
   const [showError, setShowError] = useState<ErrorType>({ nameError: false, price: false, quantity: false })
+  const [showPriorityModal, setShowPriorityModal] = useState<boolean>(false)
 
   const checkForm = () => {
     if (name.trim() === '') {
@@ -123,8 +125,8 @@ const itemAddModal = ({ lid, category, showModal, setShowModal }: itemAddModalPr
               <TextInput 
                 style={
                   showError.nameError 
-                  ? [styles.textInput, styles.error, { backgroundColor: theme.itemInput  }] 
-                  : [styles.textInput, { backgroundColor: theme.itemInput, borderColor: theme.itemInputBorder }]
+                  ? [styles.textInput, styles.error, { backgroundColor: theme.itemInput, color: theme.text  }] 
+                  : [styles.textInput, { backgroundColor: theme.itemInput, borderColor: theme.itemInputBorder, color: theme.text }]
                 } 
                 value={name} 
                 onChangeText={setName} 
@@ -135,15 +137,15 @@ const itemAddModal = ({ lid, category, showModal, setShowModal }: itemAddModalPr
 
             <View style={styles.detailsBox}>
               <Text style={styles.text}>Attributes</Text>
-              <TouchableOpacity style={[styles.attributebuttons, styles.prioritybuttons, { borderColor: theme.itemInputBorder, backgroundColor: theme.itemInput }]}>
-                <View style={[styles.priorityView, { backgroundColor: theme.priority }]}>
+              <TouchableOpacity style={[styles.attributebuttons, styles.prioritybuttons, { borderColor: theme.itemInputBorder, backgroundColor: theme.itemInput }]} onPress={() => setShowPriorityModal(true)}>
+                <View style={[styles.priorityView, priority === null ? { backgroundColor: theme.priority } : { backgroundColor: priority === 'medium' ? '#FFC602' : '#FF3B30' }]}>
                   <View style={styles.priorityCircle} />
                 </View>
-                <Text style={[styles.attributeText, { color: theme.text }]}>{priority == null ? 'Priority' : priority }</Text>
+                <Text style={[styles.attributeText, { color: theme.text }]}>{priority == null ? 'Priority' : priority[0].toUpperCase() + priority.slice(1) }</Text>
                 <Ionicons name="add" size={16} color={theme.text} style={{ marginLeft: 5 }} />
               </TouchableOpacity>
 
-              <TouchableOpacity style={[styles.attributebuttons, styles.unitbuttons, { borderColor: theme.itemInputBorder, backgroundColor: theme.itemInput  }]}>
+              <TouchableOpacity style={[styles.attributebuttons, styles.unitbuttons, { borderColor: theme.itemInputBorder, backgroundColor: theme.itemInput }]}>
                 <Text style={[styles.attributeText, { color: theme.text }]}>{unit == null ? 'Unit' : unit }</Text>
                 <Ionicons name="add" size={16} color={theme.text} style={{ marginLeft: 5 }} />
               </TouchableOpacity>
@@ -195,6 +197,8 @@ const itemAddModal = ({ lid, category, showModal, setShowModal }: itemAddModalPr
           </View>
         </View>
       </View>
+
+      <PriorityModal showModal={showPriorityModal} setShowModal={setShowPriorityModal} setPriority={setPriority} />
     </Modal>
   )
 }
