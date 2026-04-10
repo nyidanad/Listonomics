@@ -29,6 +29,10 @@ export const Colors = {
     priority: '#989CA9',
     profileInputBorder: '#EBEBEB',
     cancelButtonBorder: '#00000014',
+    settingModalBackground: '#FFFFFF',
+    settingIconBackground: '#ECEFF3',
+    activeSetting: '#F3F3F3',
+    defaultLabel: '#D9D9D9',
   },
   
   dark: {
@@ -59,5 +63,9 @@ export const Colors = {
     priority: '#757575',
     profileInputBorder: '#434343',
     cancelButtonBorder: '#434343',
+    settingModalBackground: '#222222',
+    settingIconBackground: '#434343',
+    activeSetting: '#303030',
+    defaultLabel: '#5A5A5A',
   },
 }

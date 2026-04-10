@@ -1,6 +1,8 @@
+import { StyleSheet, Switch, Text, useColorScheme, View } from 'react-native'
 import Ionicons from '@expo/vector-icons/Ionicons'
 import FontAwesome5 from '@expo/vector-icons/FontAwesome5'
-import { StyleSheet, Switch, Text, View } from 'react-native'
+
+import { Colors } from '../../constants/colors'
 
 type SettingProps = {
   title: string
@@ -13,6 +15,11 @@ type SettingProps = {
 }
 
 const settingWithSwitch = ({ title, tooltip, iconDir, leftIcon, color, toggled, onClick }: SettingProps) => {
+  const colorScheme = useColorScheme()
+
+  if (!colorScheme) return null
+  const theme = Colors[colorScheme] ?? Colors.light
+
   const LeftIconComponent = iconDir === 'Ionicons' ? Ionicons : FontAwesome5;
 
   return (
@@ -20,7 +27,7 @@ const settingWithSwitch = ({ title, tooltip, iconDir, leftIcon, color, toggled, 
       <View style={styles.leftIconWrapper}>
         <LeftIconComponent name={leftIcon} color={'#FFF'} size={18} style={[styles.leftIcon, { backgroundColor: color }]} />
         <View style={styles.titleWrapper}>
-          <Text style={styles.title}>{title}</Text>
+          <Text style={[styles.title, { color: theme.text }]}>{title}</Text>
           <Text style={styles.tooltip}>{tooltip}</Text>
         </View>
       </View>
@@ -61,7 +68,6 @@ const styles = StyleSheet.create({
     marginLeft: 20,
   },
   title: {
-    color: '#363636',
     fontSize: 16,
   },
   tooltip: {

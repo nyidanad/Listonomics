@@ -1,10 +1,9 @@
-import { Modal, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
+import { Modal, StyleSheet, Text, TouchableOpacity, useColorScheme, View } from 'react-native'
 import React, { Dispatch, SetStateAction, useState } from 'react'
-
 import Ionicons from '@expo/vector-icons/Ionicons'
 
 import assets from '../../../data/assets.json'
-import settings from '../../../data/settings.json'
+import { Colors } from '../../../constants/colors'
 
 type settingsModalProps = {
   showModal: boolean
@@ -19,8 +18,13 @@ type Theme = {
 }
 
 const themeModal = ({ showModal, setShowModal, request }: settingsModalProps) => {
+  const colorScheme = useColorScheme()
+
+  if (!colorScheme) return null
+  const theme = Colors[colorScheme] ?? Colors.light
+
   const themes = assets.themes as Theme[]
-  const [activeTheme, setAactiveTheme] = useState(settings.theme)
+  const [activeTheme, setAactiveTheme] = useState('System')
 
   const onSave = () => {}
 
@@ -36,28 +40,28 @@ const themeModal = ({ showModal, setShowModal, request }: settingsModalProps) =>
       onRequestClose={onClose}
     >
       <View style={styles.container}>
-        <View style={styles.content}>
+        <View style={[styles.content, { backgroundColor: theme.settingModalBackground }]}>
           {/* Header */}
           <View>
-            <Text style={styles.title}>Select theme</Text>
+            <Text style={[styles.title, { color: theme.text }]}>Select theme</Text>
             <Text style={styles.message}>Choose how the app looks. You can switch between Light, Dark or System. The System option will automatically match your device's apperance settings.</Text>
           </View>
 
           {/* Themes */}
           <View>
-            {themes.map((theme, index) => {
-              const isActive = activeTheme === theme.theme
+            {themes.map((item, index) => {
+              const isActive = activeTheme === item.theme
 
               return (
                 <TouchableOpacity 
                   key={index} 
-                  style={[styles.themeContainer, isActive && {backgroundColor: '#FFF'}]} 
-                  onPress={() => setAactiveTheme(theme.theme)}
+                  style={[styles.themeContainer, isActive && {backgroundColor: theme.activeSetting}]} 
+                  onPress={() => setAactiveTheme(item.theme)}
                 >
                   <View style={styles.themeWrapper}>
-                    <Ionicons name={theme.icon} color={theme.color} style={styles.icon} />
-                    <Text style={styles.theme}>{theme.theme}</Text>
-                    {theme.theme === "System" && <Text style={styles.default}>Default</Text>}
+                    <Ionicons name={item.icon} color={item.color} size={22} style={[styles.icon, { backgroundColor: theme.settingIconBackground }]} />
+                    <Text style={[styles.theme, { color: theme.text }]}>{item.theme}</Text>
+                    {item.theme === "System" && <Text style={[styles.default, { backgroundColor: theme.defaultLabel }]}>Default</Text>}
                   </View>
                   {isActive && <Ionicons name='checkmark-outline' style={styles.checkmark} />}
                 </TouchableOpacity>
@@ -123,22 +127,18 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   icon: {
-    fontSize: 24,
-    padding: 6,
+    padding: 8,
     marginLeft: 20,
     marginRight: 15,
     borderRadius: 999,
-    backgroundColor: '#ECEFF3',
   },
   theme: {
-    color: '#363636',
     fontSize: 16,
   },
   default: {
     color: '#989CA9',
     fontSize: 10,
     borderRadius: 999,
-    backgroundColor: '#F1F1F1',
     paddingHorizontal: 6,
     paddingVertical: 2,
     marginLeft: 20,

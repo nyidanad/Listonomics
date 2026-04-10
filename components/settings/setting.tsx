@@ -1,7 +1,9 @@
 import Ionicons from '@expo/vector-icons/Ionicons'
 import FontAwesome5 from '@expo/vector-icons/FontAwesome5'
-import { StyleSheet, Switch, Text, TouchableOpacity, View } from 'react-native'
+import { StyleSheet, Text, TouchableOpacity, useColorScheme, View } from 'react-native'
 import { Dispatch, SetStateAction } from 'react'
+
+import { Colors } from '../../constants/colors'
 
 type SettingProps = {
   title: string
@@ -16,6 +18,11 @@ type SettingProps = {
 }
 
 const setting = ({ title, tooltip, iconDir, leftIcon, color, showLabel, label, rightIcon, setShowModal }: SettingProps) => {
+  const colorScheme = useColorScheme()
+
+  if (!colorScheme) return null
+  const theme = Colors[colorScheme] ?? Colors.light
+
   const LeftIconComponent = iconDir === 'Ionicons' ? Ionicons : FontAwesome5;
   const titleStyle = title === 'Wipe datas' ? [styles.title, {color: 'red'}] : styles.title
 
@@ -24,7 +31,7 @@ const setting = ({ title, tooltip, iconDir, leftIcon, color, showLabel, label, r
       <View style={styles.leftIconWrapper}>
         <LeftIconComponent name={leftIcon} color={'#FFF'} size={18} style={[styles.leftIcon, { backgroundColor: color }]} />
         <View style={styles.titleWrapper}>
-          <Text style={titleStyle}>{title}</Text>
+          <Text style={[titleStyle, { color: theme.text }]}>{title}</Text>
           <Text style={styles.tooltip}>{tooltip}</Text>
         </View>
       </View>
@@ -60,7 +67,6 @@ const styles = StyleSheet.create({
     marginLeft: 20,
   },
   title: {
-    color: '#363636',
     fontSize: 16,
   },
   tooltip: {
