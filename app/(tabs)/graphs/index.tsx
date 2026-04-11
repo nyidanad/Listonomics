@@ -1,12 +1,75 @@
-import { Text } from 'react-native'
+import { StyleSheet, Text, TouchableOpacity, useColorScheme, View } from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
 
+import CustomStatHeader from '../../../components/header/customStatHeader'
+import DonutChart from '../../../components/charts/donutChart'
+import { Colors } from '../../../constants/colors'
+import { useState } from 'react'
+
 const Graphs = () => {
+  const colorScheme = useColorScheme()
+  
+  if (!colorScheme) return null
+  const theme = Colors[colorScheme] ?? Colors.light
+
+  const filters = ['7D', '1M', '3M', '1Y', 'All']
+  
+  const [activeFilter, setActiveFilter] = useState('1M')
+
   return (
-    <SafeAreaView style={{ flex: 1, alignItems: 'center', top: '50%' }}>
-      <Text>Graphs page</Text>
+    <SafeAreaView style={{ flex: 1, backgroundColor: theme.background }}>
+      <CustomStatHeader />
+      
+      {/* filters */}
+      <View style={[styles.container, { backgroundColor: theme.background }]}>
+        <View style={[styles.filters, { backgroundColor: theme.statBackground }]}>
+          {filters.map(filter => (
+            <TouchableOpacity
+              key={filter}
+              onPress={() => setActiveFilter(filter)}
+              style={[styles.filterButton, 
+                      activeFilter === filter && {  backgroundColor: theme.statFilterActiveBackground, borderColor: theme.statFilterActiveBorder, borderWidth: 1 }
+                    ]}
+            >
+              <Text
+                style={[styles.filterButtonText, { color: theme.statFilterText }, activeFilter === filter && { color: theme.text } ]}
+              >
+                {filter}
+              </Text>
+            </TouchableOpacity>
+          ))}
+        </View>
+
+        {/* charts */}
+        <DonutChart />
+
+      </View>
+
     </SafeAreaView>
   )
 }
 
 export default Graphs
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    paddingHorizontal: 20,
+  },
+  filters: {
+    flexDirection: 'row',
+    justifyContent: 'space-around',
+    borderRadius: 10,
+    marginTop: 25,
+  },
+  filterButton: {
+    flex: 1,
+    paddingVertical: 10,
+    borderRadius: 14,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  filterButtonText: {
+    fontFamily: 'InconsolataRegular',
+  },
+})

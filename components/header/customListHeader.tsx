@@ -46,10 +46,8 @@ const customListHeader = ({ readonly, setReadonly }: customListHeaderProps) => {
 export default customListHeader
 
 const styles = StyleSheet.create({
-    container: {
-    backgroundColor: '#FFFFFF',
+  container: {
     padding: 10,
-    
   },
   wrapper: {
     flexDirection: 'row',

@@ -33,6 +33,14 @@ export const Colors = {
     settingIconBackground: '#ECEFF3',
     activeSetting: '#F3F3F3',
     defaultLabel: '#D9D9D9',
+    statBackground: '#FFFFFF',
+    statBorder: '#E5E5EA',
+    statFilterActiveBackground: '#7676801f',
+    statFilterActiveBorder: '#E6E6E6',
+    statFilterText: '#A4A4A5',
+    donutTitle: '#DEDEDE',
+    donutLabelValue: '#D9D9D9',
+    donutLabelChange: '#89DAB0',
   },
   
   dark: {
@@ -67,5 +75,13 @@ export const Colors = {
     settingIconBackground: '#434343',
     activeSetting: '#303030',
     defaultLabel: '#5A5A5A',
+    statBackground: '#2C2C2C',
+    statBorder: '#434343',
+    statFilterActiveBackground: '#363636',
+    statFilterActiveBorder: '#434343',
+    statFilterText: '#5A5A5A',
+    donutTitle: '#5A5A5A',
+    donutLabelValue: '#757575',
+    donutLabelChange: '#C9EEDB',
   },
 }
