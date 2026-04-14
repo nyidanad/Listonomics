@@ -4,6 +4,7 @@ import { SafeAreaView } from 'react-native-safe-area-context'
 import CustomStatHeader from '../../../components/header/customStatHeader'
 import DonutChart from '../../../components/charts/donutChart'
 import AreaChart from '../../../components/charts/areaChart'
+import RadarChart from '../../../components/charts/radarChart'
 import { Colors } from '../../../constants/colors'
 import { useState } from 'react'
 
@@ -51,6 +52,7 @@ const Graphs = () => {
           <View style={{ paddingHorizontal: 2 }}>
             <DonutChart />
             <AreaChart setScrollEnabled={setScrollEnabled} />
+            <RadarChart />
           </View>
         </ScrollView>
       </View>

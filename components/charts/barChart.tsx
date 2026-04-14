@@ -66,6 +66,8 @@ const barChart = forwardRef<any>((props, ref) => {
         maxValue={800}
         scrollRef={ref}
         endSpacing={30}
+        isAnimated
+        animationDuration={2000}
       />
     </View>
   )

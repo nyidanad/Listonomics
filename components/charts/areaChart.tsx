@@ -1,4 +1,4 @@
-import { StyleSheet, Text, TouchableOpacity, useColorScheme, View } from 'react-native'
+import { StyleSheet, Text, useColorScheme, View } from 'react-native'
 import React, { Dispatch, SetStateAction, useRef } from 'react'
 import { LineChart } from 'react-native-gifted-charts';
 
@@ -66,7 +66,6 @@ const AreaChart = ({ setScrollEnabled }: AreaChartProps) => {
         <LineChart
           areaChart
           data={ptData}
-          rotateLabel
           allowFontScaling
           onScrollEndDrag={() => setScrollEnabled(true)}
           width={300}
@@ -88,7 +87,6 @@ const AreaChart = ({ setScrollEnabled }: AreaChartProps) => {
           yAxisTextStyle={{color: 'gray'}}
           xAxisColor={theme.areaAxisLabel}
           animateOnDataChange
-          animationDuration={1000}
           scrollRef={lineChartRef}
           onScroll={(event: any) => {
             if (barChartRef.current) {

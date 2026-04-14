@@ -45,6 +45,9 @@ export const Colors = {
     areaPointerText: '#989CA9',
     areaRuler: '#DEDEDE',
     areaAxisLabel: '#A4A4A5',
+    radarFill: '#C7C7CC',
+    radarStroke: '#DEDEDE',
+    radarText: '#989CA9',
   },
   
   dark: {
@@ -91,5 +94,8 @@ export const Colors = {
     areaPointerText: '#A6A6A6',
     areaRuler: '#434343',
     areaAxisLabel: '#5A5A5A',
+    radarFill: '#333333',
+    radarText: '#A6A6A6',
+    radarStroke: '#434343',
   },
 }
