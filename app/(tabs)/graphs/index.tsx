@@ -1,8 +1,9 @@
-import { StyleSheet, Text, TouchableOpacity, useColorScheme, View } from 'react-native'
+import { ScrollView, StyleSheet, Text, TouchableOpacity, useColorScheme, View } from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
 
 import CustomStatHeader from '../../../components/header/customStatHeader'
 import DonutChart from '../../../components/charts/donutChart'
+import AreaChart from '../../../components/charts/areaChart'
 import { Colors } from '../../../constants/colors'
 import { useState } from 'react'
 
@@ -15,6 +16,7 @@ const Graphs = () => {
   const filters = ['7D', '1M', '3M', '1Y', 'All']
   
   const [activeFilter, setActiveFilter] = useState('1M')
+  const [scrollEnabled, setScrollEnabled] = useState(true)
 
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: theme.background }}>
@@ -41,8 +43,16 @@ const Graphs = () => {
         </View>
 
         {/* charts */}
-        <DonutChart />
-
+        <ScrollView
+          showsVerticalScrollIndicator={false}
+          contentContainerStyle={{ paddingBottom: 20 }}
+          scrollEnabled={scrollEnabled}
+        >
+          <View style={{ paddingHorizontal: 2 }}>
+            <DonutChart />
+            <AreaChart setScrollEnabled={setScrollEnabled} />
+          </View>
+        </ScrollView>
       </View>
 
     </SafeAreaView>

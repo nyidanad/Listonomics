@@ -41,6 +41,10 @@ export const Colors = {
     donutTitle: '#DEDEDE',
     donutLabelValue: '#D9D9D9',
     donutLabelChange: '#89DAB0',
+    areaPointerBackground: '#F6F6F6',
+    areaPointerText: '#989CA9',
+    areaRuler: '#DEDEDE',
+    areaAxisLabel: '#A4A4A5',
   },
   
   dark: {
@@ -83,5 +87,9 @@ export const Colors = {
     donutTitle: '#5A5A5A',
     donutLabelValue: '#757575',
     donutLabelChange: '#C9EEDB',
+    areaPointerBackground: '#5a5a5a',
+    areaPointerText: '#A6A6A6',
+    areaRuler: '#434343',
+    areaAxisLabel: '#5A5A5A',
   },
 }
