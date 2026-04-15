@@ -3,6 +3,7 @@ import React, { Dispatch, SetStateAction, useRef } from 'react'
 import { LineChart } from 'react-native-gifted-charts';
 
 import { Colors } from '../../constants/colors';
+import useTimeSeriesTotals from '../../utils/useTimeSeriesTotal';
 import BarChart from './barChart';
 
 type AreaChartProps = {
@@ -18,43 +19,9 @@ const AreaChart = ({ setScrollEnabled }: AreaChartProps) => {
   const lineChartRef = useRef<any>(null);
   const barChartRef = useRef<any>(null);
 
-  const ptData = [
-    {value: 260, date: '1 Apr 2022'},
-    {value: 280, date: '2 Apr 2022'},
-    {value: 290, date: '3 Apr 2022'},
-    {value: 280, date: '4 Apr 2022'},
-    {value: 240, date: '5 Apr 2022'},
-    {value: 245, date: '6 Apr 2022'},
-    {value: 260, date: '7 Apr 2022'},
-    {value: 300, date: '8 Apr 2022'},
-    {value: 320, date: '9 Apr 2022'},
-    {value: 340, date: '10 Apr 2022', label: '10 Apr', labelTextStyle: {color: 'lightgray', width: 60},},
-    {value: 380, date: '11 Apr 2022'},
-    {value: 360, date: '12 Apr 2022'},
-    {value: 440, date: '13 Apr 2022'},
-    {value: 485, date: '14 Apr 2022'},
-    {value: 380, date: '15 Apr 2022'},
-    {value: 490, date: '16 Apr 2022'},
-    {value: 470, date: '17 Apr 2022'},
-    {value: 385, date: '18 Apr 2022'},
-    {value: 395, date: '19 Apr 2022'},
-    {value: 400, date: '20 Apr 2022', label: '20 Apr', labelTextStyle: {color: 'lightgray', width: 60},},
-    {value: 380, date: '21 Apr 2022'},
-    {value: 395, date: '22 Apr 2022'},
-    {value: 360, date: '23 Apr 2022'},
-    {value: 355, date: '24 Apr 2022'},
-    {value: 290, date: '25 Apr 2022'},
-    {value: 320, date: '26 Apr 2022'},
-    {value: 305, date: '27 Apr 2022'},
-    {value: 330, date: '28 Apr 2022'},
-    {value: 310, date: '29 Apr 2022'},
-    {value: 300, date: '30 Apr 2022', label: '30 Apr', labelTextStyle: {color: 'lightgray', width: 60},},
-    {value: 340, date: '1 May 2022'},
-    {value: 350, date: '2 May 2022'},
-    {value: 380, date: '3 May 2022'},
-    {value: 350, date: '4 May 2022'},
-    {value: 310, date: '5 May 2022'},
-  ];
+  const { priceData, quantityData } = useTimeSeriesTotals()
+  const maxPriceValue = priceData.length ? Math.max(...priceData.map(point => point.value)) : 10
+  const maxQuantityValue = quantityData.length ? Math.max(...quantityData.map(point => point.value)) : 1
 
   return (
     <View style={[styles.container, { backgroundColor: theme.statBackground }]}>
@@ -65,7 +32,7 @@ const AreaChart = ({ setScrollEnabled }: AreaChartProps) => {
       <View style={styles.chartContainer}>
         <LineChart
           areaChart
-          data={ptData}
+          data={priceData}
           allowFontScaling
           onScrollEndDrag={() => setScrollEnabled(true)}
           width={300}
@@ -77,9 +44,9 @@ const AreaChart = ({ setScrollEnabled }: AreaChartProps) => {
           endFillColor={theme === Colors.dark ? 'rgba(20,85,81,0.01)' : 'rgba(65,203,136,0.05)'}
           startOpacity={theme === Colors.dark ? 0.5 : 0.25}
           endOpacity={0}
-          initialSpacing={20}
+          initialSpacing={30}
           noOfSections={6}
-          maxValue={600}
+          maxValue={Math.max(maxPriceValue, 1) + 500}
           yAxisColor="white"
           yAxisThickness={0}
           rulesType="dashed"
@@ -106,6 +73,8 @@ const AreaChart = ({ setScrollEnabled }: AreaChartProps) => {
             activatePointersOnLongPress: true,
             autoAdjustPointerLabelPosition: false,
             pointerLabelComponent: (items: any) => {
+              const index = items[0].index
+
               return (
                 <View style={[styles.pointerContainer, { backgroundColor: theme.areaPointerBackground }]}>
                   <Text style={[styles.pointerTitle, { color: theme.areaPointerText }]}>{items[0].date}</Text>
@@ -115,14 +84,14 @@ const AreaChart = ({ setScrollEnabled }: AreaChartProps) => {
                   </View>
                   <View style={styles.pointerTextWrapper}>
                     <View style={[styles.pointerTextDot, { backgroundColor: '#bebff390' }]} />
-                    <Text style={[styles.pointerText, { color: theme.text }]}>Quantity: {items[0].value}</Text>
+                    <Text style={[styles.pointerText, { color: theme.text }]}>Quantity: {items[0].quantity}</Text>
                   </View>
                 </View>
               );
             },
           }}
         />
-        <BarChart ref={barChartRef} />
+        <BarChart ref={barChartRef} data={quantityData} maxValue={maxQuantityValue} />
       </View>
     </View>
   )
@@ -158,7 +127,7 @@ const styles = StyleSheet.create({
     padding: 5,
     justifyContent: 'center',
     marginTop: -10,
-    marginLeft: -40,
+    marginLeft: -20,
     borderRadius: 10,
   },
   pointerTextWrapper: {
