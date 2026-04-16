@@ -3,12 +3,17 @@ import React from 'react'
 import { RadarChart } from "react-native-gifted-charts";
 
 import { Colors } from '../../constants/colors';
+import useExpensesByDay from '../../utils/useExpensesByDay';
 
 const radarChart = () => {
   const colorScheme = useColorScheme()
         
   if (!colorScheme) return null
   const theme = Colors[colorScheme] ?? Colors.light
+
+  const { expensesByDay } = useExpensesByDay()
+  const visualData = expensesByDay.map(value => (value === 0 ? 0.3 : value))
+  const maxValue = Math.max(...visualData, 5)
 
   return (
     <View style={[styles.container, { backgroundColor: theme.statBackground }]}>
@@ -17,14 +22,13 @@ const radarChart = () => {
       </Text>
 
       <RadarChart
-        data={[540, 320, 280, 430, 870, 280, 200]}
-        labels={['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']}
-        labelsPositionOffset={160}
+        data={expensesByDay}
+        labels={['Hétfő', 'Kedd', 'Szerda', 'Csütörtök', 'Péntek', 'Szombat', 'Vasárnap']}
         labelConfig={{
           stroke: theme.radarText,
           fontFamily: 'InconsolataRegular',
         }}
-        maxValue={1000}
+        maxValue={maxValue}
         startAngle={90}
         
         chartContainerProps={{
