@@ -2,13 +2,14 @@ import { useCallback, useContext, useState } from 'react'
 import { useFocusEffect } from 'expo-router'
 import { AuthContext } from './authContext'
 import { supabase } from './supabase'
+import { ChartFilter, isDateInFilterRange } from './chartFilters'
 
 type UseExpensesByDayReturn = {
   expensesByDay: number[]
   isLoading: boolean
 }
 
-const useExpensesByDay = (): UseExpensesByDayReturn => {
+const useExpensesByDay = (filter: ChartFilter): UseExpensesByDayReturn => {
   const { user } = useContext(AuthContext)
   const [expensesByDay, setExpensesByDay] = useState<number[]>([0, 0, 0, 0, 0, 0, 0])
   const [isLoading, setIsLoading] = useState(false)
@@ -43,6 +44,8 @@ const useExpensesByDay = (): UseExpensesByDayReturn => {
             if (!scheduled) return
 
             const date = new Date(scheduled)
+            if (Number.isNaN(date.getTime()) || !isDateInFilterRange(date, filter)) return
+
             const dayOfWeek = date.getDay()
             // Convert Sunday (0) to position 6, move others back one position
             const adjustedDay = dayOfWeek === 0 ? 6 : dayOfWeek - 1
@@ -59,7 +62,7 @@ const useExpensesByDay = (): UseExpensesByDayReturn => {
       }
 
       loadExpensesByDay()
-    }, [user])
+    }, [user, filter])
   )
 
   return { expensesByDay, isLoading }

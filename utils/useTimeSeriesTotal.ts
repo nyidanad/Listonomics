@@ -2,6 +2,7 @@ import { useCallback, useContext, useState } from 'react'
 import { useFocusEffect } from 'expo-router'
 import { AuthContext } from './authContext'
 import { supabase } from './supabase'
+import { ChartFilter, isDateInFilterRange } from './chartFilters'
 
 type ChartPoint = {
   value: number
@@ -25,7 +26,7 @@ type AreaChartData = {
   } | null
 }
 
-const useTimeSeriesTotals = (): UseTimeSeriesTotalsReturn => {
+const useTimeSeriesTotals = (filter: ChartFilter): UseTimeSeriesTotalsReturn => {
   const { user } = useContext(AuthContext)
   const [priceData, setPriceData] = useState<ChartPoint[]>([])
   const [quantityData, setQuantityData] = useState<{ value: number }[]>([])
@@ -70,6 +71,8 @@ const useTimeSeriesTotals = (): UseTimeSeriesTotalsReturn => {
             if (!scheduled) return
 
             const date = new Date(scheduled)
+            if (Number.isNaN(date.getTime()) || !isDateInFilterRange(date, filter)) return
+
             const key = date.toISOString().split('T')[0]
 
             const price = Number(item.price ?? 0) * Number(item.quantity ?? 1)
@@ -108,8 +111,10 @@ const useTimeSeriesTotals = (): UseTimeSeriesTotalsReturn => {
       }
 
       loadTotals()
-    }, [user])
+    }, [user, filter])
   )
+
+  console.log(priceData)
 
   return { priceData, quantityData, isLoading }
 }

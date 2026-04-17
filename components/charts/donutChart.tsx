@@ -4,13 +4,18 @@ import { PieChart } from 'react-native-gifted-charts'
 
 import useCategoryTotals from '../../utils/useCategoryTotals'
 import { Colors } from '../../constants/colors'
+import { ChartFilter } from '../../utils/chartFilters'
 
 const circleRadius = 150
 const innerRadius = circleRadius * 0.85
 
-const DonutChart = () => {
+type DonutChartProps = {
+  filter: ChartFilter
+}
+
+const DonutChart = ({ filter }: DonutChartProps) => {
   const colorScheme = useColorScheme()
-  const { pieData, totalSpent, isLoading } = useCategoryTotals()
+  const { pieData, totalSpent, isLoading } = useCategoryTotals(filter)
 
   if (!colorScheme) return null
   const theme = Colors[colorScheme] ?? Colors.light

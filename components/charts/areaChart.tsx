@@ -4,13 +4,15 @@ import { LineChart } from 'react-native-gifted-charts';
 
 import { Colors } from '../../constants/colors';
 import useTimeSeriesTotals from '../../utils/useTimeSeriesTotal';
+import { ChartFilter } from '../../utils/chartFilters';
 import BarChart from './barChart';
 
 type AreaChartProps = {
   setScrollEnabled: Dispatch<SetStateAction<boolean>>
+  filter: ChartFilter
 }
 
-const AreaChart = ({ setScrollEnabled }: AreaChartProps) => {
+const AreaChart = ({ setScrollEnabled, filter }: AreaChartProps) => {
   const colorScheme = useColorScheme()
       
   if (!colorScheme) return null
@@ -19,7 +21,7 @@ const AreaChart = ({ setScrollEnabled }: AreaChartProps) => {
   const lineChartRef = useRef<any>(null);
   const barChartRef = useRef<any>(null);
 
-  const { priceData, quantityData } = useTimeSeriesTotals()
+  const { priceData, quantityData } = useTimeSeriesTotals(filter)
   const maxPriceValue = priceData.length ? Math.max(...priceData.map(point => point.value)) : 10
   const maxQuantityValue = quantityData.length ? Math.max(...quantityData.map(point => point.value)) : 1
 
@@ -46,14 +48,14 @@ const AreaChart = ({ setScrollEnabled }: AreaChartProps) => {
           endOpacity={0}
           initialSpacing={30}
           noOfSections={6}
-          maxValue={Math.max(maxPriceValue, 1) + 500}
+          maxValue={maxPriceValue + maxPriceValue * 0.5}
           yAxisColor="white"
           yAxisThickness={0}
           rulesType="dashed"
           rulesColor={theme.areaRuler}
           yAxisTextStyle={{color: 'gray'}}
           xAxisColor={theme.areaAxisLabel}
-          animateOnDataChange
+          animateOnDataChange={false}
           scrollRef={lineChartRef}
           onScroll={(event: any) => {
             if (barChartRef.current) {

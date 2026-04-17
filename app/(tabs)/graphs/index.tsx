@@ -7,6 +7,7 @@ import AreaChart from '../../../components/charts/areaChart'
 import RadarChart from '../../../components/charts/radarChart'
 import { Colors } from '../../../constants/colors'
 import { useState } from 'react'
+import { ChartFilter } from '../../../utils/chartFilters'
 
 const Graphs = () => {
   const colorScheme = useColorScheme()
@@ -14,9 +15,9 @@ const Graphs = () => {
   if (!colorScheme) return null
   const theme = Colors[colorScheme] ?? Colors.light
 
-  const filters = ['7D', '1M', '3M', '1Y', 'All']
+  const filters: ChartFilter[] = ['7D', '1M', '3M', '1Y', 'All']
   
-  const [activeFilter, setActiveFilter] = useState('1M')
+  const [activeFilter, setActiveFilter] = useState<ChartFilter>('1M')
   const [scrollEnabled, setScrollEnabled] = useState(true)
 
   return (
@@ -50,9 +51,9 @@ const Graphs = () => {
           scrollEnabled={scrollEnabled}
         >
           <View style={{ paddingHorizontal: 2 }}>
-            <DonutChart />
-            <AreaChart setScrollEnabled={setScrollEnabled} />
-            <RadarChart />
+            <DonutChart filter={activeFilter} />
+            <AreaChart filter={activeFilter} setScrollEnabled={setScrollEnabled} />
+            <RadarChart filter={activeFilter} />
           </View>
         </ScrollView>
       </View>

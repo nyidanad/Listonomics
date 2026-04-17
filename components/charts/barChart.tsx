@@ -30,7 +30,7 @@ const barChart = forwardRef<any, BarChartProps>(({ data, maxValue }, ref) => {
         initialSpacing={25}
         hideYAxisText
         hideAxesAndRules
-        maxValue={Math.max(maxValue, 1) + 10}
+        maxValue={maxValue + maxValue * 0.5}
         scrollRef={ref}
         endSpacing={30}
         isAnimated

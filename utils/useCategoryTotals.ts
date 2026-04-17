@@ -3,6 +3,7 @@ import { useFocusEffect } from 'expo-router'
 import { AuthContext } from './authContext'
 import { supabase } from './supabase'
 import { PostgrestError } from '@supabase/supabase-js'
+import { ChartFilter, isDateInFilterRange } from './chartFilters'
 
 type CategoryTotal = {
   text: string
@@ -16,7 +17,7 @@ type UseCategoryTotalsReturn = {
   isLoading: boolean
 }
 
-const useCategoryTotals = (): UseCategoryTotalsReturn => {
+const useCategoryTotals = (filter: ChartFilter): UseCategoryTotalsReturn => {
   const { user } = useContext(AuthContext)
   const [pieData, setPieData] = useState<CategoryTotal[]>([])
   const [totalSpent, setTotalSpent] = useState(0)
@@ -60,7 +61,7 @@ const useCategoryTotals = (): UseCategoryTotalsReturn => {
 
           const { data: items, error: itemError } = await supabase
             .from('items')
-            .select('price, quantity, checked, categories(id, title, color)')
+            .select('price, quantity, checked, categories(id, title, color), lists!lid(scheduled)')
             .in('lid', listIds)
 
           if (itemError) {
@@ -71,6 +72,12 @@ const useCategoryTotals = (): UseCategoryTotalsReturn => {
           const groupedByCategory = (items ?? []).reduce(
             (acc: Record<string, { title: string; amount: number; color: string }>, item: any) => {
               if (!item.checked) return acc
+
+              const scheduled = item.lists?.scheduled
+              if (!scheduled) return acc
+
+              const date = new Date(scheduled)
+              if (Number.isNaN(date.getTime()) || !isDateInFilterRange(date, filter)) return acc
 
               const price = Number(item.price ?? 0)
               const quantity = Number(item.quantity ?? 1)
@@ -119,7 +126,7 @@ const useCategoryTotals = (): UseCategoryTotalsReturn => {
       }
 
       loadCategoryTotals()
-    }, [user])
+    }, [user, filter])
   )
 
   return { pieData, totalSpent, isLoading }
