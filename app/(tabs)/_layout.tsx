@@ -60,9 +60,9 @@ function tabsLayout() {
               headerShown: false,
               }}
             />
-            <Tabs.Screen name='inventory/index' options={{
-              title: 'Inventory',
-              tabBarIcon: ({ color }) => <Ionicons size={26} name="cube" color={color} />,
+            <Tabs.Screen name='ai/index' options={{
+              title: 'Ask AI',
+              tabBarIcon: ({ color }) => <Ionicons size={26} name="sparkles" color={color} />,
               headerShown: false,
               }}
             />
