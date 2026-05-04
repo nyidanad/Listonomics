@@ -48,6 +48,7 @@ export const Colors = {
     radarFill: '#C7C7CC',
     radarStroke: '#DEDEDE',
     radarText: '#989CA9',
+    aiInput: '#E5E5EA',
   },
   
   dark: {
@@ -97,5 +98,6 @@ export const Colors = {
     radarFill: '#333333',
     radarText: '#A6A6A6',
     radarStroke: '#434343',
+    aiInput: '#363636',
   },
 }
