@@ -1,6 +1,8 @@
 import { StyleSheet, Text, useColorScheme, View } from 'react-native'
-import React from 'react'
+import React, { useRef } from 'react'
 import Checkbox from 'expo-checkbox'
+import { Swipeable } from 'react-native-gesture-handler'
+import FontAwesome from '@expo/vector-icons/FontAwesome';
 
 import { Colors } from '../../constants/colors'
 
@@ -14,13 +16,16 @@ type ItemProps = {
   // unit?: string
   // description?: string
   onToggle: () => void
+  onDelete: () => void
 }
 
-const item = ({ name, price, quantity, checked, color, priority, onToggle }: ItemProps) => {
+const item = ({ name, price, quantity, checked, color, priority, onToggle, onDelete }: ItemProps) => {
   const colorScheme = useColorScheme()
     
   if (!colorScheme) return null
   const theme = Colors[colorScheme] ?? Colors.light
+
+  const swipeableRef = useRef<Swipeable>(null)
 
   const getPriorityColor = (priority: string | null) => {
     switch (priority) {
@@ -36,29 +41,47 @@ const item = ({ name, price, quantity, checked, color, priority, onToggle }: Ite
     }
   }
 
-  return (
-    <View style={[styles.container, { borderBottomColor: theme.ruler }]}>
-      <View style={styles.wrapper}>
-        <Checkbox 
-          value={checked} 
-          onValueChange={() => onToggle()} 
-          color={checked ? color+'99' : undefined} 
-          style={[styles.checkbox, !checked && { borderColor: theme.text, borderWidth: 1.5 }]} 
-        />
-        <Text style={checked ? [styles.quantity, { color: theme.cheked  }] : [styles.quantity, { color: theme.text  }]}>
-          {quantity}x
-        </Text>
-        <Text style={checked ? [styles.textChecked, { color: theme.cheked }] : [styles.text, { color: theme.text }]}>
-          {name}
-        </Text>
-      </View>
-      <View style={styles.rightSection}>
-        <Text style={checked ? [styles.price, { color: theme.cheked  }] : [styles.price, { color: theme.text  }]}>
-          {price} Ft
-        </Text>
-        <View style={[styles.priority, { backgroundColor: getPriorityColor(priority) }]} />
-      </View>
+  const renderDeleteAction = () => (
+    <View style={styles.deleteBox}>
+      <FontAwesome name="trash-o" size={22} color="#FF3B30" />
     </View>
+  )
+
+  return (
+    <Swipeable
+      ref={swipeableRef}
+      rightThreshold={60}
+      renderRightActions={renderDeleteAction}
+      onSwipeableOpen={(direction) => {
+        if (direction === 'right') {
+          swipeableRef.current?.close()
+          onDelete()
+        }
+      }}
+    >
+      <View style={[styles.container, { borderBottomColor: theme.ruler }]}>
+        <View style={styles.wrapper}>
+          <Checkbox 
+            value={checked} 
+            onValueChange={() => onToggle()} 
+            color={checked ? color+'99' : undefined} 
+            style={[styles.checkbox, !checked && { borderColor: theme.text, borderWidth: 1.5 }]} 
+          />
+          <Text style={checked ? [styles.quantity, { color: theme.cheked  }] : [styles.quantity, { color: theme.text  }]}>
+            {quantity}x
+          </Text>
+          <Text style={checked ? [styles.textChecked, { color: theme.cheked }] : [styles.text, { color: theme.text }]}>
+            {name}
+          </Text>
+        </View>
+        <View style={styles.rightSection}>
+          <Text style={checked ? [styles.price, { color: theme.cheked  }] : [styles.price, { color: theme.text  }]}>
+            {price} Ft
+          </Text>
+          <View style={[styles.priority, { backgroundColor: getPriorityColor(priority) }]} />
+        </View>
+      </View>
+    </Swipeable>
   )
 }
 
@@ -110,5 +133,11 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     marginRight: 7,
+  },
+  deleteBox: {
+    justifyContent: 'center',
+    alignItems: 'center',
+    width: 40,
+    height: '100%',
   },
 })

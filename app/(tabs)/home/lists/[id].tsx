@@ -63,6 +63,30 @@ const ListPage = () => {
     }
   }
 
+  const onDelete = async (id: string) => {
+    try {
+      setSelectedCategories(prev =>
+        prev.map(section => ({
+          ...section,
+          data: section.data.filter((item: any) => item.id !== id)
+        }))
+      )
+
+      const { error } = await supabase
+        .from('items')
+        .delete()
+        .eq('id', id)
+      
+      if (error) {
+        throw error
+      }
+
+      console.log('[DEL] Item deleted successfully.')
+    } catch (err) {
+      console.log('Delete failed:', err)
+    }
+  }
+
   useEffect(() => {
     fetchStats({ id, setInCartCount, setTotalCost })
   }, [onToggle])
@@ -128,7 +152,7 @@ const ListPage = () => {
         <SectionList
           sections={selectedCategories}
           extraData={collapsedSections}
-          keyExtractor={(item, index) => item + index}
+          keyExtractor={(item) => item.id}
           style={{ flexGrow: 0 }}
 
           renderSectionHeader={({ section }) => {
@@ -168,6 +192,7 @@ const ListPage = () => {
                   color={section.color} 
                   priority={item.priority} 
                   onToggle={() => onToggle(item)} 
+                  onDelete={() => onDelete(item.id)} 
                 />
               </View>
             )
