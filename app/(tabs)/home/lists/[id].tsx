@@ -11,6 +11,7 @@ import ListDetails from "../../../../components/list/listDetails"
 import CategoryButton from "../../../../components/buttons/categoryButton"
 import ItemButton from "../../../../components/buttons/itemButton"
 import ItemCategoryModal, { IconMap } from "../../../../components/modals/itemCategoryModal"
+import ItemEditModal from "../../../../components/modals/itemEditModal"
 import Item from "../../../../components/item/item"
 
 import { supabase } from "../../../../utils/supabase"
@@ -36,6 +37,8 @@ const ListPage = () => {
   const [readonly, setReadonly] = useState<boolean>(false)
   const [inCartCount, setInCartCount] = useState<number>(0)
   const [totalCost, setTotalCost] = useState<number>(0)
+  const [editItem, setEditItem] = useState<any>(null)
+  const [showEditModal, setShowEditModal] = useState<boolean>(false)
 
   const bottomSheetModalRef = useRef<BottomSheetModal>(null)
 
@@ -85,6 +88,11 @@ const ListPage = () => {
     } catch (err) {
       console.log('Delete failed:', err)
     }
+  }
+
+  const onEdit = (item: any) => {
+    setEditItem(item)
+    setShowEditModal(true)
   }
 
   useEffect(() => {
@@ -185,6 +193,7 @@ const ListPage = () => {
             return (
               <View style={{ borderLeftWidth: 4, borderLeftColor: section.color }}>
                 <Item 
+                  id={item.id}
                   name={item.name} 
                   price={item.price} 
                   quantity={item.quantity} 
@@ -192,7 +201,8 @@ const ListPage = () => {
                   color={section.color} 
                   priority={item.priority} 
                   onToggle={() => onToggle(item)} 
-                  onDelete={() => onDelete(item.id)} 
+                  onDelete={() => onDelete(item.id)}
+                  onEdit={() => onEdit(item)}
                 />
               </View>
             )
@@ -214,6 +224,12 @@ const ListPage = () => {
           ref={bottomSheetModalRef}
           selectedCategories={selectedCategories}
           setSelectedCategories={setSelectedCategories}
+        />
+        <ItemEditModal
+          item={editItem}
+          showModal={showEditModal}
+          setShowModal={setShowEditModal}
+          listId={id}
         />
 
       </View>

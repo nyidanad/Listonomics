@@ -1,5 +1,5 @@
-import { StyleSheet, Text, useColorScheme, View } from 'react-native'
-import React, { useRef } from 'react'
+import { StyleSheet, Text, TouchableOpacity, useColorScheme, View } from 'react-native'
+import React, { useRef, useState } from 'react'
 import Checkbox from 'expo-checkbox'
 import { Swipeable } from 'react-native-gesture-handler'
 import FontAwesome from '@expo/vector-icons/FontAwesome';
@@ -7,6 +7,7 @@ import FontAwesome from '@expo/vector-icons/FontAwesome';
 import { Colors } from '../../constants/colors'
 
 type ItemProps = {
+  id: string
   name: string
   price: number
   quantity: number
@@ -17,15 +18,25 @@ type ItemProps = {
   // description?: string
   onToggle: () => void
   onDelete: () => void
+  onEdit: () => void
 }
 
-const item = ({ name, price, quantity, checked, color, priority, onToggle, onDelete }: ItemProps) => {
+const item = ({ id, name, price, quantity, checked, color, priority, onToggle, onDelete, onEdit }: ItemProps) => {
   const colorScheme = useColorScheme()
     
   if (!colorScheme) return null
   const theme = Colors[colorScheme] ?? Colors.light
 
   const swipeableRef = useRef<Swipeable>(null)
+  const lastTapRef = useRef<number>(0)
+
+  const handleDoubleTap = () => {
+    const now = Date.now()
+    if (now - lastTapRef.current < 300) {
+      onEdit()
+    }
+    lastTapRef.current = now
+  }
 
   const getPriorityColor = (priority: string | null) => {
     switch (priority) {
@@ -59,7 +70,10 @@ const item = ({ name, price, quantity, checked, color, priority, onToggle, onDel
         }
       }}
     >
-      <View style={[styles.container, { borderBottomColor: theme.ruler }]}>
+      <TouchableOpacity 
+        style={[styles.container, { borderBottomColor: theme.ruler }]}
+        onPressOut={handleDoubleTap}
+      >
         <View style={styles.wrapper}>
           <Checkbox 
             value={checked} 
@@ -80,7 +94,7 @@ const item = ({ name, price, quantity, checked, color, priority, onToggle, onDel
           </Text>
           <View style={[styles.priority, { backgroundColor: getPriorityColor(priority) }]} />
         </View>
-      </View>
+      </TouchableOpacity>
     </Swipeable>
   )
 }
